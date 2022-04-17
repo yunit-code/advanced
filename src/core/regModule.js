@@ -36,11 +36,11 @@ import Vue from 'vue'
                     })
                 }
             }).$mount("#" + moduleObject.id);
-            console.log("加载的VM对象：", vm)
+            // console.log("加载的VM对象：", vm)
             moduleObject.idmProps = function (props) {
-                console.log("实时更新的数据", props)
+                // console.log("实时更新的数据", props)
                 vm.propData = props;
-                console.log(vm)
+                // console.log(vm)
                 vm.$children.length > 0 &&
                     vm.$children[0].$refs[vm.componentName] &&
                     vm.$children[0].$refs[vm.componentName].propDataWatchHandle &&
