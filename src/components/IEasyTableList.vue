@@ -481,6 +481,7 @@ export default {
                       ...params,
                       ...lpitem.paramFun[0].param,
                       moduleObject: this.moduleObject,
+                      paramValue:this.conditionObject[lpitem.msgKey]
                     });
                 } catch (error) {
                   params[lpitem.paramKey || lpitem.msgKey] =
