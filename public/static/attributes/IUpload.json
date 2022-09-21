@@ -1,0 +1,496 @@
+{
+    "classId": "idm.componet.advanced.iupload",
+    "comName": "上传控件",
+    "className": "IUpload",
+    "comType": "common",
+    "comLangue": "vue",
+    "compositeAttr": [
+        {
+            "type": "input",
+            "layoutType": "inline",
+            "text": "唯一标识",
+            "bindKey": "ctrlId",
+            "disabled": true,
+            "default": "@[packageid]",
+            "desc": "",
+            "helpUrl": ""
+        },
+        {
+            "type": "group",
+            "text": "基本属性",
+            "desc": "提供设置组件能达到展示效果的基本属性设置信息",
+            "children": [
+                {
+                    "type": "textarea",
+                    "layoutType": "inline",
+                    "text": "上传地址",
+                    "bindKey": "action",
+                    "desc": "设置上传接收文件的后端接口地址",
+                    "default": "/ctrl/idm/api/upload"
+                },
+                {
+                    "type": "input",
+                    "layoutType": "inline",
+                    "text": "参数名称",
+                    "bindKey": "name",
+                    "desc": "设置发到后台的文件参数名",
+                    "default": "file"
+                },
+                {
+                    "type": "textarea",
+                    "layoutType": "inline",
+                    "text": "文件类型",
+                    "bindKey": "accept",
+                    "desc": "设置接受上传的文件类型, 详见 input accept Attribute，例如：.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    "default": ""
+                },
+                {
+                    "type": "inlineGroup",
+                    "children": [
+                        {
+                            "type": "switch",
+                            "layoutType": "inline",
+                            "text": "支持拖拽",
+                            "bindKey": "isDragger",
+                            "desc": "设置是否支持拖拽，如果启用则可直接拖拽文件到此控件区域即可上传",
+                            "default": true
+                        },
+                        {
+                            "type": "switch",
+                            "layoutType": "inline",
+                            "text": "文件夹",
+                            "bindKey": "directory",
+                            "desc": "设置是否支持文件夹上传",
+                            "default": false
+                        }
+                    ]
+                },
+                {
+                    "type": "inlineGroup",
+                    "children": [
+                        {
+                            "type": "switch",
+                            "layoutType": "inline",
+                            "text": "默认禁用",
+                            "bindKey": "disabled",
+                            "desc": "设置默认状态下是否禁用，如果想要动态变化可以通过禁用自定义函数实现",
+                            "default": false
+                        },
+                        {
+                            "type": "switch",
+                            "layoutType": "inline",
+                            "text": "多选文件",
+                            "bindKey": "multiple",
+                            "desc": "设置是否支持多选文件，ie10+ 支持。开启后按住 ctrl 可选择多个文件。",
+                            "default": false
+                        }
+                    ]
+                },
+                {
+                    "type": "inlineGroup",
+                    "children": [
+                        {
+                            "type": "switch",
+                            "layoutType": "inline",
+                            "text": "上传列表",
+                            "bindKey": "showUploadList",
+                            "desc": "设置是否展示上传列表",
+                            "default": true
+                        },
+                        {
+                            "type": "switch",
+                            "layoutType": "inline",
+                            "text": "预览图标",
+                            "bindKey": "showPreviewIcon",
+                            "desc": "设置上传列表是否展示预览图标。",
+                            "display": "@[showUploadList]",
+                            "default": true
+                        }
+                    ]
+                },
+                {
+                    "type": "inlineGroup",
+                    "children": [
+                        {
+                            "type": "switch",
+                            "layoutType": "inline",
+                            "text": "移除图标",
+                            "bindKey": "showRemoveIcon",
+                            "desc": "设置上传列表是否展示移除图标。",
+                            "display": "@[showUploadList]",
+                            "default": true
+                        },
+                        {
+                            "type": "switch",
+                            "layoutType": "inline",
+                            "text": "cookie",
+                            "bindKey": "withCredentials",
+                            "desc": "上传请求时是否携带 cookie",
+                            "default": true
+                        }
+                    ]
+                },
+                {
+                    "type": "select",
+                    "layoutType": "inline",
+                    "text": "列表样式",
+                    "bindKey": "listType",
+                    "desc": "上传列表的内建样式，支持三种基本样式 text, picture 和 picture-card",
+                    "dictionary": [
+                        {
+                            "label": "text",
+                            "value": "text"
+                        },
+                        {
+                            "label": "picture",
+                            "value": "picture"
+                        },
+                        {
+                            "label": "picture-card",
+                            "value": "picture-card"
+                        }
+                    ],
+                    "default": "text"
+                }
+            ]
+        },
+        {
+            "type": "group",
+            "text": "样式设置",
+            "desc": "点击？查看样式设置用法指南",
+            "helpUrl": "",
+            "children": [
+                {
+                    "type": "box",
+                    "layoutType": "block",
+                    "text": "内外边距",
+                    "bindKey": "box"
+                },
+                {
+                    "type": "inlineGroup",
+                    "text": "宽高",
+                    "children": [
+                        {
+                            "type": "input",
+                            "layoutType": "block",
+                            "text": "宽",
+                            "desc": "填写auto则为自适应，或者使用px、%、vw等单位，比如100%、100px、100vw等等",
+                            "bindKey": "width",
+                            "width": "60px",
+                            "default": "100%"
+                        },
+                        {
+                            "type": "input",
+                            "layoutType": "block",
+                            "text": "高",
+                            "desc": "填写auto则为自适应，或者使用px、%、vh等单位，比如100%、100px、100vh等等",
+                            "bindKey": "height",
+                            "width": "60px",
+                            "default": "auto"
+                        }
+                    ]
+                },
+                {
+                    "type": "group",
+                    "text": "背景设置",
+                    "desc": "点击？查看背景设置用法指南",
+                    "helpUrl": "",
+                    "children": [
+                        {
+                            "type": "colorPicker",
+                            "layoutType": "inline",
+                            "text": "背景色",
+                            "bindKey": "bgColor",
+                            "placeholder": "请选择颜色",
+                            "default": {}
+                        },
+                        {
+                            "type": "uploadImage",
+                            "layoutType": "inline",
+                            "text": "背景图片",
+                            "bindKey": "bgImgUrl",
+                            "placeholder": "可输入图片地址或直接上传"
+                        },
+                        {
+                            "type": "inputNumberUnit",
+                            "layoutType": "inline",
+                            "text": "横向偏移",
+                            "bindKey": "positionX",
+                            "dictionary": [
+                                {
+                                    "label": "px",
+                                    "value": "px"
+                                },
+                                {
+                                    "label": "%",
+                                    "value": "%"
+                                },
+                                {
+                                    "label": "em",
+                                    "value": "em"
+                                }
+                            ],
+                            "display": "@[bgImgUrl]"
+                        },
+                        {
+                            "type": "inputNumberUnit",
+                            "layoutType": "inline",
+                            "text": "纵向偏移",
+                            "bindKey": "positionY",
+                            "dictionary": [
+                                {
+                                    "label": "px",
+                                    "value": "px"
+                                },
+                                {
+                                    "label": "%",
+                                    "value": "%"
+                                },
+                                {
+                                    "label": "em",
+                                    "value": "em"
+                                }
+                            ],
+                            "display": "@[bgImgUrl]"
+                        },
+                        {
+                            "type": "radio",
+                            "layoutType": "block",
+                            "text": "背景大小",
+                            "bindKey": "bgSize",
+                            "dictionary": [
+                                {
+                                    "label": "裁切显示",
+                                    "value": "cover"
+                                },
+                                {
+                                    "label": "完全显示",
+                                    "value": "contain"
+                                },
+                                {
+                                    "label": "自定义",
+                                    "value": "custom"
+                                }
+                            ],
+                            "display": "@[bgImgUrl]"
+                        },
+                        {
+                            "type": "inputNumberUnit",
+                            "layoutType": "inline",
+                            "text": "宽度",
+                            "bindKey": "bgSizeWidth",
+                            "dictionary": [
+                                {
+                                    "label": "px",
+                                    "value": "px"
+                                },
+                                {
+                                    "label": "%",
+                                    "value": "%"
+                                },
+                                {
+                                    "label": "em",
+                                    "value": "em"
+                                }
+                            ],
+                            "display": "@[bgSize=='custom']"
+                        },
+                        {
+                            "type": "inputNumberUnit",
+                            "layoutType": "inline",
+                            "text": "高度",
+                            "bindKey": "bgSizeHeight",
+                            "dictionary": [
+                                {
+                                    "label": "px",
+                                    "value": "px"
+                                },
+                                {
+                                    "label": "%",
+                                    "value": "%"
+                                },
+                                {
+                                    "label": "em",
+                                    "value": "em"
+                                }
+                            ],
+                            "display": "@[bgSize=='custom']"
+                        },
+                        {
+                            "type": "radio",
+                            "layoutType": "block",
+                            "text": "平铺模式",
+                            "bindKey": "bgRepeat",
+                            "dictionary": [
+                                {
+                                    "label": "双向重复",
+                                    "value": "repeat"
+                                },
+                                {
+                                    "label": "水平重复",
+                                    "value": "repeat-x"
+                                },
+                                {
+                                    "label": "垂直重复",
+                                    "value": "repeat-y"
+                                },
+                                {
+                                    "label": "不重复",
+                                    "value": "no-repeat"
+                                },
+                                {
+                                    "label": "继承",
+                                    "value": "inherit"
+                                }
+                            ],
+                            "display": "@[bgImgUrl]"
+                        },
+                        {
+                            "type": "radio",
+                            "layoutType": "inline",
+                            "text": "背景模式",
+                            "bindKey": "bgAttachment",
+                            "dictionary": [
+                                {
+                                    "label": "固定",
+                                    "value": "fixed"
+                                },
+                                {
+                                    "label": "滚动",
+                                    "value": "scroll"
+                                },
+                                {
+                                    "label": "继承",
+                                    "value": "inherit"
+                                }
+                            ],
+                            "display": "@[bgImgUrl]"
+                        }
+                    ]
+                },
+                {
+                    "type": "border",
+                    "layoutType": "block",
+                    "text": "边框",
+                    "bindKey": "border"
+                },
+                {
+                    "type": "font",
+                    "layoutType": "block",
+                    "text": "文字",
+                    "bindKey": "font"
+                }
+            ]
+        },
+        {
+            "type": "group",
+            "text": "高级",
+            "desc": "点击？查看高级设置用法指南",
+            "children": [
+                {
+                    "type": "group",
+                    "text": "文件变动联动组件",
+                    "desc": "当文件有变动会联动这里选择的组件，把当前结果的对象传递给这些组件",
+                    "children": [
+                        {
+                            "type": "pageModuleSelect",
+                            "layoutType": "block",
+                            "text": "需求组件范围",
+                            "desc": "当前数据变动需要联动其他组件需求值（比如用于其他组件的接口参数等）的组件范围",
+                            "bindKey": "linkageDemandPageModule",
+                            "multiple": true
+                        },
+                        {
+                            "type": "pageModuleSelect",
+                            "layoutType": "block",
+                            "text": "结果组件范围",
+                            "desc": "当前数据变动需要联动其他组件变更结果值的组件范围",
+                            "bindKey": "linkageResultPageModule",
+                            "multiple": true
+                        }
+                    ]
+                },
+                {
+                    "type": "actionSelect",
+                    "layoutType": "block",
+                    "text": "自定义上传函数",
+                    "bindKey": "customUploadFunction",
+                    "desc": "如果直接使用上传接口地址无法满足要求可以通过此处自定义函数实现上传，接收参数为格式为{...自定义的,that:组件this,moduleObject:组件对象,fileList:当前文件列表,file:当前操作的文件对象}",
+                    "multiple": false
+                },
+                {
+                    "type": "actionSelect",
+                    "layoutType": "block",
+                    "text": "自定义参数上传函数",
+                    "bindKey": "customDataFunction",
+                    "desc": "如果需要上传的时候额外传递其他参数可以通过此处自定义函数来返回，返回格式为object，接收参数为格式为{...自定义的,that:组件this,moduleObject:组件对象,fileList:当前文件列表,file:当前操作的文件对象}",
+                    "multiple": false
+                },
+                {
+                    "type": "actionSelect",
+                    "layoutType": "block",
+                    "text": "自定义禁用函数",
+                    "bindKey": "customDisabledFunction",
+                    "desc": "如果需要动态变化禁用状态可以通过此处自定义函数来返回，返回格式为boolean，接收参数为格式为{...自定义的,that:组件this,moduleObject:组件对象,fileList:当前文件列表,file:当前操作的文件对象}",
+                    "multiple": false
+                },
+                {
+                    "type": "actionSelect",
+                    "layoutType": "block",
+                    "text": "自定义请求头部函数",
+                    "bindKey": "customHeadersFunction",
+                    "desc": "设置上传的请求头部，IE10 以上有效，返回格式为object，接收参数为格式为{...自定义的,that:组件this,moduleObject:组件对象,fileList:当前文件列表,file:当前操作的文件对象}",
+                    "multiple": false
+                },
+                {
+                    "type": "actionSelect",
+                    "layoutType": "block",
+                    "text": "移除自定义函数",
+                    "bindKey": "customRemovedFunction",
+                    "desc": "如果删除附件会调用此处设置的自定义函数，接收参数为格式为{...自定义的,that:组件this,moduleObject:组件对象,fileList:当前文件列表,file:当前操作的文件对象}",
+                    "multiple": true
+                },
+                {
+                    "type": "actionSelect",
+                    "layoutType": "block",
+                    "text": "点击预览自定义函数",
+                    "bindKey": "customPreviewFunction",
+                    "desc": "点击文件链接或预览图标时会调用此处设置的自定义函数，接收参数为格式为{...自定义的,that:组件this,moduleObject:组件对象,fileList:当前文件列表,file:当前操作的文件对象}",
+                    "multiple": true
+                },
+                {
+                    "type": "actionSelect",
+                    "layoutType": "block",
+                    "text": "文件预览自定义函数",
+                    "bindKey": "customPreviewFileFunction",
+                    "desc": "当设置展示的列表为图片时候可以设置此处的自定义函数，接收参数为格式为{...自定义的,that:组件this,moduleObject:组件对象,fileList:当前文件列表,file:当前操作的文件对象}",
+                    "multiple": true
+                },
+                {
+                    "type": "actionSelect",
+                    "layoutType": "block",
+                    "text": "下载自定义函数",
+                    "bindKey": "customDownloadFunction",
+                    "desc": "点击下载文件时的回调，如果没有指定，则默认跳转到文件 url 对应的标签页，接收参数为格式为{...自定义的,that:组件this,moduleObject:组件对象,fileList:当前文件列表,file:当前操作的文件对象}",
+                    "multiple": true
+                },
+                {
+                    "type": "actionSelect",
+                    "layoutType": "block",
+                    "text": "拖拽文件不符合格式自定义函数",
+                    "bindKey": "customRejectFunction",
+                    "desc": "如果拖拽文件不符合限定上传的格式会调用此处设置的自定义函数，接收参数为格式为{...自定义的,that:组件this,moduleObject:组件对象,fileList:当前文件列表,file:当前操作的文件对象}",
+                    "multiple": true
+                },
+                {
+                    "type": "actionSelect",
+                    "layoutType": "block",
+                    "text": "上传文件之前钩子自定义函数",
+                    "bindKey": "customBeforeUploadFunction",
+                    "desc": "上传文件之前的钩子，参数为上传的文件，若返回 false 则停止上传。支持返回一个 Promise 对象，Promise 对象 reject 时则停止上传，resolve 时开始上传（ resolve 传入 File 或 Blob 对象则上传 resolve 传入对象）。注意：IE9 不支持该方法。，接收参数为格式为{...自定义的,that:组件this,moduleObject:组件对象,fileList:当前文件列表,currentFileList:当前操作的文件列表,file:当前操作的文件对象}",
+                    "multiple": false
+                }
+            ]
+        }
+    ]
+}

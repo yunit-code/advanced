@@ -18,6 +18,13 @@
             "className": "ISteps",
             "comType": "common",
             "comLangue": "vue"
+        },
+        {
+            "classId": "idm.componet.advanced.iupload",
+            "comName": "上传控件",
+            "className": "IUpload",
+            "comType": "common",
+            "comLangue": "vue"
         }
     ]
 }

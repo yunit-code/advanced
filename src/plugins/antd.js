@@ -10,6 +10,7 @@ import 'ant-design-vue/lib/tag/style/css';
 import 'ant-design-vue/lib/tabs/style/css';
 import 'ant-design-vue/lib/modal/style/css';
 import 'ant-design-vue/lib/steps/style/css';
+import 'ant-design-vue/lib/upload/style/css';
 import {
   Button,
   Icon,
@@ -20,7 +21,8 @@ import {
   ConfigProvider,
   Modal,
   Input,
-  Steps
+  Steps,
+  Upload
 } from 'ant-design-vue';
 
 /* v1.1.3+ registration methods */
@@ -33,5 +35,6 @@ Vue.use(Tabs);
 Vue.use(Modal);
 Vue.use(Input);
 Vue.use(Steps);
+Vue.use(Upload);
 Vue.use(ConfigProvider);
 Vue.prototype.$confirm = Modal.confirm;

@@ -95,3 +95,6 @@ export {
 /**
  * 组件的图标按需引入放到这下面
  */
+export {
+    default as PaperClipOutline
+} from '@ant-design/icons/lib/outline/PaperClipOutline';
