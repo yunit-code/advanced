@@ -73,7 +73,10 @@ export default {
     this.initAttrToModule();
   },
   mounted() {
-    
+    //赋值给window提供跨页面调用
+    this.$nextTick(function(params) {
+      window[this.moduleObject.packageid] = this;
+    });
   },
   destroyed() {},
   methods:{
