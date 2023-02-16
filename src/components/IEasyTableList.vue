@@ -758,7 +758,7 @@ export default {
     convertAttrToStyleObject() {
       this.rowCustomRenderList = [];
       
-      var styleObject = {};
+      var styleObject = {},tableTitleObj = {};
       if (this.propData.bgSize && this.propData.bgSize == "custom") {
         styleObject["background-size"] =
           (this.propData.bgSizeWidth
@@ -914,10 +914,14 @@ export default {
               styleObject["text-align"] = element.fontTextAlign;
               styleObject["text-decoration"] = element.fontDecoration;
               break;
+            case 'tableTitleFont':
+              IDM.style.setFontStyle(tableTitleObj, element)
+              break
           }
         }
       }
       window.IDM.setStyleToPageHead(this.moduleObject.id, styleObject);
+      window.IDM.setStyleToPageHead(this.moduleObject.id + ' .ant-table-thead>tr>th .ant-table-column-title', tableTitleObj);
     },
     /**
      * 组件通信：接收消息的方法

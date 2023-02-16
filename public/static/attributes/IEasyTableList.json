@@ -831,6 +831,12 @@
                     "layoutType": "block",
                     "text": "文字",
                     "bindKey": "font"
+                },
+                {
+                    "type": "font",
+                    "layoutType": "block",
+                    "text": "表头文字",
+                    "bindKey": "tableTitleFont"
                 }
             ]
         },
