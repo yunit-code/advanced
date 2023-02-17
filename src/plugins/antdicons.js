@@ -91,10 +91,18 @@ export {
 /**
  * ======================拖拽设计器中必须的图标，如果删除可能会造成引用了以上图标将会不显示 end===================================
  */
-
 /**
  * 组件的图标按需引入放到这下面
  */
 export {
     default as PaperClipOutline
 } from '@ant-design/icons/lib/outline/PaperClipOutline';
+export {
+    default as CaretDownFill
+} from '@ant-design/icons/lib/fill/CaretDownFill';
+export {
+    default as CaretUpFill
+} from '@ant-design/icons/lib/fill/CaretUpFill';
+export {
+    default as FilterFill
+} from '@ant-design/icons/lib/fill/FilterFill';

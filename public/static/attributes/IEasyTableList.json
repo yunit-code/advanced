@@ -516,6 +516,14 @@
                         }
                     ],
                     "default": "text"
+                },
+                {
+                    "type": "actionSelect",
+                    "layoutType": "block",
+                    "text": "column自定义函数",
+                    "bindKey": "columnCustomFunction",
+                    "desc": "返回对象的属性将添加表格的column配置项中，例如：{ filters: [], onFilter: ()=>{} }",
+                    "multiple": false
                 }
             ]
         },

@@ -214,6 +214,17 @@ export default {
               };
               that.rowCustomRenderList.push(columnObj);
             });
+          // 列自定义添加配置
+          var columnCustomFunction = item.columnCustomFunction?.[0];
+          let customOptions = {}
+          if(columnCustomFunction) {
+            customOptions = window?.[columnCustomFunction?.name]?.call({
+              ...(columnCustomFunction.param || {})
+            }) || {}
+          }
+
+          columnObj = Object.assign(customOptions, columnObj)
+          console.log(customOptions, columnObj)
           columnList.push(columnObj);
         });
       return columnList;
