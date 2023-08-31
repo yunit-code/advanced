@@ -23,6 +23,23 @@
                 {
                     "type": "radio",
                     "layoutType": "inline",
+                    "text": "默认状态",
+                    "bindKey": "defaultStatus",
+                    "dictionary": [
+                        {
+                            "label": "普通",
+                            "value": "default"
+                        },
+                        {
+                            "label": "隐藏",
+                            "value": "hidden"
+                        }
+                    ],
+                    "default": "default"
+                },
+                {
+                    "type": "radio",
+                    "layoutType": "inline",
                     "text": "布局方式",
                     "bindKey": "tableLayout",
                     "dictionary": [
@@ -79,16 +96,14 @@
                     "layoutType": "inline",
                     "text": "X最大宽",
                     "desc": "用于指定滚动区域的宽，为0则不设置",
-                    "bindKey": "scrollX",
-                    "width": "100px"
+                    "bindKey": "scrollX"
                 },
                 {
                     "type": "inputNumber",
                     "layoutType": "inline",
                     "text": "Y最大高",
                     "desc": "用于指定滚动区域的高，为0则不设置",
-                    "bindKey": "scrollY",
-                    "width": "100px"
+                    "bindKey": "scrollY"
                 },
                 {
                     "type": "switch",
@@ -119,7 +134,7 @@
                     "layoutType": "inline",
                     "text": "唯一主键",
                     "bindKey": "rowKey",
-                    "desc":"表格行 key 的取值，可以是返回数据的唯一主键的字段名称，不填写则默认为id"
+                    "desc":"表格行 key 的取值，可以是返回数据的唯一主键的字段名称，不填写则默认为表格内置索引"
                 }
             ]
         },
@@ -247,6 +262,10 @@
                         {
                             "label": "自定义函数",
                             "value": "customFunction"
+                        },
+                        {
+                            "label": "分页容器",
+                            "value": "pageContainer"
                         }
                     ],
                     "default": "customInterface"

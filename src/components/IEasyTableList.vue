@@ -9,6 +9,7 @@
     idm-ctrl="idm_module"
     :id="moduleObject.id"
     :idm-ctrl-id="moduleObject.id"
+    v-show="propData.defaultStatus!='hidden'"
   >
     <!--
       组件内部容器
@@ -40,7 +41,7 @@
           :locale="localeEmpty"
           :customHeaderRow="customHeaderRow"
           :rowClassName="rowClassNameHandle"
-          :rowKey="propData.rowKey||'id'"
+          :rowKey="propData.rowKey|| ((r, i) => i.toString())"
           :loading="loading"
           @change="handleTableChange"
         >
@@ -148,6 +149,7 @@ export default {
       dataRows: [],
       moduleObject: {},
       propData: this.$root.propData.compositeAttr || {
+        defaultStatus: 'default',
         openPagination: true,
         smallPagination: true,
         showSizeChanger: true,
@@ -613,6 +615,9 @@ export default {
             that.resultChangeTableData(resValue)
           }
           break;
+        case 'pageContainer':
+          that.loading = false;
+          break
       }
     },
     /**
@@ -934,6 +939,12 @@ export default {
       window.IDM.setStyleToPageHead(this.moduleObject.id, styleObject);
       window.IDM.setStyleToPageHead(this.moduleObject.id + ' .ant-table-thead>tr>th .ant-table-column-title', tableTitleObj);
     },
+    showThisModuleHandle(){
+        this.propData.defaultStatus = "default";
+      },
+      hideThisModuleHandle(){
+        this.propData.defaultStatus = "hidden";
+      },
     /**
      * 组件通信：接收消息的方法
      * @param {
@@ -950,8 +961,17 @@ export default {
         if(object.messageKey){
           this.onReInitDataMsgKey(object.message,object.messageKey);
         }
+        console.log(object?.message, '<------------------------')
+        if(object?.message?.data) {
+          this.resultChangeTableData(object.message)
+        }
       }else if(object.type&&object.type=="linkageReload"){
         this.reload(object.message&&object.message.reloadFirstPage);
+      }
+      if(object&&object.type=="linkageShowModule"){
+        this.showThisModuleHandle();
+      }else if(object&&object.type=="linkageHideModule"){
+        this.hideThisModuleHandle();
       }
     },
     /**

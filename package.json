@@ -39,13 +39,13 @@
     },
     "rules": {
       "no-unused-vars": 0,
-      "no-empty":0,
-      "no-case-declarations":0
+      "no-empty": 0,
+      "no-case-declarations": 0
     },
-    "globals":{
+    "globals": {
       "IDM": true,
       "$": true,
-      "_":true
+      "_": true
     }
   },
   "browserslist": [
