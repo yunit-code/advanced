@@ -487,7 +487,7 @@
                     "layoutType": "block",
                     "text": "上传文件之前钩子自定义函数",
                     "bindKey": "customBeforeUploadFunction",
-                    "desc": "上传文件之前的钩子，参数为上传的文件，若返回 false 则停止上传。支持返回一个 Promise 对象，Promise 对象 reject 时则停止上传，resolve 时开始上传（ resolve 传入 File 或 Blob 对象则上传 resolve 传入对象）。注意：IE9 不支持该方法。，接收参数为格式为{...自定义的,that:组件this,moduleObject:组件对象,fileList:当前文件列表,currentFileList:当前操作的文件列表,file:当前操作的文件对象}",
+                    "desc": "上传文件之前的钩子，参数为上传的文件，若返回 false 则停止上传。支持返回一个 Promise 对象，Promise 对象 reject 时则停止上传，resolve 时开始上传（ resolve 传入 File 或 Blob 对象则上传 resolve 传入对象）。注意：IE9 不支持该方法。接收参数为格式为{...自定义的,that:组件this,moduleObject:组件对象,fileList:当前文件列表,currentFileList:当前操作的文件列表,file:当前操作的文件对象}",
                     "multiple": false
                 }
             ]

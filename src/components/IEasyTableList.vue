@@ -715,12 +715,12 @@ export default {
     resultChangeTableData(listResultData){
       this.loading = false;
       //设置数据源
-      var rows = listResultData?listResultData.data&&listResultData.data.rows:[];
+      var rows = listResultData&&listResultData.data?listResultData.data.rows:[];
       if(rows.length==0){
         rows = listResultData&&listResultData.rows;
       }
       this.dataRows = rows;
-      var totalCount = listResultData?listResultData.data&&listResultData.data.total:-1;
+      var totalCount = listResultData&&listResultData.data?listResultData.data.total:-1;
       if(totalCount==-1){
         totalCount = listResultData&&listResultData.total;
       }
