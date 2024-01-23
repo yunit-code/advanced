@@ -11,6 +11,9 @@ import 'ant-design-vue/lib/tabs/style/css';
 import 'ant-design-vue/lib/modal/style/css';
 import 'ant-design-vue/lib/steps/style/css';
 import 'ant-design-vue/lib/upload/style/css';
+import 'ant-design-vue/lib/select/style/css';
+import 'ant-design-vue/lib/input-number/style/css';
+import 'ant-design-vue/lib/switch/style/css';
 import {
   Button,
   Icon,
@@ -22,6 +25,9 @@ import {
   Modal,
   Input,
   Steps,
+  Select,
+  InputNumber,
+  Switch,
   Upload
 } from 'ant-design-vue';
 
@@ -37,4 +43,7 @@ Vue.use(Input);
 Vue.use(Steps);
 Vue.use(Upload);
 Vue.use(ConfigProvider);
+Vue.use(Select);
+Vue.use(InputNumber);
+Vue.use(Switch);
 Vue.prototype.$confirm = Modal.confirm;

@@ -51,8 +51,43 @@
             slot-scope="text,record,index"
             :key="cindex"
           >
-            <div v-if="item.rowsCustomRenderReturnType == 'text'">{{ getRowsCustomRender(item,text,record,index) }}</div>
-            <div v-else-if="item.rowsCustomRenderReturnType == 'html'" v-html="getRowsCustomRender(item,text,record,index)"></div>
+            <a-input
+              :size="propData.size"
+              v-if="item.type=='input'"
+              style="margin: -5px 0"
+              v-model="record[item.dataIndex]"
+              @blur="saveDataHandle(record,item)"
+            />
+            <a-input-number
+              :size="propData.size"
+              v-else-if="item.type=='inputNumber'"
+              style="margin: -5px 0"
+              v-model="record[item.dataIndex]"
+              @change	="saveDataHandle(record,item)"
+            />
+            <a-switch
+              :size="propData.size" style="margin: -5px 0" v-else-if="item.type=='switch'" 
+            v-model="record[item.dataIndex]"
+              @change	="saveDataHandle(record,item)"
+            ></a-switch>
+            <a-select
+              :size="propData.size"
+              @change	="saveDataHandle(record,item)" :labelInValue="item.type=='mSelect'" :mode="item.type=='mSelect'?'multiple':'default'" v-else-if="item.type=='select'||item.type=='mSelect'" v-model="record[item.dataIndex]" style="margin: -5px 0;min-width:100%">
+              <a-select-option v-for="oitem in item.dictionary" :key="oitem.key" :value="oitem.key">
+                {{oitem.label}}
+              </a-select-option>
+            </a-select>
+            <a-radio-group
+              :size="propData.size" v-else-if="item.type=='radio'" :name="item.dataIndex" v-model="record[item.dataIndex]"
+              @change	="saveDataHandle(record,item)">
+              <a-radio v-for="oitem in item.dictionary" :key="oitem.key" :value="oitem.key">
+                {{oitem.label}}
+              </a-radio>
+            </a-radio-group>
+            <template v-else>
+              <div v-if="item.rowsCustomRenderReturnType == 'text'">{{ getRowsCustomRender(item,text,record,index) }}</div>
+              <div v-else-if="item.rowsCustomRenderReturnType == 'html'" v-html="getRowsCustomRender(item,text,record,index)"></div>
+            </template>
           </div>
           <template v-for="(item, cindex) in columns">
             <!--------------自定义标题-------------->
@@ -216,6 +251,21 @@ export default {
               };
               that.rowCustomRenderList.push(columnObj);
             });
+          if(item.type&&item.type!='readonly'&&item.type!='custom'){
+            columnObj.scopedSlots = {
+                customRender: "rows_" + (columnObj.key || columnObj.dataIndex||IDM.uuid()),
+              };
+              if(item.dictionaryFun&&item.dictionaryFun.length>0){
+                //调用自定义函数
+                item.dictionary = window[item.dictionaryFun[0].name]&&window[item.dictionaryFun[0].name].call(this,{
+                  customParam:item.dictionaryFun[0].param,
+                  _this:that
+                });
+              }
+              item.scopedSlots = columnObj.scopedSlots;
+            that.rowCustomRenderList.push(item);
+          }
+
           // 列自定义添加配置
           var columnCustomFunction = item.columnCustomFunction?.[0];
           let customOptions = {}
@@ -288,6 +338,7 @@ export default {
                     selectedRows
                   });
           });
+        that.executeLinkageStart("dataListSelectionChange",selectedRows)
       }
 
       //手动选择/取消某列的自定义函数
@@ -319,6 +370,7 @@ export default {
                   });
           });
       }
+      rowSelectionConfig.selectedRowKeys = that.selectedRowKeys;
 
       return rowSelectionConfig;
     },
@@ -422,6 +474,7 @@ export default {
   props: {},
   created() {
     this.moduleObject = this.$root.moduleObject;
+    this.pageSize = this.propData.defaultPageSize||10;
     // console.log(this.moduleObject)
     this.convertAttrToStyleObject();
     this.initData();
@@ -437,6 +490,99 @@ export default {
   },
   destroyed() {},
   methods: {
+    /**
+     * 保存数据
+     * @param {*} record 整条数据
+     * @param {*} dataItem 字段配置
+     */
+    saveDataHandle(record,dataItem){
+      if(!this.propData.saveFormUrl||!this.propData.saveFormKey){
+        return;
+      }
+      // __DATA=
+      // {
+      //     "maininfo":{
+      //         "S-LIST_ITEM-0007":{
+      //             "values":[
+      //                 {
+      //                     "key":"value",
+      //                     "value":""
+      //                 }
+      //             ]
+      //         },
+      //         "S-LIST_ITEM-0031":{
+      //             "values":[
+      //                 {
+      //                     "key":"value",
+      //                     "value":""
+      //                 },
+      //                 {
+      //                     "key":"text",
+      //                     "value":""
+      //                 }
+      //             ]
+      //         },
+      //         "S-BASE-0001":{
+      //             "values":[
+      //                 {
+      //                     "key":"value",
+      //                     "value":"240109153910TfeEdkORe7UU28rutH4"
+      //                 }
+      //             ]
+      //         }
+      //     }
+      // }
+      let maininfo = {};
+      maininfo[this.propData.saveFormKey] = {
+        "values":[
+          {
+            "key":"value",
+            "value":record[this.propData.saveFormKey]
+          }
+        ]
+      }
+      let metaName = "";
+      if(dataItem.dataIndex.endsWiths(".value")){
+        metaName = dataItem.dataIndex.substring(0,dataItem.dataIndex.length-6);
+      }
+      let values=[],value="";
+      Object.keys(record||{}).forEach(key=>{
+        if(key.startsWiths(metaName)&&metaName!=key){
+          let keyName = key.substring(metaName.length+1);
+          if(keyName=="value"){
+            value = record[key];
+          }
+          values.push({
+            key:keyName,
+            value:record[key]
+          })
+        }
+      });
+      //修正text
+      let text = "";
+      if(dataItem?.dictionary?.length){
+        dataItem?.dictionary.forEach(item=>{
+          if(item.key==value){
+            text = item.label;
+          }
+        })
+      }
+      text&&values.forEach(item=>{
+        if(item.key=="text"){
+          item.value = text;
+        }
+      })
+      maininfo[metaName] = {
+        values:values
+      }
+      //提交后端
+      IDM.http.post(this.propData.saveFormUrl,{__DATA:JSON.stringify({maininfo}),saveFormKey:this.propData.saveFormKey}).then(res=>{
+        IDM.message.success("保存成功");
+      }).catch(err=>{
+        IDM.message.error("保存失败");
+      })
+    },
+
     /**
      * 获取扩展行的结果
      */
@@ -460,10 +606,14 @@ export default {
     /**
      * 重新加载
      */
-    reload(reloadFirstPage){
+    reload(reloadFirstPage,conditionObject,messageKey){
       if(reloadFirstPage){
         //  this.pageSize =20;
          this.current = 1;
+      }
+      this.selectedRowKeys = [];
+      if(messageKey){
+        this.conditionObject[messageKey] = conditionObject;
       }
       //请求数据源
       this.initData();
@@ -512,8 +662,8 @@ export default {
           }
         });
       }
-      params["pageIndex"] = this.current;
-      params["pageSize"] = this.pageSize;
+      params[this.propData.pageIndex||"pageIndex"] = this.current;
+      params[this.propData.pageSize||"pageSize"] = this.pageSize;
       switch (this.propData.dataSourceType) {
         case "customInterface":
           //请求接口时会调用这里设置的函数返回自定义的参数，返回格式为Object对象，例如：{param1:'',param2:''}
@@ -956,7 +1106,45 @@ export default {
      * } object
      */
     receiveBroadcastMessage(object) {
-      console.log("组件收到消息:"+this.moduleObject.packageid, object);
+      if(this.propData.linkageEnd?.length){
+        this.propData.linkageEnd.forEach(linkageObject=>{
+          const currentItemType = linkageObject.reslinkageType=='custom'?linkageObject.reslinkageTypeCustom:linkageObject.reslinkageType;
+          if(currentItemType!=object.type){
+            return;
+          }
+          //再次处理过滤条件
+          if (linkageObject.resResultRule && !IDM.getExpressData(linkageObject.resResultRule, object)) {
+            return;
+          }
+          switch (linkageObject.resType) {
+            //重新加载刷新数据
+            case "linkageReload":
+              this.reload(true,object.message,object.messageKey);
+              break;
+              //重新加载数据来源
+            case "linkageDemand":
+              this.resultChangeTableData(object.message)
+              break;
+            case "linkageShowModule":
+              this.showThisModuleHandle();
+              break;
+            case "linkageHideModule":
+              this.hideThisModuleHandle();
+              break;
+            case "customFun":
+            linkageObject.resFunction?.length &&
+                IDM.invokeCustomFunctions.apply(this, [
+                  linkageObject.resFunction,
+                  {
+                    moduleObject: this.moduleObject,
+                    messageObject:object
+                  },
+                ]);
+              break;
+          }
+        })
+        return;
+      }
       if(object.type&&object.type=="linkageDemand"){
         if(object.messageKey){
           this.onReInitDataMsgKey(object.message,object.messageKey);
@@ -973,6 +1161,38 @@ export default {
       }else if(object&&object.type=="linkageHideModule"){
         this.hideThisModuleHandle();
       }
+    },
+    /**
+     * 执行发送联动消息
+     * @param {*} actionType 触发的动作类型
+     * @param {*} sendData 发送的数据
+     */
+    executeLinkageStart(actionType, sendData) {
+      const linkageList = this.propData.linkageStart || [];
+      if (!linkageList.length) {
+        return;
+      }
+      let linkageFilterList = linkageList.filter(
+        (item) => item.actionType?.indexOf(actionType) > -1
+      );
+      linkageFilterList.length &&
+        linkageFilterList.forEach((linkageObject) => {
+          if (!linkageObject.type) {
+            return;
+          }
+          let moduleIdArray = linkageObject.module
+            ? linkageObject.module.map((item) => item.moduleId)
+            : [];
+          this.sendBroadcastMessage({
+            type:
+              linkageObject.type == "custom"
+                ? linkageObject.customType
+                : linkageObject.type,
+            message: sendData,
+            rangeModule: moduleIdArray,
+            messageKey: this.propData.ctrlId,
+          });
+        });
     },
     /**
      * 组件通信：发送消息的方法
