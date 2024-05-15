@@ -1,7 +1,8 @@
 
 const path = require('path')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-
+// const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const webpack = require('webpack');
+const isDev = process.env.NODE_ENV === 'development'
 function resolve(dir) {
     return path.join(__dirname, dir)
 }
@@ -49,6 +50,7 @@ const externals = {
 module.exports = {
     publicPath:"./",
     assetsDir:assetsDir,
+    productionSourceMap: false,
     pages:{
       index: {
         // page 的入口
@@ -115,16 +117,19 @@ module.exports = {
     },
     configureWebpack: {
       plugins: [
-        new MiniCssExtractPlugin({
-          // 修改打包后css文件名
-          filename: `${assetsDir}/css/[name].css`,
-          chunkFilename: `${assetsDir}/css/[name].css`
-        })
+        new webpack.optimize.LimitChunkCountPlugin({
+          maxChunks: 1
+        }),
+        // new MiniCssExtractPlugin({
+        //   // 修改打包后css文件名
+        //   filename: `${assetsDir}/css/[name].css`,
+        //   chunkFilename: `${assetsDir}/css/[name].css`
+        // })
       ],
       output: {
         // 输出重构  打包编译后的 文件名称
         filename: `${assetsDir}/js/[name].js`,
-        chunkFilename: `${assetsDir}/js/[name].js`,
+        // chunkFilename: `${assetsDir}/js/[name].js`,
         jsonpFunction:JSON.stringify("webpackJsonp_"+getGUID()+"_"+new Date().getTime())
       },
       resolve:{
@@ -137,9 +142,12 @@ module.exports = {
     },
     css: {
         // 是否使用css分离插件 ExtractTextPlugin
-        extract: true,
+        extract: isDev ? false : {
+          filename: `${assetsDir}/css/[name].css`,
+          // chunkFilename: `${assetsDir}/css/[name].css`
+        },
         // 开启 CSS source maps?
-        sourceMap: true,
+        sourceMap: isDev,
         // css预设器配置项
         // 启用 CSS modules for all css / pre-processor files.
         requireModuleExtension: true,
