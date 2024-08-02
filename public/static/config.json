@@ -25,6 +25,20 @@
             "className": "IUpload",
             "comType": "common",
             "comLangue": "vue"
+        },
+        {
+            "classId": "idm.componet.advanced.IFormSearch",
+            "comName": "搜索表单",
+            "className": "IFormSearch",
+            "comType": "common",
+            "comLangue": "vue"
+        },
+        {
+            "classId": "idm.componet.advanced.ITable",
+            "comName": "动态表格",
+            "className": "ITable",
+            "comType": "common",
+            "comLangue": "vue"
         }
     ]
 }

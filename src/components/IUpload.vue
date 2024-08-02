@@ -151,7 +151,7 @@ export default {
       }
 
       if(this.propData.linkageDemandPageModule&&this.propData.linkageDemandPageModule.length>0){
-        var moduleIdArray = [];
+        let moduleIdArray = [];
         this.propData.linkageDemandPageModule.forEach(item=>{moduleIdArray.push(item.moduleId)});
         this.sendBroadcastMessage({
           type:"linkageDemand",
@@ -164,7 +164,7 @@ export default {
         })
       }
       if(this.propData.linkageResultPageModule&&this.propData.linkageResultPageModule.length>0){
-        var moduleIdArray = [];
+        let moduleIdArray = [];
         this.propData.linkageResultPageModule.forEach(item=>{moduleIdArray.push(item.moduleId)});
         this.sendBroadcastMessage({
           type:"linkageResult",
