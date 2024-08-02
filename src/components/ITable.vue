@@ -99,18 +99,7 @@
                             </template>
                             <template v-else-if="column.type == 'href'">
                                 <a
-                                    :href="
-                                        urlGetWebPath(
-                                            expressReplace(
-                                                column.href,
-                                                {
-                                                    moduleObject,
-                                                    record,
-                                                },
-                                                true
-                                            )
-                                        )
-                                    "
+                                    :href="getLink(value, record, column)"
                                     :target="column.target"
                                     @click.stop
                                     >{{ value }}</a
@@ -700,6 +689,31 @@ export default {
                     },
                 ])
                 .join()
+        },
+        getLink(value, record, column) {
+            if (column.hrefFunc) {
+                return window.IDM.invokeCustomFunctions
+                    .apply(this, [
+                        column.hrefFunc,
+                        {
+                            moduleObject: this.moduleObject,
+                            record,
+                            value,
+                            column,
+                        },
+                    ])
+                    .join()
+            }
+            return this.urlGetWebPath(
+                this.expressReplace(
+                    column.href,
+                    {
+                        moduleObject: this.moduleObject,
+                        record,
+                    },
+                    true
+                )
+            )
         },
     },
 }
