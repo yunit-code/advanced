@@ -245,11 +245,7 @@ export default {
         return {
             locale: zh_CN,
             moduleObject: this.$root.moduleObject,
-            dataSource: [
-                {
-                    id: '',
-                },
-            ],
+            dataSource: [],
             totalCount: 0,
             filter: {},
             sort: {},
