@@ -117,7 +117,7 @@ export default {
                 : [],
             totalCount: 0,
             filter: {},
-            sort: {},
+            sort: null,
             loading: false,
             pagination: {
                 current: 1,
@@ -246,6 +246,9 @@ export default {
                                 <a-menu
                                     slot='overlay'
                                     selectable={false}
+                                    style={{
+                                        textAlign: 'center',
+                                    }}
                                     onClick={props => {
                                         this.handleMenuClick(
                                             props.key,
@@ -473,8 +476,12 @@ export default {
                 this.pagination.current
             params[this.propData.pageSize || 'pageSize'] =
                 this.pagination.pageSize
-            params[this.propData.orderType || 'orderType'] = this.sort.orderType
-            params[this.propData.reversed || 'reversed'] = this.sort.reversed
+            if (this.sort) {
+                params[this.propData.orderType || 'orderType'] =
+                    this.sort.orderType
+                params[this.propData.reversed || 'reversed'] =
+                    this.sort.reversed
+            }
             this.loading = true
             dataUtil
                 .fetchData(
@@ -526,12 +533,12 @@ export default {
         handleTableChange(pagination, filters, sorter) {
             this.pagination.current = pagination.current
             this.pagination.pageSize = pagination.pageSize
-            this.sort = {
-                orderType: sorter.order
-                    ? this.columns[sorter.columnKey]?.sortField || sorter.field
-                    : '',
-                reversed: sorter.order ? sorter.order == 'descend' : '',
-            }
+            this.sort = sorter.order
+                ? {
+                      orderType: sorter.column.sortField || sorter.field,
+                      reversed: sorter.order == 'descend',
+                  }
+                : null
             this.initData()
         },
         /**

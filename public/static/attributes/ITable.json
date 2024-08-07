@@ -687,6 +687,28 @@
                             "bindKey": "sortField",
                             "desc": "远程排序字段，不填默认为列标识",
                             "default": "@[value]"
+                        },
+                        {
+                            "type": "select",
+                            "text": "固定到",
+                            "bindKey": "fixed",
+                            "layoutType": "inline",
+                            "desc": "固定列位置",
+                            "dictionary": [
+                                {
+                                    "label": "无",
+                                    "value": false
+                                },
+                                {
+                                    "label": "左侧",
+                                    "value": "left"
+                                },
+                                {
+                                    "label": "右侧",
+                                    "value": "right"
+                                }
+                            ],
+                            "default": false
                         }
                     ]
                 }
