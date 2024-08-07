@@ -17,6 +17,7 @@ import 'ant-design-vue/lib/switch/style/css'
 import 'ant-design-vue/lib/form/style/css'
 import 'ant-design-vue/lib/form-model/style/css'
 import 'ant-design-vue/lib/space/style/css'
+import 'ant-design-vue/lib/date-picker/style/css'
 import {
     Button,
     Icon,
@@ -35,6 +36,7 @@ import {
     FormModel,
     Space,
     Form,
+    DatePicker,
 } from 'ant-design-vue'
 
 /* v1.1.3+ registration methods */
@@ -57,4 +59,5 @@ Vue.use(FormModel.Item)
 Vue.use(Form)
 Vue.use(Form.Item)
 Vue.use(Space)
+Vue.use(DatePicker)
 Vue.prototype.$confirm = Modal.confirm

@@ -5,7 +5,7 @@
         :idm-ctrl-id="moduleObject.id"
     >
         <a-config-provider :locale="locale">
-            <div class="table-wrap" :class="className.wrap">
+            <div class="table-container" :class="className.wrap">
                 <a-form-model
                     v-if="fields.length > 0"
                     :model="filter"
@@ -56,153 +56,13 @@
                     :expandIconAsCell="false"
                     :expandIconColumnIndex="propData.expandIconColumnIndex || 1"
                     :indentSize="0"
-                    :scroll="{ y: propData.tableMaxHeight }"
+                    :scroll="{ y: propData.tableMaxHeight, x: '100%' }"
                     :rowClassName="
                         (_, index) => (index % 2 == 0 ? 'odd' : 'even')
                     "
+                    :columns="columns"
+                    class="table-wrap"
                 >
-                    <a-table-column
-                        v-for="(column, columnIndex) in propData.columns"
-                        :title="column.label"
-                        :data-index="column.value"
-                        :sorter="column.sorter"
-                        :align="column.align"
-                        :width="column.width"
-                        :customHeaderCell="
-                            e => handleCustomHeaderCell(column, e)
-                        "
-                        :key="columnIndex"
-                    >
-                        <template #default="value, record, index">
-                            <template v-if="column.type == 'index'">
-                                {{ index + 1 }}
-                            </template>
-                            <template v-else-if="column.type == 'text'">
-                                {{
-                                    expressReplace(
-                                        column.textTemplate || '@[value]',
-                                        {
-                                            value,
-                                            record,
-                                            column,
-                                            columnIndex,
-                                        }
-                                    )
-                                }}
-                            </template>
-                            <template v-else-if="column.type == 'select'">
-                                {{
-                                    optionData[column.value]?.find(
-                                        n => n.key == value
-                                    )?.value
-                                }}
-                            </template>
-                            <template v-else-if="column.type == 'href'">
-                                <a
-                                    :href="getLink(value, record, column)"
-                                    :target="column.target"
-                                    @click.stop
-                                    >{{ value }}</a
-                                >
-                            </template>
-                            <template v-else-if="column.type == 'actions'">
-                                <a-dropdown
-                                    v-if="
-                                        column.dropdown &&
-                                        getActions(value, record, column)
-                                            .length > 0
-                                    "
-                                >
-                                    <a-menu
-                                        slot="overlay"
-                                        :selectable="false"
-                                        @click="
-                                            ({ key }) =>
-                                                handleMenuClick(
-                                                    key,
-                                                    value,
-                                                    record,
-                                                    column
-                                                )
-                                        "
-                                    >
-                                        <a-menu-item
-                                            v-for="item in getActions(
-                                                value,
-                                                record,
-                                                column
-                                            )"
-                                            :key="item.value"
-                                            style="text-align: center"
-                                        >
-                                            {{ item.label }}
-                                        </a-menu-item>
-                                    </a-menu>
-                                    <img
-                                        src="../assets/more.png"
-                                        @click.stop.prevent
-                                        alt=""
-                                    />
-                                </a-dropdown>
-                                <a-space v-else>
-                                    <a-button
-                                        v-for="item in getActions(
-                                            value,
-                                            record,
-                                            column
-                                        )"
-                                        :key="item.value"
-                                        @click.stop="
-                                            handleMenuClick(
-                                                item.value,
-                                                value,
-                                                record,
-                                                column
-                                            )
-                                        "
-                                    >
-                                        {{ item.label }}
-                                    </a-button>
-                                </a-space>
-                            </template>
-                            <template v-else-if="column.type == 'component'">
-                                <div
-                                    class="drag_container"
-                                    idm-ctrl-inner
-                                    :idm-ctrl-id="moduleObject.id"
-                                    :idm-container-index="`record-${
-                                        record[propData.rowKey]
-                                    }-${columnIndex}`"
-                                ></div>
-                            </template>
-                            <template
-                                v-else-if="column.type == 'htmlFunction'"
-                                v-html="
-                                    handleHtmlRender(
-                                        value,
-                                        record,
-                                        column,
-                                        columnIndex
-                                    )
-                                "
-                            >
-                                <span
-                                    v-html="
-                                        handleHtmlRender(
-                                            value,
-                                            record,
-                                            column,
-                                            columnIndex
-                                        )
-                                    "
-                                ></span>
-                            </template>
-                            <template v-else>
-                                {{ value }}
-                            </template>
-                        </template>
-                    </a-table-column>
-
                     <template #expandIcon="{ record, expanded, expandable }">
                         <svg-icon
                             v-if="expandable && record.expandable"
@@ -237,15 +97,24 @@
 <script>
 import { commonParam, dataUtil } from '../utils'
 import bindStyle from '../mixins/bindStyle'
-import { nextTick } from 'vue'
+import { nextTick, h } from 'vue'
 import zh_CN from 'ant-design-vue/lib/locale/zh_CN'
+import moreIcon from '../assets/more.png'
 export default {
     mixins: [bindStyle()],
     data() {
         return {
             locale: zh_CN,
             moduleObject: this.$root.moduleObject,
-            dataSource: [],
+            columnsDataSource: [],
+            dataSource: window.IDM.env_develop_mode
+                ? [
+                      {
+                          id: '1',
+                          expandable: true,
+                      },
+                  ]
+                : [],
             totalCount: 0,
             filter: {},
             sort: {},
@@ -257,57 +126,175 @@ export default {
                 showSizeChanger: true,
                 showTotal: (total, range) =>
                     `当前显示${range[0]}-${range[1]}，总共${total}条`,
+                hideOnSinglePage: true,
             },
             conditionObject: {},
             optionData: {},
             env_develop_mode: window.IDM.env_develop_mode,
             propData: this.$root.propData.compositeAttr || {
                 dataSourceType: 'customInterface',
-                columns: [
-                    {
-                        label: '序号',
-                        value: 'id',
-                        type: 'index',
-                        headerAlign: 'center',
-                        width: 60,
-                    },
-                    {
-                        label: '名称',
-                        value: 'title',
-                        type: 'text',
-                    },
-                    {
-                        label: '操作',
-                        value: 'buttonList',
-                        type: 'actions',
-                        dataSource: 'record',
-                        labelKey: 'text',
-                        valueKey: 'value',
-                        dropdown: true,
-                    },
-                ],
+                columnSourceType: 'staticData',
+                columns: [],
                 rowKey: 'id',
                 expandedRow: true,
             },
         }
     },
     computed: {
+        columns() {
+            return this.comboColumns(this.columnsDataSource)
+        },
         fields() {
-            return this.propData.columns.filter(n => n.filter)
+            return this.columnsDataSource.filter(n => n.filter)
         },
     },
     mounted() {
         this.init()
     },
+    watch: {
+        columns: {
+            handler(columns) {
+                columns
+                    .filter(n => n.type == 'select')
+                    .forEach(n => {
+                        dataUtil
+                            .fetchData({
+                                dataSourceType: n.dataSourceType,
+                                customInterface: {
+                                    url: n.customInterfaceUrl,
+                                    requestParamFun: n.requestParamFun,
+                                    requestContentType: n.requestContentType,
+                                    requestType: n.requestType,
+                                    responseDataFun: n.responseDataFun,
+                                    requestErrorFun: n.requestErrorFun,
+                                },
+                                customFunction: n.customFunction,
+                            })
+                            .then(data => {
+                                this.$set(this.optionData, n.value, data)
+                            })
+                    })
+            },
+        },
+    },
     methods: {
         urlGetWebPath: window.IDM.url.getWebPath,
         expressReplace: window.IDM.express.replace,
+        comboColumns(columns = [], keyPrefix = 'col') {
+            if (columns.length == 0) return null
+            return columns.map((column, columnIndex) => {
+                const key = `${keyPrefix}-${columnIndex}`
+                return {
+                    ...column,
+                    title: column.label || column.title,
+                    dataIndex: column.value || column.dataIndex,
+                    align: column.headerAlign,
+                    customCell: (record, rowIndex) =>
+                        this.handleCustomCell(record, rowIndex, column),
+                    customHeaderCell: e =>
+                        this.handleCustomHeaderCell(e, column),
+                    key,
+                    customRender: (value, record, index) =>
+                        this.customRender({
+                            value,
+                            record,
+                            index,
+                            column,
+                            columnIndex,
+                        }),
+                    children: this.comboColumns(column.children || [], key),
+                }
+            })
+        },
+        customRender({ value, record, index, column, columnIndex }) {
+            switch (column.type) {
+                case 'index':
+                    return index + 1
+                case 'text':
+                    return this.expressReplace(
+                        column.textTemplate || '@[value]',
+                        {
+                            value,
+                            record,
+                            column,
+                            columnIndex,
+                        }
+                    )
+                case 'select':
+                    return this.optionData[column.value]?.find(
+                        n => n.key == value
+                    )?.value
+                case 'href':
+                    return (
+                        <a
+                            href={this.getLink(value, record, column)}
+                            target={column.target}
+                        >
+                            {value}
+                        </a>
+                    )
+                case 'actions':
+                    const actions = this.getActions(value, record, column)
+                    if (column.dropdown && actions.length > 0) {
+                        return (
+                            <a-dropdown>
+                                <a-menu
+                                    slot='overlay'
+                                    selectable={false}
+                                    onClick={props => {
+                                        this.handleMenuClick(
+                                            props.key,
+                                            value,
+                                            record,
+                                            column
+                                        )
+                                    }}
+                                >
+                                    {actions.map(action => (
+                                        <a-menu-item key={action.value}>
+                                            {action.label}
+                                        </a-menu-item>
+                                    ))}
+                                </a-menu>
+                                <img
+                                    src={moreIcon}
+                                    onClick={e => e.stopPropagation()}
+                                />
+                            </a-dropdown>
+                        )
+                    }
+                    return (
+                        <a-space>
+                            {actions.map(action => (
+                                <a-button
+                                    onClick={e => e.stopPropagation()}
+                                    key={action.value}
+                                >
+                                    {action.label}
+                                </a-button>
+                            ))}
+                        </a-space>
+                    )
+                case 'htmlFunction':
+                    return (
+                        <span
+                            domPropsInnerHTML={this.handleHtmlRender(
+                                value,
+                                record,
+                                column,
+                                columnIndex
+                            )}
+                        ></span>
+                    )
+                default:
+                    return value
+            }
+        },
         setContextValue(object) {
             console.debug('iTable setContextValue', object)
         },
         propDataWatchHandle(propData) {
             this.propData = propData.compositeAttr
-            console.debug('iTable propDataWatchHandle', propData)
             this.init()
         },
         receiveBroadcastMessage(data) {
@@ -383,8 +370,7 @@ export default {
             }
         },
         init() {
-            this.initData()
-            this.loadColumnsOptions()
+            this.loadColumnsOptions().then(() => this.initData())
         },
         /**
          * 消息变动实时重新加载
@@ -412,11 +398,6 @@ export default {
                 window.IDM.env_develop_mode ||
                 process.env.NODE_ENV != 'production'
             ) {
-                this.dataSource = [
-                    {
-                        id: '',
-                    },
-                ]
                 return
             }
             //把已选择的清空
@@ -517,26 +498,24 @@ export default {
                 })
         },
         loadColumnsOptions() {
-            // load columns options
-            this.propData.columns
-                .filter(n => n.type == 'select')
-                .forEach(n => {
-                    dataUtil
-                        .fetchData({
-                            dataSourceType: n.dataSourceType,
-                            customInterface: {
-                                url: n.customInterfaceUrl,
-                                requestParamFun: n.requestParamFun,
-                                requestContentType: n.requestContentType,
-                                requestType: n.requestType,
-                                responseDataFun: n.responseDataFun,
-                                requestErrorFun: n.requestErrorFun,
-                            },
-                            customFunction: n.customFunction,
-                        })
-                        .then(data => {
-                            this.$set(this.optionData, n.value, data)
-                        })
+            return dataUtil
+                .fetchData({
+                    dataSourceType: this.propData.columnSourceType,
+                    customInterface: {
+                        url: this.propData.columnCustomInterfaceUrl,
+                        requestParamFun: this.propData.columnRequestParamFun,
+                        requestContentType:
+                            this.propData.columnRequestContentType,
+                        requestType: this.propData.columnRequestType,
+                        responseDataFun: this.propData.columnResponseDataFun,
+                        requestErrorFun: this.propData.columnRequestErrorFun,
+                    },
+                    customFunction: this.propData.columnCustomFunction,
+                    staticData: this.propData.columns,
+                })
+                .then(data => {
+                    this.columnsDataSource = data
+                    return data
                 })
         },
         handleTableChange(pagination, filters, sorter) {
@@ -544,8 +523,7 @@ export default {
             this.pagination.pageSize = pagination.pageSize
             this.sort = {
                 orderType: sorter.order
-                    ? this.propData.columns[sorter.columnKey]?.sortField ||
-                      sorter.field
+                    ? this.columns[sorter.columnKey]?.sortField || sorter.field
                     : '',
                 reversed: sorter.order ? sorter.order == 'descend' : '',
             }
@@ -554,29 +532,11 @@ export default {
         /**
          * 数据改变事件
          */
-        resultChangeTableData(listResultData) {
-            this.loading = false
-            //设置数据源
-            var rows =
-                listResultData && listResultData.data
-                    ? listResultData.data.rows
-                    : []
-            if (rows.length == 0) {
-                rows = listResultData && listResultData.rows
-            }
-            this.dataSource = rows
-            var totalCount =
-                listResultData && listResultData.data
-                    ? listResultData.data.total
-                    : -1
-            if (totalCount == -1) {
-                totalCount = listResultData && listResultData.total
-            }
-            if (totalCount && totalCount != -1) {
-                this.pagination.total = totalCount
-            }
+        resultChangeTableData(result) {
+            this.dataSource = result.rows || result.data?.rows || []
+            this.pagination.total = result.total || result.data?.total || 0
             this.dataSource.map(record => {
-                this.propData.columns.map((column, columnIndex) => {
+                this.columns.map((column, columnIndex) => {
                     if (column.type == 'component') {
                         this.moduleObject.removeDynamicRenderModuleGroup?.call(
                             this,
@@ -590,22 +550,25 @@ export default {
                 })
             })
             nextTick(() => {
-                this.dataSource.map(record => {
-                    this.propData.columns.map((column, columnIndex) => {
-                        if (column.type == 'component') {
-                            this.moduleObject.dynamicRenderModuleGroupInitData?.call(
-                                this,
-                                this.moduleObject.packageid,
-                                `record-${
-                                    record[this.propData.rowKey]
-                                }-${columnIndex}`,
-                                {
-                                    record,
-                                },
-                                false
-                            )
-                        }
-                    })
+                this.renderExpand()
+            })
+        },
+        renderExpand() {
+            this.dataSource.map(record => {
+                this.columns.map((column, columnIndex) => {
+                    if (column.type == 'component') {
+                        this.moduleObject.dynamicRenderModuleGroupInitData?.call(
+                            this,
+                            this.moduleObject.packageid,
+                            `record-${
+                                record[this.propData.rowKey]
+                            }-${columnIndex}`,
+                            {
+                                record,
+                            },
+                            false
+                        )
+                    }
                 })
             })
         },
@@ -651,6 +614,9 @@ export default {
         },
         getActions(value, record, column) {
             if (column.handleActionsFunc) {
+                if (value == undefined || value == null) {
+                    return []
+                }
                 return window.IDM.invokeCustomFunctions
                     .apply(this, [
                         column.handleActionsFunc,
@@ -662,12 +628,21 @@ export default {
                     ])
                     .flat()
             }
-            return column.actions || []
+            return value || []
         },
         handleCustomHeaderCell(column) {
             const style = new Map()
             if (column.headerAlign) {
                 style.set('text-align', column.headerAlign)
+            }
+            return {
+                style: Object.fromEntries(style.entries()),
+            }
+        },
+        handleCustomCell(record, recordIndex, column) {
+            const style = new Map()
+            if (column.align) {
+                style.set('text-align', column.align)
             }
             return {
                 style: Object.fromEntries(style.entries()),
@@ -716,10 +691,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.table-wrap {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+.table-container {
+    .table-wrap {
+        margin-top: 20px;
+    }
 }
 :deep(.tag) {
     color: var(--color);
@@ -762,12 +737,30 @@ export default {
 :deep(.ant-table) {
     border: 1px solid #e8e8e8;
     border-radius: 3px;
+    &.ant-table-fixed-header {
+        .ant-table-scroll {
+            .ant-table-header {
+                margin-bottom: 0;
+                padding-bottom: 0;
+                scrollbar-width: none;
+            }
+        }
+    }
+    .ant-table-fixed {
+        > .ant-table-thead {
+            > tr {
+                > th {
+                    // white-space: nowrap;
+                }
+            }
+        }
+    }
     .ant-table-thead > tr > th {
-        color: #333 !important;
-        font-size: 16px !important;
-        font-weight: bold !important;
-        padding: 10px 10px !important;
-        background-color: #f6fbfa !important;
+        color: #333;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 10px 10px;
+        background-color: #f6fbfa;
     }
     .ant-table-tbody {
         > tr {

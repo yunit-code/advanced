@@ -1,5 +1,5 @@
 export const fetchData = (
-    { dataSourceType, customInterface, customFunction },
+    { dataSourceType, customInterface, customFunction, staticData },
     { params } = { params: {} }
 ) => {
     return new Promise((resolve, reject) => {
@@ -105,7 +105,15 @@ export const fetchData = (
                     resolve(resValue)
                 }
                 break
+            case 'staticData':
+                resolve(staticData)
+                break
             case 'pageContainer':
+                break
+            default:
+                reject({
+                    message: '无效数据源',
+                })
                 break
         }
     })
