@@ -60,7 +60,7 @@ export default function () {
                         }
                     }
                 }
-                window.IDM.setStyleToPageHead(`.${this.moduleObject.id} .${this.className.wrap}`, styleObject)
+                window.IDM.setStyleToPageHead(`${this.moduleObject.id} .${this.className.wrap}`, styleObject)
             }
         }
     }

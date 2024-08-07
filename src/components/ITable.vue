@@ -145,7 +145,7 @@ export default {
             return this.comboColumns(this.columnsDataSource)
         },
         fields() {
-            return this.columnsDataSource.filter(n => n.filter)
+            return this.comboFilters(this.columnsDataSource)
         },
     },
     mounted() {
@@ -186,6 +186,7 @@ export default {
                 const key = `${keyPrefix}-${columnIndex}`
                 return {
                     ...column,
+                    key,
                     title: column.label || column.title,
                     dataIndex: column.value || column.dataIndex,
                     align: column.headerAlign,
@@ -193,7 +194,6 @@ export default {
                         this.handleCustomCell(record, rowIndex, column),
                     customHeaderCell: e =>
                         this.handleCustomHeaderCell(e, column),
-                    key,
                     customRender: (value, record, index) =>
                         this.customRender({
                             value,
@@ -205,6 +205,11 @@ export default {
                     children: this.comboColumns(column.children || [], key),
                 }
             })
+        },
+        comboFilters(columns = []) {
+            return columns
+                .flatMap(n => (n.children ? this.comboFilters(n.children) : n))
+                .filter(n => n.filter)
         },
         customRender({ value, record, index, column, columnIndex }) {
             switch (column.type) {
@@ -692,9 +697,9 @@ export default {
 
 <style lang="scss" scoped>
 .table-container {
-    .table-wrap {
-        margin-top: 20px;
-    }
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 :deep(.tag) {
     color: var(--color);
