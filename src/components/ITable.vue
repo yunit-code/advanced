@@ -64,16 +64,17 @@
                     class="table-wrap"
                 >
                     <template #expandIcon="{ record, expanded, expandable }">
-                        <svg-icon
-                            v-if="expandable && record.expandable"
-                            style="
-                                font-size: 18px;
-                                color: #134fed;
-                                cursor: pointer;
-                                margin-right: 3px;
-                            "
-                            icon-class="move"
-                        ></svg-icon>
+                        <div>
+                            <svg-icon
+                                v-if="expandable && record.expandable"
+                                style="
+                                    font-size: 18px;
+                                    color: #134fed;
+                                    cursor: pointer;
+                                "
+                                icon-class="move"
+                            ></svg-icon>
+                        </div>
                     </template>
                     <template
                         v-if="propData.expandedRow"
@@ -234,6 +235,7 @@ export default {
                         <a
                             href={this.getLink(value, record, column)}
                             target={column.target}
+                            onClick={e => e.stopPropagation()}
                         >
                             {value}
                         </a>
@@ -752,8 +754,6 @@ export default {
     &.ant-table-fixed-header {
         .ant-table-scroll {
             .ant-table-header {
-                margin-bottom: 0;
-                padding-bottom: 0;
                 scrollbar-width: none;
             }
         }
