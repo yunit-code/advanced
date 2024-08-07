@@ -3,13 +3,18 @@ export default function () {
         data() {
             return {
                 className: {
-                    wrap: window.IDM.uuid()
-                }
+                    wrap: `wrap-${window.IDM.uuid()}`,
+                },
             }
         },
-        mounted() {
-            this._bindTheme()
-            this._bindStyle()
+        watch: {
+            propData: {
+                handler() {
+                    this._bindTheme()
+                    this._bindStyle()
+                },
+                immediate: true,
+            },
         },
         methods: {
             /**
@@ -20,11 +25,22 @@ export default function () {
                 if (!Array.isArray(themeList) || themeList.length == 0) {
                     return
                 }
-                const themeNamePrefix = window.IDM?.setting?.applications?.themeNamePrefix || 'idm-theme-'
-                themeList.forEach((item) => {
-                    IDM.setStyleToPageHead(`.${themeNamePrefix}${item.key} #${this.moduleObject.id || 'module_demo'} .${this.className.wrap}`, {
-                        color: item.mainColor ? window.IDM?.hex8ToRgbaString(item.mainColor.hex8) : ''
-                    })
+                const themeNamePrefix =
+                    window.IDM?.setting?.applications?.themeNamePrefix ||
+                    'idm-theme-'
+                themeList.forEach(item => {
+                    IDM.setStyleToPageHead(
+                        `.${themeNamePrefix}${item.key} #${
+                            this.moduleObject.id || 'module_demo'
+                        } .${this.className.wrap}`,
+                        {
+                            color: item.mainColor
+                                ? window.IDM?.hex8ToRgbaString(
+                                      item.mainColor.hex8
+                                  )
+                                : '',
+                        }
+                    )
                 })
             },
             /**
@@ -49,7 +65,8 @@ export default function () {
                                 IDM.style.setBoxStyle(styleObject, element)
                                 break
                             case 'bgColor':
-                                styleObject['background-color'] = element && element.hex8
+                                styleObject['background-color'] =
+                                    element && element.hex8
                                 break
                             case 'boxShadow':
                                 styleObject['box-shadow'] = element
@@ -60,8 +77,11 @@ export default function () {
                         }
                     }
                 }
-                window.IDM.setStyleToPageHead(`${this.moduleObject.id} .${this.className.wrap}`, styleObject)
-            }
-        }
+                window.IDM.setStyleToPageHead(
+                    `${this.moduleObject.id} .${this.className.wrap}`,
+                    styleObject
+                )
+            },
+        },
     }
 }

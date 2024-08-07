@@ -26,14 +26,6 @@
                     "layoutType": "inline"
                 },
                 {
-                    "type": "switch",
-                    "text": "展开行",
-                    "desc": "是否开启展开行，点击行后展示",
-                    "bindKey": "expandedRow",
-                    "default": false,
-                    "layoutType": "inline"
-                },
-                {
                     "display": "@[expandedRow==true]",
                     "type": "inputNumber",
                     "text": "展开行图标位置",
