@@ -709,6 +709,14 @@
                                 }
                             ],
                             "default": false
+                        },
+                        {
+                            "type": "switch",
+                            "layoutType": "inline",
+                            "text": "超出省略",
+                            "bindKey": "ellipsis",
+                            "desc": "超出宽度部分文字会以省略号展示",
+                            "default": false
                         }
                     ]
                 }

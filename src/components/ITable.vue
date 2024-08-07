@@ -755,6 +755,15 @@ export default {
         .ant-table-scroll {
             .ant-table-header {
                 scrollbar-width: none;
+                &::-webkit-scrollbar {
+                    display: none;
+                }
+            }
+        }
+        .ant-table-body {
+            scrollbar-width: none;
+            &::-webkit-scrollbar {
+                display: none;
             }
         }
     }
