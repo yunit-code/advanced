@@ -1,10 +1,18 @@
-export default function () {
+import { propToStyle } from '../utils'
+export default function bindStyle(
+    list = {
+        wrap() {
+            return this.propData
+        },
+    }
+) {
     return {
         data() {
             return {
-                className: {
-                    wrap: `wrap-${window.IDM.uuid()}`,
-                },
+                className: Object.keys(list).reduce((carry, current) => {
+                    carry[current] = `wrap-${window.IDM.uuid()}`
+                    return carry
+                }, {}),
             }
         },
         watch: {
@@ -47,40 +55,12 @@ export default function () {
              * @Desc 设置样式
              */
             _bindStyle() {
-                let styleObject = {}
-                for (const key in this.propData) {
-                    if (this.propData.hasOwnProperty.call(this.propData, key)) {
-                        const element = this.propData[key]
-                        if (!element && element !== false && element != 0) {
-                            continue
-                        }
-                        switch (key) {
-                            case 'width':
-                                styleObject['width'] = element
-                                break
-                            case 'height':
-                                styleObject['height'] = element
-                                break
-                            case 'ulbox':
-                                IDM.style.setBoxStyle(styleObject, element)
-                                break
-                            case 'bgColor':
-                                styleObject['background-color'] =
-                                    element && element.hex8
-                                break
-                            case 'boxShadow':
-                                styleObject['box-shadow'] = element
-                                break
-                            case 'boxborder':
-                                IDM.style.setBorderStyle(styleObject, element)
-                                break
-                        }
-                    }
-                }
-                window.IDM.setStyleToPageHead(
-                    `${this.moduleObject.id} .${this.className.wrap}`,
-                    styleObject
-                )
+                Object.entries(this.className).forEach(([key, className]) => {
+                    window.IDM.setStyleToPageHead(
+                        `${this.moduleObject.id} .${className}`,
+                        propToStyle(list[key].call(this))
+                    )
+                })
             },
         },
     }

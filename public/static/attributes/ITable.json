@@ -61,7 +61,7 @@
                             "desc": "填写auto则为自适应，或者使用px、%、vw等单位，比如100%、100px、100vw等等",
                             "bindKey": "width",
                             "width": "60px",
-                            "default": "100%"
+                            "default": ""
                         },
                         {
                             "type": "input",
@@ -70,7 +70,7 @@
                             "desc": "填写auto则为自适应，或者使用px、%、vh等单位，比如100%、100px、100vh等等",
                             "bindKey": "height",
                             "width": "60px",
-                            "default": "100%"
+                            "default": ""
                         }
                     ]
                 },
@@ -87,8 +87,8 @@
                     "bindKey": "bgColor",
                     "placeholder": "请选择颜色",
                     "default": {
-                        "hex": "#ffffff",
-                        "hex8": "#ffffff"
+                        "hex": "",
+                        "hex8": ""
                     }
                 },
                 {
@@ -403,6 +403,14 @@
                                     "bindKey": "textTemplate",
                                     "desc": "自定义文本模板，不填默认为字段值，支持表达式，可选参数 value:字段值 record:行数据 column:列配置 columnIndex:列索引",
                                     "default": ""
+                                },
+                                {
+                                    "type": "actionSelect",
+                                    "layoutType": "block",
+                                    "text": "点击事件",
+                                    "bindKey": "textClickFunc",
+                                    "desc": "点击内容时会调用此方法，参数 {record:行数据 column:列配置 recordIndex:行索引}",
+                                    "multiple": false
                                 }
                             ]
                         },
@@ -717,6 +725,12 @@
                             "bindKey": "ellipsis",
                             "desc": "超出宽度部分文字会以省略号展示",
                             "default": false
+                        },
+                        {
+                            "type": "font",
+                            "layoutType": "block",
+                            "text": "文字样式",
+                            "bindKey": "font"
                         }
                     ]
                 }

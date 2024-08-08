@@ -22,5 +22,54 @@ export const commonParam = () => {
         urlData: JSON.stringify(urlObject),
     }
 }
-
+export const propToStyle = props => {
+    return Object.entries(props).reduce((carry, [key, value]) => {
+        if (!value && value !== false && value != 0) {
+            return
+        }
+        switch (key) {
+            case 'width':
+                carry['width'] = value
+                break
+            case 'height':
+                carry['height'] = value
+                break
+            case 'ulbox':
+                IDM.style.setBoxStyle(carry, value)
+                break
+            case 'bgColor':
+                carry['background-color'] = value && value.hex8
+                break
+            case 'boxShadow':
+                carry['box-shadow'] = value
+                break
+            case 'boxborder':
+                IDM.style.setBorderStyle(carry, value)
+                break
+            case 'font':
+                carry['font-family'] = value.fontFamily
+                if (value.fontColors.hex8) {
+                    carry['color'] = value.fontColors.hex8
+                }
+                carry['font-weight'] =
+                    value.fontWeight && value.fontWeight.split(' ')[0]
+                carry['font-style'] = value.fontStyle
+                carry['font-size'] = value.fontSize + value.fontSizeUnit
+                carry['line-height'] =
+                    value.fontLineHeight +
+                    (value.fontLineHeightUnit == '-'
+                        ? ''
+                        : value.fontLineHeightUnit)
+                carry['text-align'] = value.fontTextAlign
+                carry['text-decoration'] = value.fontDecoration
+                break
+        }
+        return carry
+    }, {})
+}
 export { default as dataUtil } from './dataUtil'
+export default {
+    commonParam,
+    propToStyle,
+    openWindow,
+}

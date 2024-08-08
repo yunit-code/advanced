@@ -35,7 +35,7 @@
                             "desc": "填写auto则为自适应，或者使用px、%、vw等单位，比如100%、100px、100vw等等",
                             "bindKey": "width",
                             "width": "60px",
-                            "default": "100%"
+                            "default": ""
                         },
                         {
                             "type": "input",
@@ -44,7 +44,7 @@
                             "desc": "填写auto则为自适应，或者使用px、%、vh等单位，比如100%、100px、100vh等等",
                             "bindKey": "height",
                             "width": "60px",
-                            "default": "100%"
+                            "default": ""
                         }
                     ]
                 },
@@ -61,8 +61,8 @@
                     "bindKey": "bgColor",
                     "placeholder": "请选择颜色",
                     "default": {
-                        "hex": "#ffffff",
-                        "hex8": "#ffffff"
+                        "hex": "",
+                        "hex8": ""
                     }
                 },
                 {

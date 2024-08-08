@@ -6,44 +6,53 @@
     >
         <a-config-provider :locale="locale">
             <div class="table-container" :class="className.wrap">
-                <a-form-model
-                    v-if="fields.length > 0"
-                    :model="filter"
-                    layout="inline"
-                    class="filter-wrap"
-                >
-                    <a-form-model-item
-                        v-for="field in fields"
-                        :key="field.value"
-                        :label="field.label"
-                        :prop="field.value"
+                <div class="filter-wrap">
+                    <a-form-model
+                        :model="filter"
+                        layout="inline"
+                        class="filter-form"
                     >
-                        <a-select
-                            v-if="field.type == 'select'"
-                            v-model="filter[field.value]"
-                            :mode="field.selectMode"
-                            :allowClear="true"
-                            style="min-width: 100px"
+                        <a-form-model-item
+                            v-for="field in fields"
+                            :key="field.value"
+                            :label="field.label"
+                            :prop="field.value"
                         >
-                            <a-select-option
-                                v-for="item in optionData[field.value]"
-                                :key="item.key"
-                                :value="item.key"
-                                >{{ item.value }}</a-select-option
+                            <a-select
+                                v-if="field.type == 'select'"
+                                v-model="filter[field.value]"
+                                :mode="field.selectMode"
+                                :allowClear="true"
+                                style="min-width: 100px"
                             >
-                        </a-select>
-                        <template v-else-if="field.type == 'date'">
-                            <a-date-picker
-                                v-model="filter[`${field.value}Start`]"
-                            />
-                            ~
-                            <a-date-picker
-                                v-model="filter[`${field.value}End`]"
-                            />
-                        </template>
-                        <a-input v-else v-model="filter[field.value]" />
-                    </a-form-model-item>
-                </a-form-model>
+                                <a-select-option
+                                    v-for="item in optionData[field.value]"
+                                    :key="item.key"
+                                    :value="item.key"
+                                    >{{ item.value }}</a-select-option
+                                >
+                            </a-select>
+                            <template v-else-if="field.type == 'date'">
+                                <a-date-picker
+                                    v-model="filter[`${field.value}Start`]"
+                                />
+                                ~
+                                <a-date-picker
+                                    v-model="filter[`${field.value}End`]"
+                                />
+                            </template>
+                            <a-input v-else v-model="filter[field.value]" />
+                        </a-form-model-item>
+                        <a-form-model-item>
+                            <div
+                                class="filter-extra drag_container"
+                                idm-ctrl-inner
+                                :idm-ctrl-id="moduleObject.id"
+                                idm-container-index="filter-extra"
+                            ></div>
+                        </a-form-model-item>
+                    </a-form-model>
+                </div>
                 <a-table
                     :dataSource="dataSource"
                     :pagination="pagination"
@@ -96,17 +105,25 @@
 </template>
 
 <script>
-import { commonParam, dataUtil } from '../utils'
-import bindStyle from '../mixins/bindStyle'
-import { nextTick, h } from 'vue'
+import { commonParam, dataUtil, propToStyle } from '../utils'
+import { bindProp, bindStyle } from '../mixins'
+import { nextTick } from 'vue'
 import zh_CN from 'ant-design-vue/lib/locale/zh_CN'
 import moreIcon from '../assets/more.png'
 export default {
-    mixins: [bindStyle()],
+    mixins: [
+        bindProp({
+            dataSourceType: 'customInterface',
+            columnSourceType: 'staticData',
+            columns: [],
+            rowKey: 'id',
+            expandedRow: true,
+        }),
+        bindStyle(),
+    ],
     data() {
         return {
             locale: zh_CN,
-            moduleObject: this.$root.moduleObject,
             columnsDataSource: [],
             dataSource: window.IDM.env_develop_mode
                 ? [
@@ -132,13 +149,6 @@ export default {
             conditionObject: {},
             optionData: {},
             env_develop_mode: window.IDM.env_develop_mode,
-            propData: this.$root.propData.compositeAttr || {
-                dataSourceType: 'customInterface',
-                columnSourceType: 'staticData',
-                columns: [],
-                rowKey: 'id',
-                expandedRow: true,
-            },
         }
     },
     computed: {
@@ -654,12 +664,20 @@ export default {
             }
         },
         handleCustomCell(record, recordIndex, column) {
-            const style = new Map()
+            const style = propToStyle(column)
             if (column.align) {
-                style.set('text-align', column.align)
+                style['text-align'] = column.align
             }
             return {
-                style: Object.fromEntries(style.entries()),
+                style,
+                on: {
+                    click: () => {
+                        window.IDM.invokeCustomFunctions.apply(this, [
+                            column.textClickFunc,
+                            { record, recordIndex, column },
+                        ])
+                    },
+                },
             }
         },
         handleHtmlRender(value, record, column, columnIndex) {
@@ -710,6 +728,15 @@ export default {
     flex-direction: column;
     gap: 20px;
 }
+.filter-wrap {
+    padding: 10px;
+    background-color: #f5f5f5;
+    :deep(.ant-form-item-label) {
+        color: #333333;
+        font-size: 16px;
+        font-weight: 500;
+    }
+}
 :deep(.tag) {
     color: var(--color);
     &.tag-border {
@@ -739,43 +766,9 @@ export default {
         --bg: #e3000021;
     }
 }
-.filter-wrap {
-    padding: 10px;
-    background-color: #f5f5f5;
-    :deep(.ant-form-item-label) {
-        color: #333333;
-        font-size: 16px;
-        font-weight: 500;
-    }
-}
 :deep(.ant-table) {
     border: 1px solid #e8e8e8;
     border-radius: 3px;
-    &.ant-table-fixed-header {
-        .ant-table-scroll {
-            .ant-table-header {
-                scrollbar-width: none;
-                &::-webkit-scrollbar {
-                    display: none;
-                }
-            }
-        }
-        .ant-table-body {
-            scrollbar-width: none;
-            &::-webkit-scrollbar {
-                display: none;
-            }
-        }
-    }
-    .ant-table-fixed {
-        > .ant-table-thead {
-            > tr {
-                > th {
-                    // white-space: nowrap;
-                }
-            }
-        }
-    }
     .ant-table-thead > tr > th {
         color: #333;
         font-size: 16px;
