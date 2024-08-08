@@ -19,6 +19,93 @@
             ]
         },
         {
+            "text": "检索",
+            "type": "group",
+            "children": [
+                {
+                    "text": "启用",
+                    "type": "switch",
+                    "bindKey": "submitEnable",
+                    "layoutType": "inline",
+                    "default": true
+                },
+                {
+                    "type": "actionSelect",
+                    "layoutType": "block",
+                    "text": "点击事件",
+                    "bindKey": "submitFunc",
+                    "desc": "点击检索时调用，接收参数为格式为{filter:筛选条件}",
+                    "multiple": true
+                },
+                {
+                    "type": "pageModuleSelect",
+                    "layoutType": "block",
+                    "text": "点击发送组件消息范围",
+                    "desc": "当点击的时候需要联动其他组件结果值的组件范围",
+                    "bindKey": "submitLinkageResultPageModule",
+                    "multiple": true
+                }
+            ]
+        },
+        {
+            "text": "重置",
+            "type": "group",
+            "children": [
+                {
+                    "text": "启用",
+                    "type": "switch",
+                    "bindKey": "resetEnable",
+                    "layoutType": "inline",
+                    "default": true
+                },
+                {
+                    "type": "actionSelect",
+                    "layoutType": "block",
+                    "text": "点击事件",
+                    "bindKey": "resetFunc",
+                    "desc": "点击重置时调用，接收参数为格式为{filter:筛选条件}",
+                    "multiple": true
+                },
+                {
+                    "type": "pageModuleSelect",
+                    "layoutType": "block",
+                    "text": "点击发送组件消息范围",
+                    "desc": "当点击的时候需要联动其他组件结果值的组件范围",
+                    "bindKey": "resetLinkageResultPageModule",
+                    "multiple": true
+                }
+            ]
+        },
+        {
+            "text": "导出",
+            "type": "group",
+            "children": [
+                {
+                    "text": "启用",
+                    "type": "switch",
+                    "bindKey": "exportEnable",
+                    "layoutType": "inline",
+                    "default": true
+                },
+                {
+                    "type": "actionSelect",
+                    "layoutType": "block",
+                    "text": "点击事件",
+                    "bindKey": "exportFunc",
+                    "desc": "点击导出时调用，接收参数为格式为{filter:筛选条件}",
+                    "multiple": true
+                },
+                {
+                    "type": "pageModuleSelect",
+                    "layoutType": "block",
+                    "text": "点击发送组件消息范围",
+                    "desc": "当点击的时候需要联动其他组件结果值的组件范围",
+                    "bindKey": "exportLinkageResultPageModule",
+                    "multiple": true
+                }
+            ]
+        },
+        {
             "type": "group",
             "text": "外层样式",
             "desc": "点击？查看样式设置用法指南",

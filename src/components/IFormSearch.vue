@@ -17,11 +17,14 @@
                     placeholder="请输入检索内容"
                 />
             </a-form-model-item>
-            <a-form-model-item>
+            <a-form-model-item v-if="propData.submitEnable">
                 <a-button type="primary" htmlType="submit">检索</a-button>
             </a-form-model-item>
-            <a-form-model-item>
+            <a-form-model-item v-if="propData.resetEnable">
                 <a-button @click="resetHandle">重置</a-button>
+            </a-form-model-item>
+            <a-form-model-item v-if="propData.exportEnable">
+                <a-button @click="exportHandle">导出</a-button>
             </a-form-model-item>
             <a-form-model-item>
                 <div
@@ -41,6 +44,8 @@ export default {
     mixins: [
         bindProp({
             fieldKey: 'contentQuery',
+            submitEnable: true,
+            resetEnable: true,
         }),
         bindStyle(),
     ],
@@ -59,21 +64,57 @@ export default {
         },
         receiveBroadcastMessage(data) {
             console.debug('iFormSearch receiveBroadcastMessage', data)
+            switch (data.type) {
+                case 'linkageDemand':
+                    switch (data.messageKey) {
+                        case 'filter':
+                            Object.entries(data.message).forEach(
+                                ([key, value]) => {
+                                    this.$set(this.filter, key, value)
+                                }
+                            )
+                            break
+                        case 'reset':
+                            this.filter = {}
+                            break
+                    }
+                    break
+            }
         },
-        submitHandle() {
+        handleAction({ customFun, messageKey, rangeModule }) {
+            window.IDM.invokeCustomFunctions.apply(this, [
+                customFun,
+                {
+                    filter: this.filter,
+                },
+            ])
             window.IDM.broadcast?.send({
                 type: 'linkageDemand',
-                messageKey: 'filter',
-                rangeModule: this.propData.linkageDemandPageModule,
+                messageKey,
+                rangeModule,
                 message: this.filter,
+            })
+        },
+        submitHandle() {
+            this.handleAction({
+                customFun: this.propData.submitFunc,
+                messageKey: 'filter',
+                rangeModule: this.propData.submitLinkageDemandPageModule,
             })
         },
         resetHandle() {
             this.filter = {}
-            window.IDM.broadcast?.send({
-                type: 'linkageDemand',
+            this.handleAction({
+                customFun: this.propData.resetFunc,
                 messageKey: 'reset',
-                rangeModule: this.propData.linkageDemandPageModule,
+                rangeModule: this.propData.resetLinkageDemandPageModule,
+            })
+        },
+        exportHandle() {
+            this.handleAction({
+                customFun: this.propData.exportFunc,
+                messageKey: 'export',
+                rangeModule: this.propData.exportLinkageDemandPageModule,
             })
         },
     },

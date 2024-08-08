@@ -187,6 +187,17 @@ export default {
                     })
             },
         },
+        filter: {
+            handler(filter) {
+                window.IDM.broadcast?.send({
+                    type: 'linkageDemand',
+                    messageKey: 'filter',
+                    rangeModule: this.propData.linkageDemandPageModule,
+                    message: filter,
+                })
+            },
+            deep: true,
+        },
     },
     methods: {
         urlGetWebPath: window.IDM.url.getWebPath,
@@ -323,9 +334,11 @@ export default {
                 case 'linkageDemand':
                     switch (data.messageKey) {
                         case 'filter':
-                            Object.keys(data.message).forEach(key => {
-                                this.$set(this.filter, key, data.message[key])
-                            })
+                            Object.entries(data.message).forEach(
+                                ([key, value]) => {
+                                    this.$set(this.filter, key, value)
+                                }
+                            )
                             break
                         case 'reset':
                             this.filter = {}
