@@ -18,6 +18,10 @@ import 'ant-design-vue/lib/form/style/css'
 import 'ant-design-vue/lib/form-model/style/css'
 import 'ant-design-vue/lib/space/style/css'
 import 'ant-design-vue/lib/date-picker/style/css'
+import 'ant-design-vue/lib/menu/style/css'
+import 'ant-design-vue/lib/tooltip/style/css'
+import 'ant-design-vue/lib/popover/style/css'
+import 'ant-design-vue/lib/dropdown/style/css'
 import {
     Button,
     Icon,
@@ -37,6 +41,10 @@ import {
     Space,
     Form,
     DatePicker,
+    Menu,
+    Tooltip,
+    Popover,
+    Dropdown
 } from 'ant-design-vue'
 
 /* v1.1.3+ registration methods */
@@ -60,4 +68,8 @@ Vue.use(Form)
 Vue.use(Form.Item)
 Vue.use(Space)
 Vue.use(DatePicker)
+Vue.use(Menu)
+Vue.use(Tooltip)
+Vue.use(Popover)
+Vue.use(Dropdown)
 Vue.prototype.$confirm = Modal.confirm
