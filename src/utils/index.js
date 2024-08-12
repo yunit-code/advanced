@@ -24,9 +24,6 @@ export const commonParam = () => {
 }
 export const propToStyle = props => {
     return Object.entries(props).reduce((carry, [key, value]) => {
-        if (!value && value !== false && value != 0) {
-            return
-        }
         switch (key) {
             case 'width':
                 carry['width'] = value
