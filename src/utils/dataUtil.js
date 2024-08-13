@@ -1,7 +1,13 @@
-export const fetchData = (
-    { dataSourceType, customInterface, customFunction, staticData },
+export function fetchData(
+    {
+        dataSourceType,
+        customInterface,
+        pageCommonInterface,
+        customFunction,
+        staticData,
+    },
     { params } = { params: {} }
-) => {
+) {
     return new Promise((resolve, reject) => {
         let reqParam = {}
         switch (dataSourceType) {
@@ -90,6 +96,31 @@ export const fetchData = (
                         })
                 break
             case 'pageCommonInterface':
+                for (const data of pageCommonInterface.dataset) {
+                    if (data.key == pageCommonInterface.dataName) {
+                        let value = data
+                        if (pageCommonInterface.dataFiled) {
+                            value = window.IDM.express.replace(
+                                `@[${pageCommonInterface.dataFiled}]`,
+                                data
+                            )
+                        }
+                        if (
+                            Array.isArray(pageCommonInterface.dataFunc) &&
+                            pageCommonInterface.dataFunc.length > 0
+                        ) {
+                            value =
+                                window[pageCommonInterface.dataFunc[0].name] &&
+                                window[
+                                    pageCommonInterface.dataFunc[0].name
+                                ].call(this, {
+                                    data,
+                                    value,
+                                })
+                        }
+                        resolve(value)
+                    }
+                }
                 break
             case 'customFunction':
                 if (customFunction && customFunction.length > 0) {

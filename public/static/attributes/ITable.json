@@ -41,6 +41,21 @@
                     "desc": "表格最大高度，超出后显示滚动条",
                     "bindKey": "tableMaxHeight",
                     "default": "calc(100vh - 300px)"
+                },
+                {
+                    "type": "switch",
+                    "text": "搜索扩展",
+                    "desc": "是否开启筛选扩展栏，展示在筛选表单后",
+                    "bindKey": "searchExendBar",
+                    "default": false,
+                    "layoutType": "inline"
+                },
+                {
+                    "type": "switch",
+                    "text": "启用分页",
+                    "bindKey": "openPagination",
+                    "default": true,
+                    "layoutType": "inline"
                 }
             ]
         },
@@ -134,7 +149,7 @@
                             "value": "customFunction"
                         }
                     ],
-                    "default": "staticData"
+                    "default": ""
                 },
                 {
                     "type": "group",
@@ -248,6 +263,7 @@
                     "type": "group",
                     "text": "页面统一接口",
                     "display": "@[columnSourceType=='pageCommonInterface']",
+                    "desc": "结果为列配置数组 [column,...column]",
                     "children": [
                         {
                             "type": "input",
@@ -266,6 +282,14 @@
                             "desc": "根据接口返回数据格式指定结果集的字段，比如结果集名为resultData且它的值为{data:{filedName:[{}]}}，则这里应该填写data.filedName",
                             "default": "",
                             "placeholder": "示例：data.filedName 或者 [0].data[0].filedName"
+                        },
+                        {
+                            "type": "actionSelect",
+                            "layoutType": "block",
+                            "text": "结果处理函数",
+                            "bindKey": "columnDataFunc",
+                            "desc": "获取数据后会调用此方法，参数为 {data:结果集,value:字段值}",
+                            "multiple": false
                         }
                     ]
                 },
@@ -316,7 +340,7 @@
                             "bindKey": "headerAlign",
                             "type": "select",
                             "layoutType": "inline",
-                            "default": "left",
+                            "default": "center",
                             "dictionary": [
                                 {
                                     "label": "左对齐",
@@ -727,6 +751,14 @@
                             "default": false
                         },
                         {
+                            "type": "switch",
+                            "layoutType": "inline",
+                            "text": "隐藏",
+                            "bindKey": "hidden",
+                            "desc": "开启后不在表格中展示",
+                            "default": false
+                        },
+                        {
                             "type": "font",
                             "layoutType": "block",
                             "text": "文字样式",
@@ -764,152 +796,165 @@
                             "value": "pageContainer"
                         }
                     ],
-                    "default": "customInterface"
+                    "default": ""
                 },
                 {
-                    "type": "input",
-                    "layoutType": "inline",
-                    "text": "接口地址",
-                    "bindKey": "customInterfaceUrl",
-                    "desc": "用于获取数据源的接口地址，请按照统一标准的返回格式返回数组格式的数据，格式如下：{\"code\":\"200\",\"data\":[{...},...],...}",
-                    "display": "@[dataSourceType=='customInterface']"
-                },
-                {
-                    "type": "input",
-                    "layoutType": "inline",
-                    "text": "索引参数",
-                    "bindKey": "pageIndex",
-                    "desc": "提交请求给后端的当前页数的索引参数名",
-                    "default": "pageIndex",
-                    "display": "@[dataSourceType=='customInterface']"
-                },
-                {
-                    "type": "input",
-                    "layoutType": "inline",
-                    "text": "页量参数",
-                    "bindKey": "pageSize",
-                    "desc": "提交请求给后端的每页大小的索引参数名",
-                    "default": "pageSize",
-                    "display": "@[dataSourceType=='customInterface']"
-                },
-                {
-                    "type": "radio",
-                    "layoutType": "inline",
-                    "text": "请求方式",
-                    "bindKey": "requestType",
-                    "dictionary": [
-                        {
-                            "label": "POST",
-                            "value": "post"
-                        },
-                        {
-                            "label": "GET",
-                            "value": "get"
-                        }
-                    ],
-                    "default": "get",
-                    "display": "@[dataSourceType=='customInterface']"
-                },
-                {
-                    "type": "select",
-                    "layoutType": "inline",
-                    "text": "请求类型",
-                    "bindKey": "requestContentType",
-                    "desc": "请求接口的数据类型，请根据后端需求进行选择",
-                    "dictionary": [
-                        {
-                            "label": "默认",
-                            "value": ""
-                        },
-                        {
-                            "label": "JSON",
-                            "value": "application/json;charset=UTF-8"
-                        },
-                        {
-                            "label": "FormData",
-                            "value": "multipart/form-data"
-                        }
-                    ],
-                    "default": "",
-                    "display": "@[dataSourceType=='customInterface'&&requestType=='post']"
-                },
-                {
-                    "type": "actionSelect",
-                    "layoutType": "block",
-                    "text": "请求参数自定义函数",
-                    "bindKey": "requestParamFun",
-                    "desc": "请求接口时会调用这里设置的函数返回自定义的参数，返回格式为Object对象，例如：{param1:'',param2:''}",
-                    "display": "@[dataSourceType=='customInterface']",
-                    "multiple": false
-                },
-                {
-                    "type": "table",
-                    "text": "接收其他组件联动参数",
-                    "bindKey": "linkageParamList",
-                    "tabText": "参数[index]",
+                    "type": "group",
+                    "text": "自定义接口",
                     "display": "@[dataSourceType=='customInterface']",
                     "children": [
                         {
                             "type": "input",
                             "layoutType": "inline",
-                            "text": "表单标识",
-                            "bindKey": "msgKey",
-                            "default": ""
+                            "text": "接口地址",
+                            "bindKey": "customInterfaceUrl",
+                            "desc": "用于获取数据源的接口地址，请按照统一标准的返回格式返回数组格式的数据，格式如下：{\"code\":\"200\",\"data\":[{...},...],...}"
                         },
                         {
                             "type": "input",
                             "layoutType": "inline",
-                            "text": "参数别名",
-                            "bindKey": "paramKey",
-                            "default": ""
+                            "text": "索引参数",
+                            "bindKey": "pageIndex",
+                            "desc": "提交请求给后端的当前页数的索引参数名",
+                            "default": "pageIndex"
+                        },
+                        {
+                            "type": "input",
+                            "layoutType": "inline",
+                            "text": "页量参数",
+                            "bindKey": "pageSize",
+                            "desc": "提交请求给后端的每页大小的索引参数名",
+                            "default": "pageSize"
+                        },
+                        {
+                            "type": "radio",
+                            "layoutType": "inline",
+                            "text": "请求方式",
+                            "bindKey": "requestType",
+                            "dictionary": [
+                                {
+                                    "label": "POST",
+                                    "value": "post"
+                                },
+                                {
+                                    "label": "GET",
+                                    "value": "get"
+                                }
+                            ],
+                            "default": "get"
+                        },
+                        {
+                            "type": "select",
+                            "layoutType": "inline",
+                            "text": "请求类型",
+                            "bindKey": "requestContentType",
+                            "desc": "请求接口的数据类型，请根据后端需求进行选择",
+                            "dictionary": [
+                                {
+                                    "label": "默认",
+                                    "value": ""
+                                },
+                                {
+                                    "label": "JSON",
+                                    "value": "application/json;charset=UTF-8"
+                                },
+                                {
+                                    "label": "FormData",
+                                    "value": "multipart/form-data"
+                                }
+                            ],
+                            "default": "",
+                            "display": "@[requestType=='post']"
                         },
                         {
                             "type": "actionSelect",
                             "layoutType": "block",
-                            "text": "参数处理函数",
-                            "bindKey": "paramFun",
-                            "desc": "收到其他组件联动参数后会根据表单标识调用这里设置的函数返回自定义的参数内容，返回格式为字符串或对象，例如：{text:'',value:''}或者直接字符串",
+                            "text": "请求参数自定义函数",
+                            "bindKey": "requestParamFun",
+                            "desc": "请求接口时会调用这里设置的函数返回自定义的参数，返回格式为Object对象，例如：{param1:'',param2:''}",
+                            "multiple": false
+                        },
+                        {
+                            "type": "table",
+                            "text": "接收其他组件联动参数",
+                            "bindKey": "linkageParamList",
+                            "tabText": "参数[index]",
+                            "children": [
+                                {
+                                    "type": "input",
+                                    "layoutType": "inline",
+                                    "text": "表单标识",
+                                    "bindKey": "msgKey",
+                                    "default": ""
+                                },
+                                {
+                                    "type": "input",
+                                    "layoutType": "inline",
+                                    "text": "参数别名",
+                                    "bindKey": "paramKey",
+                                    "default": ""
+                                },
+                                {
+                                    "type": "actionSelect",
+                                    "layoutType": "block",
+                                    "text": "参数处理函数",
+                                    "bindKey": "paramFun",
+                                    "desc": "收到其他组件联动参数后会根据表单标识调用这里设置的函数返回自定义的参数内容，返回格式为字符串或对象，例如：{text:'',value:''}或者直接字符串",
+                                    "multiple": false
+                                }
+                            ]
+                        },
+                        {
+                            "type": "actionSelect",
+                            "layoutType": "block",
+                            "text": "返回数据处理函数",
+                            "bindKey": "responseDataFun",
+                            "desc": "针对请求接口成功后返回的数据格式处理，返回列表需要的数据格式",
+                            "multiple": false
+                        },
+                        {
+                            "type": "actionSelect",
+                            "layoutType": "block",
+                            "text": "请求错误自定义函数",
+                            "bindKey": "requestErrorFun",
+                            "desc": "请求接口失败时候会调用此处的自定义函数",
                             "multiple": false
                         }
                     ]
                 },
                 {
-                    "type": "actionSelect",
-                    "layoutType": "block",
-                    "text": "返回数据处理函数",
-                    "bindKey": "responseDataFun",
-                    "desc": "针对请求接口成功后返回的数据格式处理，返回列表需要的数据格式",
-                    "display": "@[dataSourceType=='customInterface']",
-                    "multiple": false
-                },
-                {
-                    "type": "actionSelect",
-                    "layoutType": "block",
-                    "text": "请求错误自定义函数",
-                    "bindKey": "requestErrorFun",
-                    "desc": "请求接口失败时候会调用此处的自定义函数",
-                    "display": "@[dataSourceType=='customInterface']",
-                    "multiple": false
-                },
-                {
-                    "type": "input",
-                    "layoutType": "inline",
-                    "text": "结果集名",
-                    "bindKey": "dataName",
-                    "desc": "页面接口设定的结果集名称，位置为：页面设置》高级设置》页面接口",
-                    "default": "",
-                    "placeholder": "示例：resultData",
-                    "display": "@[dataSourceType=='pageCommonInterface']"
-                },
-                {
-                    "type": "textarea",
-                    "layoutType": "inline",
-                    "text": "显示字段",
-                    "bindKey": "dataFiled",
-                    "desc": "根据接口返回数据格式指定结果集的字段，比如结果集名为resultData且它的值为{data:{filedName:[{}]}}，则这里应该填写data.filedName",
-                    "default": "",
-                    "placeholder": "示例：data.filedName 或者 [0].data[0].filedName",
-                    "display": "@[dataSourceType=='pageCommonInterface']"
+                    "type": "group",
+                    "text": "页面统一接口",
+                    "desc": "结果为 {rows:数据集,total:总数}",
+                    "display": "@[dataSourceType=='pageCommonInterface']",
+                    "children": [
+                        {
+                            "type": "input",
+                            "layoutType": "inline",
+                            "text": "结果集名",
+                            "bindKey": "dataName",
+                            "desc": "页面接口设定的结果集名称，位置为：页面设置》高级设置》页面接口",
+                            "default": "",
+                            "placeholder": "示例：resultData"
+                        },
+                        {
+                            "type": "textarea",
+                            "layoutType": "inline",
+                            "text": "显示字段",
+                            "bindKey": "dataFiled",
+                            "desc": "根据接口返回数据格式指定结果集的字段，比如结果集名为resultData且它的值为{data:{filedName:[{}]}}，则这里应该填写data.filedName",
+                            "default": "",
+                            "placeholder": "示例：data.filedName 或者 [0].data[0].filedName"
+                        },
+                        {
+                            "type": "actionSelect",
+                            "layoutType": "block",
+                            "text": "结果处理函数",
+                            "bindKey": "dataFunc",
+                            "desc": "获取数据后会调用此方法，参数为 {data:结果集,value:字段值}",
+                            "multiple": false
+                        }
+                    ]
                 },
                 {
                     "type": "actionSelect",
@@ -919,6 +964,108 @@
                     "desc": "获取数据源的时候会调用此方法，返回数据格式如下：{total:0,rows:[{}]}",
                     "display": "@[dataSourceType=='customFunction']",
                     "multiple": false
+                }
+            ]
+        },
+        {
+            "type": "group",
+            "text": "分页设置",
+            "display":"@[openPagination]",
+            "children": [
+                {
+                    "type": "radio",
+                    "layoutType": "inline",
+                    "text": "分页位置",
+                    "bindKey": "paginationPosition",
+                    "dictionary": [
+                        {
+                            "label": "top",
+                            "value": "top"
+                        },
+                        {
+                            "label": "bottom",
+                            "value": "bottom"
+                        },
+                        {
+                            "label": "both",
+                            "value": "both"
+                        }
+                    ],
+                    "default": "bottom"
+                },
+                {
+                    "type": "textarea",
+                    "layoutType": "inline",
+                    "text": "分页条数",
+                    "bindKey": "pageSizeOptions",
+                    "desc":"指定每页可以显示多少条，以逗号隔开，例如：10,20,30,40",
+                    "default": "10,20,30,40"
+                },
+                {
+                    "type": "inputNumber",
+                    "layoutType": "inline",
+                    "text": "默认条数",
+                    "bindKey": "defaultPageSize",
+                    "maxLength": 300,
+                    "minLength": 1,
+                    "desc":"默认的每页条数，一般指定分页条数设置的其中一个即可",
+                    "default": 10
+                },
+                {
+                    "type": "switch",
+                    "layoutType": "inline",
+                    "text": "单页隐藏",
+                    "bindKey": "hideOnSinglePage",
+                    "desc":"设置只有一页时是否隐藏分页器",
+                    "default": false
+                },
+                {
+                    "type": "switch",
+                    "layoutType": "inline",
+                    "text": "禁用分页",
+                    "bindKey": "disabledPagination",
+                    "default": false
+                },
+                {
+                    "type": "switch",
+                    "layoutType": "inline",
+                    "text": "快速跳转",
+                    "bindKey": "showQuickJumper",
+                    "desc":"设置是否可以快速跳转至某页",
+                    "default": false
+                },
+                {
+                    "type": "switch",
+                    "layoutType": "inline",
+                    "text": "改变分页",
+                    "bindKey": "showSizeChanger",
+                    "desc":"设置是否可以改变每页的大小",
+                    "default": false
+                },
+                {
+                    "type": "switch",
+                    "layoutType": "inline",
+                    "text": "迷你分页",
+                    "bindKey": "smallPagination",
+                    "desc":"设置是否是小尺寸分页",
+                    "default": false
+                },
+                {
+                    "type": "switch",
+                    "layoutType": "inline",
+                    "text": "简单分页",
+                    "bindKey": "simplePagination",
+                    "desc":"设置是否显示为简单分页",
+                    "default": false
+                },
+                {
+                    "type": "textarea",
+                    "layoutType": "block",
+                    "text": "总量显示格式化",
+                    "bindKey": "showTotalFormat",
+                    "desc":"设置用于显示数据总量和当前数据顺序，示例：@[range[0]]-@[range[1]] of @[total] items",
+                    "placeholder":"示例：@[range[0]]-@[range[1]] of @[total] items",
+                    "default": ""
                 }
             ]
         },

@@ -6,53 +6,51 @@
     >
         <a-config-provider :locale="locale">
             <div class="table-container" :class="className.wrap">
-                <div class="filter-wrap">
-                    <a-form-model
-                        :model="filter"
-                        layout="inline"
-                        class="filter-form"
+                <a-form-model
+                    :model="filter"
+                    layout="inline"
+                    class="filter-form"
+                >
+                    <a-form-model-item
+                        v-for="field in fields"
+                        :key="field.value"
+                        :label="field.label"
+                        :prop="field.value"
                     >
-                        <a-form-model-item
-                            v-for="field in fields"
-                            :key="field.value"
-                            :label="field.label"
-                            :prop="field.value"
+                        <a-select
+                            v-if="field.type == 'select'"
+                            v-model="filter[field.value]"
+                            :mode="field.selectMode"
+                            :allowClear="true"
+                            style="min-width: 100px"
                         >
-                            <a-select
-                                v-if="field.type == 'select'"
-                                v-model="filter[field.value]"
-                                :mode="field.selectMode"
-                                :allowClear="true"
-                                style="min-width: 100px"
+                            <a-select-option
+                                v-for="item in optionData[field.value]"
+                                :key="item.key"
+                                :value="item.key"
+                                >{{ item.value }}</a-select-option
                             >
-                                <a-select-option
-                                    v-for="item in optionData[field.value]"
-                                    :key="item.key"
-                                    :value="item.key"
-                                    >{{ item.value }}</a-select-option
-                                >
-                            </a-select>
-                            <template v-else-if="field.type == 'date'">
-                                <a-date-picker
-                                    v-model="filter[`${field.value}Start`]"
-                                />
-                                ~
-                                <a-date-picker
-                                    v-model="filter[`${field.value}End`]"
-                                />
-                            </template>
-                            <a-input v-else v-model="filter[field.value]" />
-                        </a-form-model-item>
-                        <a-form-model-item>
-                            <div
-                                class="filter-extra drag_container"
-                                idm-ctrl-inner
-                                :idm-ctrl-id="moduleObject.id"
-                                idm-container-index="filter-extra"
-                            ></div>
-                        </a-form-model-item>
-                    </a-form-model>
-                </div>
+                        </a-select>
+                        <template v-else-if="field.type == 'date'">
+                            <a-date-picker
+                                v-model="filter[`${field.value}Start`]"
+                            />
+                            ~
+                            <a-date-picker
+                                v-model="filter[`${field.value}End`]"
+                            />
+                        </template>
+                        <a-input v-else v-model="filter[field.value]" />
+                    </a-form-model-item>
+                    <a-form-model-item v-if="propData.searchExendBar">
+                        <div
+                            class="filter-extra drag_container"
+                            idm-ctrl-inner
+                            :idm-ctrl-id="moduleObject.id"
+                            idm-container-index="filter-extra"
+                        ></div>
+                    </a-form-model-item>
+                </a-form-model>
                 <a-table
                     :dataSource="dataSource"
                     :pagination="pagination"
@@ -114,7 +112,7 @@ export default {
     mixins: [
         bindProp({
             dataSourceType: 'customInterface',
-            columnSourceType: 'staticData',
+            columnSourceType: '',
             columns: [],
             rowKey: 'id',
             expandedRow: true,
@@ -124,11 +122,26 @@ export default {
     data() {
         return {
             locale: zh_CN,
-            columnsDataSource: [],
+            columnsDataSource: [
+                {
+                    label: '序号',
+                    type: 'index',
+                },
+                {
+                    label: 'ID',
+                    value: 'id',
+                },
+                {
+                    label: '标题',
+                    value: 'title',
+                    filter: true,
+                },
+            ],
             dataSource: window.IDM.env_develop_mode
                 ? [
                       {
                           id: '1',
+                          title: '标题',
                           expandable: true,
                       },
                   ]
@@ -149,6 +162,7 @@ export default {
             conditionObject: {},
             optionData: {},
             env_develop_mode: window.IDM.env_develop_mode,
+            contextDataset: [],
         }
     },
     computed: {
@@ -163,7 +177,7 @@ export default {
         this.init()
     },
     watch: {
-        columns: {
+        columnsDataSource: {
             handler(columns) {
                 columns
                     .filter(n => n.type == 'select')
@@ -180,6 +194,7 @@ export default {
                                     requestErrorFun: n.requestErrorFun,
                                 },
                                 customFunction: n.customFunction,
+                                staticData: n.staticData,
                             })
                             .then(data => {
                                 this.$set(this.optionData, n.value, data)
@@ -204,29 +219,31 @@ export default {
         expressReplace: window.IDM.express.replace,
         comboColumns(columns = [], keyPrefix = 'col') {
             if (columns.length == 0) return null
-            return columns.map((column, columnIndex) => {
-                const key = `${keyPrefix}-${columnIndex}`
-                return {
-                    ...column,
-                    key,
-                    title: column.label || column.title,
-                    dataIndex: column.value || column.dataIndex,
-                    align: column.headerAlign,
-                    customCell: (record, rowIndex) =>
-                        this.handleCustomCell(record, rowIndex, column),
-                    customHeaderCell: e =>
-                        this.handleCustomHeaderCell(e, column),
-                    customRender: (value, record, index) =>
-                        this.customRender({
-                            value,
-                            record,
-                            index,
-                            column,
-                            columnIndex,
-                        }),
-                    children: this.comboColumns(column.children || [], key),
-                }
-            })
+            return columns
+                .filter(n => n.hidden != true)
+                .map((column, columnIndex) => {
+                    const key = `${keyPrefix}-${columnIndex}`
+                    return {
+                        ...column,
+                        key,
+                        title: column.label || column.title,
+                        dataIndex: column.value || column.dataIndex,
+                        align: column.headerAlign || 'center',
+                        customCell: (record, rowIndex) =>
+                            this.handleCustomCell(record, rowIndex, column),
+                        customHeaderCell: e =>
+                            this.handleCustomHeaderCell(e, column),
+                        customRender: (value, record, index) =>
+                            this.customRender({
+                                value,
+                                record,
+                                index,
+                                column,
+                                columnIndex,
+                            }),
+                        children: this.comboColumns(column.children || [], key),
+                    }
+                })
         },
         comboFilters(columns = []) {
             return columns
@@ -323,6 +340,8 @@ export default {
         },
         setContextValue(object) {
             console.debug('iTable setContextValue', object)
+            this.contextDataset.push(object)
+            this.init()
         },
         propDataWatchHandle(propData) {
             this.propData = propData.compositeAttr
@@ -521,6 +540,12 @@ export default {
                             responseDataFun: this.propData.responseDataFun,
                             requestErrorFun: this.propData.requestErrorFun,
                         },
+                        pageCommonInterface: {
+                            dataset: this.contextDataset,
+                            dataName: this.propData.dataName,
+                            dataFiled: this.propData.dataFiled,
+                            dataFunc: this.propData.dataFunc,
+                        },
                         customFunction: this.propData.customFunction,
                     },
                     {
@@ -547,10 +572,17 @@ export default {
                         responseDataFun: this.propData.columnResponseDataFun,
                         requestErrorFun: this.propData.columnRequestErrorFun,
                     },
+                    pageCommonInterface: {
+                        dataset: this.contextDataset,
+                        dataName: this.propData.columnDataName,
+                        dataFiled: this.propData.columnDataFiled,
+                        dataFunc: this.propData.columnDataFunc,
+                    },
                     customFunction: this.propData.columnCustomFunction,
                     staticData: this.propData.columns,
                 })
                 .then(data => {
+                    console.debug('loadColumnsOptions', data)
                     this.columnsDataSource = data
                     return data
                 })
@@ -741,9 +773,13 @@ export default {
     flex-direction: column;
     gap: 20px;
 }
-.filter-wrap {
+.filter-form {
     padding: 10px;
     background-color: #f5f5f5;
+    display: none;
+    &:has(> *) {
+        display: block;
+    }
     :deep(.ant-form-item-label) {
         color: #333333;
         font-size: 16px;
