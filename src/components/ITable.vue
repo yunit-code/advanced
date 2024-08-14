@@ -583,6 +583,7 @@ export default {
                 .fetchData(
                     {
                         dataSourceType: this.propData.dataSourceType,
+                        dataSource:this.propData.dataSource,
                         customInterface: {
                             url: this.propData.customInterfaceUrl,
                             requestParamFun: this.propData.requestParamFun,
@@ -615,6 +616,7 @@ export default {
             return dataUtil
                 .fetchData({
                     dataSourceType: this.propData.columnSourceType,
+                    dataSource:this.propData.columnDataSource,
                     customInterface: {
                         url: this.propData.columnCustomInterfaceUrl,
                         requestParamFun: this.propData.columnRequestParamFun,
@@ -697,12 +699,6 @@ export default {
             if (window.IDM.env_develop_mode) {
                 return
             }
-            this.moduleObject.removeDynamicRenderModuleGroup?.call(
-                this,
-                this.moduleObject.packageid,
-                `expand-${record[this.propData.rowKey]}`,
-                false
-            )
             if (expanded) {
                 nextTick(() => {
                     this.moduleObject.dynamicRenderModuleGroupInitData?.call(

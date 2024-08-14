@@ -133,6 +133,10 @@
                     "bindKey": "columnSourceType",
                     "dictionary": [
                         {
+                            "label": "数据源",
+                            "value": "dataSource"
+                        },
+                        {
                             "label": "静态配置",
                             "value": "staticData"
                         },
@@ -150,6 +154,12 @@
                         }
                     ],
                     "default": ""
+                },
+                {
+                    "display": "@[columnDataSourceType=='dataSource']",
+                    "type": "dataSourceSelect",
+                    "text": "数据源",
+                    "bindKey": "columnDataSource"
                 },
                 {
                     "type": "group",
@@ -780,6 +790,10 @@
                     "bindKey": "dataSourceType",
                     "dictionary": [
                         {
+                            "label": "数据源",
+                            "value": "dataSource"
+                        },
+                        {
                             "label": "自定义接口",
                             "value": "customInterface"
                         },
@@ -957,6 +971,12 @@
                     ]
                 },
                 {
+                    "display": "@[dataSourceType=='dataSource']",
+                    "type": "dataSourceSelect",
+                    "text": "数据源",
+                    "bindKey": "dataSource"
+                },
+                {
                     "type": "actionSelect",
                     "layoutType": "block",
                     "text": "自定义函数",
@@ -970,7 +990,7 @@
         {
             "type": "group",
             "text": "分页设置",
-            "display":"@[openPagination]",
+            "display": "@[openPagination]",
             "children": [
                 {
                     "type": "radio",
@@ -998,7 +1018,7 @@
                     "layoutType": "inline",
                     "text": "分页条数",
                     "bindKey": "pageSizeOptions",
-                    "desc":"指定每页可以显示多少条，以逗号隔开，例如：10,20,30,40",
+                    "desc": "指定每页可以显示多少条，以逗号隔开，例如：10,20,30,40",
                     "default": "10,20,30,40"
                 },
                 {
@@ -1008,7 +1028,7 @@
                     "bindKey": "defaultPageSize",
                     "maxLength": 300,
                     "minLength": 1,
-                    "desc":"默认的每页条数，一般指定分页条数设置的其中一个即可",
+                    "desc": "默认的每页条数，一般指定分页条数设置的其中一个即可",
                     "default": 10
                 },
                 {
@@ -1016,7 +1036,7 @@
                     "layoutType": "inline",
                     "text": "单页隐藏",
                     "bindKey": "hideOnSinglePage",
-                    "desc":"设置只有一页时是否隐藏分页器",
+                    "desc": "设置只有一页时是否隐藏分页器",
                     "default": false
                 },
                 {
@@ -1031,7 +1051,7 @@
                     "layoutType": "inline",
                     "text": "快速跳转",
                     "bindKey": "showQuickJumper",
-                    "desc":"设置是否可以快速跳转至某页",
+                    "desc": "设置是否可以快速跳转至某页",
                     "default": false
                 },
                 {
@@ -1039,7 +1059,7 @@
                     "layoutType": "inline",
                     "text": "改变分页",
                     "bindKey": "showSizeChanger",
-                    "desc":"设置是否可以改变每页的大小",
+                    "desc": "设置是否可以改变每页的大小",
                     "default": false
                 },
                 {
@@ -1047,7 +1067,7 @@
                     "layoutType": "inline",
                     "text": "迷你分页",
                     "bindKey": "smallPagination",
-                    "desc":"设置是否是小尺寸分页",
+                    "desc": "设置是否是小尺寸分页",
                     "default": false
                 },
                 {
@@ -1055,7 +1075,7 @@
                     "layoutType": "inline",
                     "text": "简单分页",
                     "bindKey": "simplePagination",
-                    "desc":"设置是否显示为简单分页",
+                    "desc": "设置是否显示为简单分页",
                     "default": false
                 },
                 {
@@ -1063,8 +1083,8 @@
                     "layoutType": "block",
                     "text": "总量显示格式化",
                     "bindKey": "showTotalFormat",
-                    "desc":"设置用于显示数据总量和当前数据顺序，示例：@[range[0]]-@[range[1]] of @[total] items",
-                    "placeholder":"示例：@[range[0]]-@[range[1]] of @[total] items",
+                    "desc": "设置用于显示数据总量和当前数据顺序，示例：@[range[0]]-@[range[1]] of @[total] items",
+                    "placeholder": "示例：@[range[0]]-@[range[1]] of @[total] items",
                     "default": ""
                 }
             ]

@@ -1,6 +1,7 @@
 export function fetchData(
     {
         dataSourceType,
+        dataSource,
         customInterface,
         pageCommonInterface,
         customFunction,
@@ -11,6 +12,14 @@ export function fetchData(
     return new Promise((resolve, reject) => {
         let reqParam = {}
         switch (dataSourceType) {
+            case 'dataSource':
+                window.IDM.datasource.request(
+                    dataSource[0].id,
+                    params,
+                    resolve,
+                    reject
+                )
+                break
             case 'customInterface':
                 if (
                     customInterface.requestParamFun &&
