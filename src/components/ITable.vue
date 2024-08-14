@@ -53,7 +53,7 @@
                 </a-form-model>
                 <a-table
                     :dataSource="dataSource"
-                    :pagination="pagination"
+                    :pagination="paginationConfig"
                     :rowKey="propData.rowKey"
                     :loading="loading"
                     @change="handleTableChange"
@@ -154,10 +154,6 @@ export default {
                 current: 1,
                 pageSize: 10,
                 total: 0,
-                showSizeChanger: true,
-                showTotal: (total, range) =>
-                    `当前显示${range[0]}-${range[1]}，总共${total}条`,
-                hideOnSinglePage: true,
             },
             conditionObject: {},
             optionData: {},
@@ -171,6 +167,62 @@ export default {
         },
         fields() {
             return this.comboFilters(this.columnsDataSource)
+        },
+        paginationConfig() {
+            let paginationConfig = {}
+            if (!this.propData.openPagination) {
+                return false
+            }
+            //分页位置
+            paginationConfig.position =
+                this.propData.paginationPosition || 'bottom'
+            //指定每页可以显示多少条，以逗号隔开
+            paginationConfig.pageSizeOptions = this.propData.pageSizeOptions
+                ? this.propData.pageSizeOptions.split(',')
+                : ['10', '20', '30', '40']
+            //默认的每页条数，一般指定分页条数设置的其中一个即可
+            paginationConfig.defaultPageSize =
+                this.propData.defaultPageSize || 10
+            //设置只有一页时是否隐藏分页器
+            paginationConfig.hideOnSinglePage =
+                this.propData.hideOnSinglePage || false
+            //禁用分页
+            paginationConfig.disabled =
+                this.propData.disabledPagination || false
+            //设置是否可以快速跳转至某页
+            paginationConfig.showQuickJumper =
+                this.propData.showQuickJumper || false
+            //设置是否可以改变每页的大小
+            paginationConfig.showSizeChanger =
+                this.propData.showSizeChanger || false
+            //设置是否是小尺寸分页
+            paginationConfig.size = this.propData.smallPagination || false
+            //设置是否显示为简单分页
+            paginationConfig.simple = this.propData.simplePagination || false
+            if (this.propData.showTotalFormat) {
+                //设置用于显示数据总量和当前数据顺序
+                paginationConfig.showTotal = function (total, range) {
+                    return (
+                        IDM.express &&
+                        IDM.express.replace.call(
+                            this,
+                            this.propData.showTotalFormat,
+                            {
+                                total,
+                                range,
+                            }
+                        )
+                    )
+                }
+            }
+            //分页的当前页索引
+            paginationConfig.current = this.pagination.current
+            //分页的大小
+            paginationConfig['pageSize(.sync)'] = this.pagination.pageSize
+            //分页的总数
+            paginationConfig.total = this.pagination.total
+
+            return paginationConfig
         },
     },
     mounted() {
