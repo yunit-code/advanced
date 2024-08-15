@@ -790,6 +790,14 @@
                             "bindKey": "font"
                         }
                     ]
+                },
+                {
+                    "type": "actionSelect",
+                    "layoutType": "block",
+                    "text": "请求参数自定义函数",
+                    "bindKey": "columnCustomParams",
+                    "desc": "获取数据源的时候会携带函数返回的对象，返回数据格式如下：{key:value}",
+                    "multiple": false
                 }
             ]
         },
@@ -819,10 +827,6 @@
                         {
                             "label": "自定义函数",
                             "value": "customFunction"
-                        },
-                        {
-                            "label": "分页容器",
-                            "value": "pageContainer"
                         }
                     ],
                     "default": ""
@@ -998,6 +1002,14 @@
                     "bindKey": "customFunction",
                     "desc": "获取数据源的时候会调用此方法，返回数据格式如下：{total:0,rows:[{}]}",
                     "display": "@[dataSourceType=='customFunction']",
+                    "multiple": false
+                },
+                {
+                    "type": "actionSelect",
+                    "layoutType": "block",
+                    "text": "请求参数自定义函数",
+                    "bindKey": "customParams",
+                    "desc": "获取数据源的时候会携带函数返回的对象，返回数据格式如下：{key:value}",
                     "multiple": false
                 }
             ]

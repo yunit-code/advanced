@@ -240,6 +240,16 @@ export default {
             .then(() => this.initData())
     },
     watch: {
+        'propData.customParams': {
+            handler(customParams) {
+                this.filter = window.IDM.invokeCustomFunctions(
+                    customParams
+                ).reduce((carry, current) => {
+                    return Object.assign({}, carry, current)
+                }, {})
+            },
+            immediate: true,
+        },
         filter: {
             handler(filter) {
                 window.IDM.broadcast?.send({
@@ -385,7 +395,6 @@ export default {
         },
         propDataWatchHandle(propData) {
             this.propData = propData.compositeAttr
-            this.init()
         },
         receiveBroadcastMessage(data) {
             console.debug('iTable receiveBroadcastMessage', data)
@@ -599,27 +608,39 @@ export default {
         },
         loadColumnsOptions() {
             return dataUtil
-                .fetchData({
-                    dataSourceType: this.propData.columnSourceType,
-                    dataSource: this.propData.columnDataSource,
-                    customInterface: {
-                        url: this.propData.columnCustomInterfaceUrl,
-                        requestParamFun: this.propData.columnRequestParamFun,
-                        requestContentType:
-                            this.propData.columnRequestContentType,
-                        requestType: this.propData.columnRequestType,
-                        responseDataFun: this.propData.columnResponseDataFun,
-                        requestErrorFun: this.propData.columnRequestErrorFun,
+                .fetchData(
+                    {
+                        dataSourceType: this.propData.columnSourceType,
+                        dataSource: this.propData.columnDataSource,
+                        customInterface: {
+                            url: this.propData.columnCustomInterfaceUrl,
+                            requestParamFun:
+                                this.propData.columnRequestParamFun,
+                            requestContentType:
+                                this.propData.columnRequestContentType,
+                            requestType: this.propData.columnRequestType,
+                            responseDataFun:
+                                this.propData.columnResponseDataFun,
+                            requestErrorFun:
+                                this.propData.columnRequestErrorFun,
+                        },
+                        pageCommonInterface: {
+                            dataset: this.contextDataset,
+                            dataName: this.propData.columnDataName,
+                            dataFiled: this.propData.columnDataFiled,
+                            dataFunc: this.propData.columnDataFunc,
+                        },
+                        customFunction: this.propData.columnCustomFunction,
+                        staticData: this.propData.columns,
                     },
-                    pageCommonInterface: {
-                        dataset: this.contextDataset,
-                        dataName: this.propData.columnDataName,
-                        dataFiled: this.propData.columnDataFiled,
-                        dataFunc: this.propData.columnDataFunc,
-                    },
-                    customFunction: this.propData.columnCustomFunction,
-                    staticData: this.propData.columns,
-                })
+                    {
+                        params: window.IDM.invokeCustomFunctions(
+                            this.propData.columnCustomParams
+                        ).reduce((carry, current) => {
+                            return Object.assign({}, carry, current)
+                        }, {}),
+                    }
+                )
                 .then(data => {
                     this.columnsDataSource = data
                     return data

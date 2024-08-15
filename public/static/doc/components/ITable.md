@@ -60,6 +60,7 @@ type columnType = {
         staticData?: {
             value:string // 文本值
             key:string // 标识
+            selected:boolean // 是否默认选中，为true时会自动追加至筛选条件中
         }[] // dataSourceType=static时需配置，表格中会根据当前列字段名匹配key取值
     }
     ```
