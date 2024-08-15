@@ -13,13 +13,13 @@
                 >
                     <a-form-model-item
                         v-for="field in fields"
-                        :key="field.value"
+                        :key="field._filterKey"
                         :label="field.label"
-                        :prop="field.value"
+                        :prop="field.filterKey"
                     >
                         <a-select
                             v-if="field.type == 'select'"
-                            v-model="filter[field.value]"
+                            v-model="filter[field._filterKey]"
                             :mode="field.selectMode"
                             :allowClear="true"
                             style="min-width: 100px"
@@ -33,14 +33,14 @@
                         </a-select>
                         <template v-else-if="field.type == 'date'">
                             <a-date-picker
-                                v-model="filter[`${field.value}Start`]"
+                                v-model="filter[`${field._filterKey}Start`]"
                             />
                             ~
                             <a-date-picker
-                                v-model="filter[`${field.value}End`]"
+                                v-model="filter[`${field._filterKey}End`]"
                             />
                         </template>
-                        <a-input v-else v-model="filter[field.value]" />
+                        <a-input v-else v-model="filter[field._filterKey]" />
                     </a-form-model-item>
                     <a-form-model-item v-if="propData.searchExendBar">
                         <div
@@ -166,7 +166,16 @@ export default {
             return this.comboColumns(this.columnsDataSource)
         },
         fields() {
-            return this.comboFilters(this.columnsDataSource)
+            return this.comboFilters(this.columnsDataSource).map(column => ({
+                ...column,
+                _filterKey: this.expressReplace(
+                    column.filterField || '@[value]',
+                    {
+                        value: column.value,
+                        column,
+                    }
+                ),
+            }))
         },
         paginationConfig() {
             let paginationConfig = {}
@@ -226,34 +235,11 @@ export default {
         },
     },
     mounted() {
-        this.init()
+        this.loadColumnsOptions()
+            .then(() => this.loadOptionData())
+            .then(() => this.initData())
     },
     watch: {
-        columnsDataSource: {
-            handler(columns) {
-                columns
-                    .filter(n => n.type == 'select')
-                    .forEach(n => {
-                        dataUtil
-                            .fetchData({
-                                dataSourceType: n.dataSourceType,
-                                customInterface: {
-                                    url: n.customInterfaceUrl,
-                                    requestParamFun: n.requestParamFun,
-                                    requestContentType: n.requestContentType,
-                                    requestType: n.requestType,
-                                    responseDataFun: n.responseDataFun,
-                                    requestErrorFun: n.requestErrorFun,
-                                },
-                                customFunction: n.customFunction,
-                                staticData: n.staticData,
-                            })
-                            .then(data => {
-                                this.$set(this.optionData, n.value, data)
-                            })
-                    })
-            },
-        },
         filter: {
             handler(filter) {
                 window.IDM.broadcast?.send({
@@ -393,7 +379,9 @@ export default {
         setContextValue(object) {
             console.debug('iTable setContextValue', object)
             this.contextDataset.push(object)
-            this.init()
+            this.loadColumnsOptions()
+                .then(() => this.loadOptionData())
+                .then(() => this.initData())
         },
         propDataWatchHandle(propData) {
             this.propData = propData.compositeAttr
@@ -472,9 +460,6 @@ export default {
             } else if (data.type && data.type == 'linkageReload') {
                 this.reload(data.message && data.message.reloadFirstPage)
             }
-        },
-        init() {
-            this.loadColumnsOptions().then(() => this.initData())
         },
         /**
          * 消息变动实时重新加载
@@ -583,7 +568,7 @@ export default {
                 .fetchData(
                     {
                         dataSourceType: this.propData.dataSourceType,
-                        dataSource:this.propData.dataSource,
+                        dataSource: this.propData.dataSource,
                         customInterface: {
                             url: this.propData.customInterfaceUrl,
                             requestParamFun: this.propData.requestParamFun,
@@ -616,7 +601,7 @@ export default {
             return dataUtil
                 .fetchData({
                     dataSourceType: this.propData.columnSourceType,
-                    dataSource:this.propData.columnDataSource,
+                    dataSource: this.propData.columnDataSource,
                     customInterface: {
                         url: this.propData.columnCustomInterfaceUrl,
                         requestParamFun: this.propData.columnRequestParamFun,
@@ -636,10 +621,63 @@ export default {
                     staticData: this.propData.columns,
                 })
                 .then(data => {
-                    console.debug('loadColumnsOptions', data)
                     this.columnsDataSource = data
                     return data
                 })
+        },
+        loadOptionData() {
+            this.columnsDataSource.forEach((column, columnIndex) => {
+                const filterKey = this.expressReplace(
+                    column.filterField || '@[value]',
+                    {
+                        value: column.value,
+                        column,
+                    }
+                )
+                if (column.type == 'select') {
+                    dataUtil
+                        .fetchData({
+                            dataSourceType: column.dataSourceType,
+                            dataSource: column.dataSource,
+                            customInterface: {
+                                url: column.customInterfaceUrl,
+                                requestParamFun: column.requestParamFun,
+                                requestContentType: column.requestContentType,
+                                requestType: column.requestType,
+                                responseDataFun: column.responseDataFun,
+                                requestErrorFun: column.requestErrorFun,
+                            },
+                            customFunction: column.customFunction,
+                            staticData: column.staticData,
+                        })
+                        .then(data => {
+                            this.$set(this.optionData, column.value, data)
+                            if (column.selectMode == 'multiple') {
+                                const selectedItems = data.filter(
+                                    m => m.selected
+                                )
+                                if (selectedItems.length > 0) {
+                                    this.$set(
+                                        this.filter,
+                                        filterKey,
+                                        selectedItems.map(m => m.key)
+                                    )
+                                }
+                                return
+                            } else {
+                                const selectedItem = data.find(m => m.selected)
+                                if (selectedItem) {
+                                    this.$set(
+                                        this.filter,
+                                        filterKey,
+                                        selectedItem.key
+                                    )
+                                }
+                                return
+                            }
+                        })
+                }
+            })
         },
         handleTableChange(pagination, filters, sorter) {
             this.pagination.current = pagination.current

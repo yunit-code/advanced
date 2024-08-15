@@ -11,8 +11,8 @@
 -   列表
     ```typescript
     {
-        rows: []
-        total: number
+        rows: [] // 数据集合
+        total: number // 总数量
     }
     ```
 
@@ -39,7 +39,7 @@ type columnType = {
     fixed?: 'left' | 'right' | false // 固定列，默认false
     ellipsis?: boolean // 内容是否超出省略，默认false
     hidden?: boolean // 是否在表格中隐藏列，筛选不受影响，默认false
-    children?: columnType[] // 子列，需要表头分组时配置
+    children?: columnType[] // 子列集合，需要表头分组时配置
 }
 ```
 
@@ -60,7 +60,7 @@ type columnType = {
         staticData?: {
             value:string // 文本值
             key:string // 标识
-        }[] // dataSourceType=static时需配置
+        }[] // dataSourceType=static时需配置，表格中会根据当前列字段名匹配key取值
     }
     ```
 -   date 日期
@@ -83,7 +83,7 @@ type columnType = {
 
 ```typescript
 {
-    expandable?:boolean // 是否有扩展行，默认false
+    expandable?:boolean // 是否有扩展行，为true时展示扩展按钮且点击行展示扩展子容器，默认false
 }
 ```
 
@@ -94,4 +94,31 @@ type dataSourceType =
     | 'customInterface' // 自定义接口
     | 'pageCommonInterface' // 页面统一接口
     | 'customFunction' // 自定义函数
+```
+
+#### 联动说明
+
+##### 接收
+
+-   filter 设置筛选条件
+    ```typescript
+    {
+        messageKey:'filter'
+        message:{[key:string]:any}
+    }
+    ```
+-   reset 重置筛选条件
+    ```typescript
+    {
+        messageKey: 'reset'
+    }
+    ```
+
+##### 发送
+
+```typescript
+    {
+        messageKey: 'filter'
+        message:{[key:string]:any}
+    }
 ```

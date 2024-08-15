@@ -13,6 +13,18 @@ export function fetchData(
         let reqParam = {}
         switch (dataSourceType) {
             case 'dataSource':
+                if (!Array.isArray(dataSource)) {
+                    reject({
+                        message: '数据源格式错误',
+                    })
+                    return
+                }
+                if (dataSource.length == 0) {
+                    reject({
+                        message: '数据源为空',
+                    })
+                    return
+                }
                 window.IDM.datasource.request(
                     dataSource[0].id,
                     params,

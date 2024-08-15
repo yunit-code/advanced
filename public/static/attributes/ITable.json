@@ -156,7 +156,7 @@
                     "default": ""
                 },
                 {
-                    "display": "@[columnDataSourceType=='dataSource']",
+                    "display": "@[columnSourceType=='dataSource']",
                     "type": "dataSourceSelect",
                     "text": "数据源",
                     "bindKey": "columnDataSource"
@@ -476,6 +476,10 @@
                                     "default": "static",
                                     "dictionary": [
                                         {
+                                            "label": "数据源",
+                                            "value": "dataSource"
+                                        },
+                                        {
                                             "label": "自定义接口",
                                             "value": "customInterface"
                                         },
@@ -486,12 +490,14 @@
                                         {
                                             "label": "自定义函数",
                                             "value": "customFunction"
-                                        },
-                                        {
-                                            "label": "分页容器",
-                                            "value": "pageContainer"
                                         }
                                     ]
+                                },
+                                {
+                                    "display": "@[dataSourceType=='dataSource']",
+                                    "type": "dataSourceSelect",
+                                    "text": "数据源",
+                                    "bindKey": "dataSource"
                                 },
                                 {
                                     "type": "input",
@@ -712,6 +718,15 @@
                             "bindKey": "filter",
                             "desc": "开启远程筛选",
                             "default": false
+                        },
+                        {
+                            "display": "@[filter==true]",
+                            "type": "input",
+                            "layoutType": "inline",
+                            "text": "筛选字段",
+                            "bindKey": "filterField",
+                            "desc": "远程筛选字段，不填默认为列标识",
+                            "default": "@[value]"
                         },
                         {
                             "type": "switch",
