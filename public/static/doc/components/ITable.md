@@ -65,6 +65,9 @@ type columnType = {
     }
     ```
 -   date 日期
+    日期类型启用筛选后会产生两个请求参数
+    -   字段名+Start 表示开始日期
+    -   字段名+End 表示结束日期
 -   href 链接
     ```typescript
     {
