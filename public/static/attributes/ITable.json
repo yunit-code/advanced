@@ -437,14 +437,6 @@
                                     "bindKey": "textTemplate",
                                     "desc": "自定义文本模板，不填默认为字段值，支持表达式，可选参数 value:字段值 record:行数据 column:列配置 columnIndex:列索引",
                                     "default": ""
-                                },
-                                {
-                                    "type": "actionSelect",
-                                    "layoutType": "block",
-                                    "text": "点击事件",
-                                    "bindKey": "textClickFunc",
-                                    "desc": "点击内容时会调用此方法，参数 {record:行数据 column:列配置 recordIndex:行索引}",
-                                    "multiple": false
                                 }
                             ]
                         },
@@ -688,7 +680,7 @@
                                 {
                                     "type": "actionSelect",
                                     "layoutType": "block",
-                                    "text": "自定义函数",
+                                    "text": "链接生成函数",
                                     "bindKey": "hrefFunc",
                                     "desc": "链接生成函数，选择后会覆盖文本链接，接收参数{value：字段值,record:行数据,column:列配置,moduleObject:组件对象} 返回值：string"
                                 },
@@ -697,7 +689,7 @@
                                     "layoutType": "inline",
                                     "text": "打开方式",
                                     "bindKey": "target",
-                                    "default": "_blank",
+                                    "default": "",
                                     "dictionary": [
                                         {
                                             "label": "新窗口",
@@ -782,6 +774,13 @@
                             "bindKey": "hidden",
                             "desc": "开启后不在表格中展示",
                             "default": false
+                        },
+                        {
+                            "type": "actionSelect",
+                            "layoutType": "block",
+                            "text": "点击事件",
+                            "bindKey": "clickFunc",
+                            "desc": "单元格点击事件函数，接收参数{record:行数据,column:列配置,moduleObject:组件对象}"
                         },
                         {
                             "type": "font",

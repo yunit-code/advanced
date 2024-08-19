@@ -71,10 +71,12 @@ type columnType = {
 -   href 链接
     ```typescript
     {
-        href?: string // 链接模板，支持表达式
+        href?: string // 链接模板，支持表达式，为空时将使用javascrip:void(0)
         target?: '_blank'|'_self' // 打开目标，默认'_blank'
     }
     ```
+    链接模板和链接生成函数都为空时将使用javascrip:void(0)
+
 -   actions 按钮组
     ```typescript
     {

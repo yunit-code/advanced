@@ -321,7 +321,6 @@ export default {
                         <a
                             href={this.getLink(value, record, column)}
                             target={column.target}
-                            onClick={e => e.stopPropagation()}
                         >
                             {value}
                         </a>
@@ -823,10 +822,16 @@ export default {
             return {
                 style,
                 on: {
-                    click: () => {
+                    click: event => {
                         window.IDM.invokeCustomFunctions.apply(this, [
-                            column.textClickFunc,
-                            { record, recordIndex, column },
+                            column.clickFunc,
+                            {
+                                record,
+                                recordIndex,
+                                column,
+                                moduleObject: this.moduleObject,
+                                event,
+                            },
                         ])
                     },
                 },
@@ -846,35 +851,39 @@ export default {
                 .join()
         },
         getLink(value, record, column) {
-            if (column.hrefFunc) {
-                return window.IDM.invokeCustomFunctions
-                    .apply(this, [
-                        column.hrefFunc,
+            if (Array.isArray(column.hrefFunc) && column.hrefFunc.length > 0) {
+                return window.IDM.invokeCustomFunctions(column.hrefFunc, {
+                    moduleObject: this.moduleObject,
+                    record,
+                    value,
+                    column,
+                }).join()
+            }
+            if (column.href) {
+                return this.urlGetWebPath(
+                    this.expressReplace(
+                        column.href,
                         {
                             moduleObject: this.moduleObject,
                             record,
-                            value,
-                            column,
                         },
-                    ])
-                    .join()
-            }
-            return this.urlGetWebPath(
-                this.expressReplace(
-                    column.href,
-                    {
-                        moduleObject: this.moduleObject,
-                        record,
-                    },
-                    true
+                        true
+                    )
                 )
-            )
+            }
+            return 'javascript:void(0)'
         },
     },
 }
 </script>
 
 <style lang="scss" scoped>
+a {
+    color: #2673d3;
+    &:hover {
+        text-decoration: underline;
+    }
+}
 .table-container {
     display: flex;
     flex-direction: column;
