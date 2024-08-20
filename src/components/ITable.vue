@@ -33,10 +33,12 @@
                         </a-select>
                         <template v-else-if="field.type == 'date'">
                             <a-date-picker
+                                valueFormat="YYYY-MM-DD"
                                 v-model="filter[`${field._filterKey}Start`]"
                             />
                             ~
                             <a-date-picker
+                                valueFormat="YYYY-MM-DD"
                                 v-model="filter[`${field._filterKey}End`]"
                             />
                         </template>
@@ -103,7 +105,7 @@
 </template>
 
 <script>
-import { commonParam, dataUtil, propToStyle } from '../utils'
+import { commonParam, dataUtil, propToStyle, availableArray } from '../utils'
 import { bindProp, bindStyle } from '../mixins'
 import { nextTick } from 'vue'
 import zh_CN from 'ant-design-vue/lib/locale/zh_CN'
@@ -254,8 +256,16 @@ export default {
             handler(filter) {
                 window.IDM.broadcast?.send({
                     type: 'linkageDemand',
-                    messageKey: 'filter',
+                    messageKey:
+                        this.propData.linkageDemandMessageKey || 'filter',
                     rangeModule: this.propData.linkageDemandPageModule,
+                    message: filter,
+                })
+                window.IDM.broadcast?.send({
+                    type: 'linkageResult',
+                    messageKey:
+                        this.propData.linkageResultMessageKey || 'filter',
+                    rangeModule: this.propData.linkageResultPageModule,
                     message: filter,
                 })
             },
@@ -318,12 +328,15 @@ export default {
                     )?.value
                 case 'href':
                     return (
-                        <a
-                            href={this.getLink(value, record, column)}
-                            target={column.target}
+                        <span
+                            class='href'
+                            onClick={() => {
+                                const link = this.getLink(value, record, column)
+                                link && window.open(link, column.target)
+                            }}
                         >
                             {value}
-                        </a>
+                        </span>
                     )
                 case 'actions':
                     const actions = this.getActions(value, record, column)
@@ -646,7 +659,7 @@ export default {
                 })
         },
         loadOptionData() {
-            this.columnsDataSource.forEach((column, columnIndex) => {
+            this.columnsDataSource.forEach(column => {
                 const filterKey = this.expressReplace(
                     column.filterField || '@[value]',
                     {
@@ -772,36 +785,28 @@ export default {
             }
         },
         handleMenuClick(key, value, record, column) {
-            if (
-                Array.isArray(column.hanldeInterfaceFunc) &&
-                column.hanldeInterfaceFunc.length > 0
-            ) {
-                window.IDM.invokeCustomFunctions.apply(this, [
-                    column.hanldeInterfaceFunc,
-                    {
-                        key,
-                        value,
-                        record,
-                        column,
-                    },
-                ])
+            if (availableArray(column.hanldeInterfaceFunc)) {
+                window.IDM.invokeCustomFunctions(column.hanldeInterfaceFunc, {
+                    key,
+                    value,
+                    record,
+                    column,
+                })
             }
         },
         getActions(value, record, column) {
-            if (column.handleActionsFunc) {
+            if (availableArray(column.handleActionsFunc)) {
                 if (value == undefined || value == null) {
                     return []
                 }
-                return window.IDM.invokeCustomFunctions
-                    .apply(this, [
-                        column.handleActionsFunc,
-                        {
-                            value,
-                            record,
-                            column,
-                        },
-                    ])
-                    .flat()
+                return window.IDM.invokeCustomFunctions(
+                    column.handleActionsFunc,
+                    {
+                        value,
+                        record,
+                        column,
+                    }
+                ).flat()
             }
             return value || []
         },
@@ -823,35 +828,29 @@ export default {
                 style,
                 on: {
                     click: event => {
-                        window.IDM.invokeCustomFunctions.apply(this, [
-                            column.clickFunc,
-                            {
+                        if (availableArray(column.clickFunc)) {
+                            window.IDM.invokeCustomFunctions(column.clickFunc, {
                                 record,
                                 recordIndex,
                                 column,
                                 moduleObject: this.moduleObject,
                                 event,
-                            },
-                        ])
+                            })
+                        }
                     },
                 },
             }
         },
         handleHtmlRender(value, record, column, columnIndex) {
-            return window.IDM.invokeCustomFunctions
-                .apply(this, [
-                    column.htmlFunction,
-                    {
-                        value,
-                        record,
-                        column,
-                        columnIndex,
-                    },
-                ])
-                .join()
+            return window.IDM.invokeCustomFunctions(column.htmlFunction, {
+                value,
+                record,
+                column,
+                columnIndex,
+            }).join()
         },
         getLink(value, record, column) {
-            if (Array.isArray(column.hrefFunc) && column.hrefFunc.length > 0) {
+            if (availableArray(column.hrefFunc)) {
                 return window.IDM.invokeCustomFunctions(column.hrefFunc, {
                     moduleObject: this.moduleObject,
                     record,
@@ -871,14 +870,15 @@ export default {
                     )
                 )
             }
-            return 'javascript:void(0)'
+            return ''
         },
     },
 }
 </script>
 
 <style lang="scss" scoped>
-a {
+a,
+.href {
     color: #2673d3;
     &:hover {
         text-decoration: underline;

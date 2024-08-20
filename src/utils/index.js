@@ -64,9 +64,11 @@ export const propToStyle = props => {
         return carry
     }, {})
 }
+export const availableArray = value => Array.isArray(value) && value.length > 0
 export { default as dataUtil } from './dataUtil'
 export default {
     commonParam,
     propToStyle,
     openWindow,
+    availableArray,
 }

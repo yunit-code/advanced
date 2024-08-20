@@ -1223,12 +1223,26 @@
                     "multiple": true
                 },
                 {
+                    "type": "text",
+                    "layoutType": "inline",
+                    "text": "发送消息key",
+                    "bindKey": "linkageDemandMessageKey",
+                    "default": "filter"
+                },
+                {
                     "type": "pageModuleSelect",
                     "layoutType": "block",
                     "text": "结果组件范围",
                     "desc": "当前筛选变动需要联动其他组件变更结果值的组件范围",
                     "bindKey": "linkageResultPageModule",
                     "multiple": true
+                },
+                {
+                    "type": "text",
+                    "layoutType": "inline",
+                    "text": "发送消息key",
+                    "bindKey": "linkageResultMessageKey",
+                    "default": "filter"
                 }
             ]
         }
