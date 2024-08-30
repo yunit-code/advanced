@@ -42,11 +42,9 @@ export default function bindStyle(
                             this.moduleObject.id || 'module_demo'
                         } .${this.className.wrap}`,
                         {
-                            color: item.mainColor
-                                ? window.IDM?.hex8ToRgbaString(
-                                      item.mainColor.hex8
-                                  )
-                                : '',
+                            '--theme-color': window.IDM?.hex8ToRgbaString(
+                                item.mainColor.hex8
+                            ),
                         }
                     )
                 })

@@ -414,11 +414,9 @@ export default {
                 case 'linkageDemand':
                     switch (data.messageKey) {
                         case 'filter':
-                            _.entries(data.message).forEach(
-                                ([key, value]) => {
-                                    this.$set(this.filter, key, value)
-                                }
-                            )
+                            _.entries(data.message).forEach(([key, value]) => {
+                                this.$set(this.filter, key, value)
+                            })
                             break
                         case 'reset':
                             this.filter = {}
@@ -935,7 +933,10 @@ a,
     border-radius: 3px;
     .ant-table-header,
     .ant-table-body {
-        
+        scrollbar-gutter: stable;
+    }
+    .ant-table-body {
+        overflow-y: auto !important;
     }
     .ant-table-thead {
         > tr {

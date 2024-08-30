@@ -120,3 +120,15 @@ export default {
     },
 }
 </script>
+<style lang="scss" scoped>
+:deep(.ant-btn-primary) {
+    background-color: var(--theme-color, #1890ff);
+    border-color: var(--theme-color, #1890ff);
+    &:hover,
+    &:active,
+    &:focus {
+        background-color: var(--theme-color, #1890ff);
+        border-color: var(--theme-color, #1890ff);
+    }
+}
+</style>
