@@ -10,7 +10,7 @@ export default function bindStyle(
         data() {
             return {
                 className: Object.keys(list).reduce((carry, current) => {
-                    carry[current] = `wrap-${window.IDM.uuid()}`
+                    carry[current] = `${current}-${window.IDM.uuid()}`
                     return carry
                 }, {}),
             }
@@ -30,7 +30,7 @@ export default function bindStyle(
              */
             _bindTheme() {
                 const themeList = this.propData.themeList || []
-                if (!Array.isArray(themeList) || themeList.length == 0) {
+                if (!_.isArray(themeList) || themeList.length == 0) {
                     return
                 }
                 const themeNamePrefix =
@@ -55,7 +55,7 @@ export default function bindStyle(
              * @Desc 设置样式
              */
             _bindStyle() {
-                Object.entries(this.className).forEach(([key, className]) => {
+                _.entries(this.className).forEach(([key, className]) => {
                     window.IDM.setStyleToPageHead(
                         `${this.moduleObject.id} .${className}`,
                         propToStyle(list[key].call(this))

@@ -23,7 +23,7 @@ export const commonParam = () => {
     }
 }
 export const propToStyle = props => {
-    return Object.entries(props).reduce((carry, [key, value]) => {
+    return _.entries(props).reduce((carry, [key, value]) => {
         switch (key) {
             case 'width':
                 carry['width'] = value
@@ -64,7 +64,7 @@ export const propToStyle = props => {
         return carry
     }, {})
 }
-export const availableArray = value => Array.isArray(value) && value.length > 0
+export const availableArray = value => _.isArray(value) && value.length > 0
 export { default as dataUtil } from './dataUtil'
 export default {
     commonParam,

@@ -304,9 +304,9 @@ export default {
                 })
         },
         comboFilters(columns = []) {
-            return columns
-                .flatMap(n => (n.children ? this.comboFilters(n.children) : n))
-                .filter(n => n.filter)
+            return _.flatMap(columns, n =>
+                n.children ? this.comboFilters(n.children) : n
+            ).filter(n => n.filter)
         },
         customRender({ value, record, index, column, columnIndex }) {
             switch (column.type) {
@@ -414,7 +414,7 @@ export default {
                 case 'linkageDemand':
                     switch (data.messageKey) {
                         case 'filter':
-                            Object.entries(data.message).forEach(
+                            _.entries(data.message).forEach(
                                 ([key, value]) => {
                                     this.$set(this.filter, key, value)
                                 }
@@ -799,14 +799,13 @@ export default {
                 if (value == undefined || value == null) {
                     return []
                 }
-                return window.IDM.invokeCustomFunctions(
-                    column.handleActionsFunc,
-                    {
+                return _.flatten(
+                    window.IDM.invokeCustomFunctions(column.handleActionsFunc, {
                         value,
                         record,
                         column,
-                    }
-                ).flat()
+                    })
+                )
             }
             return value || []
         },
@@ -816,7 +815,7 @@ export default {
                 style.set('text-align', column.headerAlign)
             }
             return {
-                style: Object.fromEntries(style.entries()),
+                style: _.fromPairs([...style]),
             }
         },
         handleCustomCell(record, recordIndex, column) {
@@ -934,12 +933,20 @@ a,
 :deep(.ant-table) {
     border: 1px solid #e8e8e8;
     border-radius: 3px;
-    .ant-table-thead > tr > th {
-        color: #333;
-        font-size: 16px;
-        font-weight: bold;
-        padding: 10px 10px;
-        background-color: #f6fbfa;
+    .ant-table-header,
+    .ant-table-body {
+        
+    }
+    .ant-table-thead {
+        > tr {
+            > th {
+                color: #333;
+                font-size: 16px;
+                font-weight: bold;
+                padding: 10px 10px;
+                background-color: #f6fbfa;
+            }
+        }
     }
     .ant-table-tbody {
         > tr {
