@@ -10,6 +10,7 @@
                     :model="filter"
                     layout="inline"
                     class="filter-form"
+                    v-if="fields.length>0 || propData.searchExendBar"
                 >
                     <a-form-model-item
                         v-for="field in fields"
@@ -889,10 +890,6 @@ a,
 .filter-form {
     padding: 10px;
     background-color: #f5f5f5;
-    display: none;
-    &:has(> *) {
-        display: block;
-    }
     :deep(.ant-form-item-label) {
         color: #333333;
         font-size: 16px;
