@@ -1,0 +1,261 @@
+{
+    "classId": "idm.componet.advanced.IFormSearch",
+    "comName": "搜索表单",
+    "className": "IFormSearch",
+    "comType": "common",
+    "comLangue": "vue",
+    "compositeAttr": [
+        {
+            "type": "group",
+            "text": "基本设置",
+            "children": [
+                {
+                    "type": "input",
+                    "text": "内容索引",
+                    "layoutType": "inline",
+                    "bindKey": "fieldKey",
+                    "default": "contentQuery"
+                }
+            ]
+        },
+        {
+            "text": "检索",
+            "type": "group",
+            "children": [
+                {
+                    "text": "启用",
+                    "type": "switch",
+                    "bindKey": "submitEnable",
+                    "layoutType": "inline",
+                    "default": true
+                },
+                {
+                    "type": "actionSelect",
+                    "layoutType": "block",
+                    "text": "点击事件",
+                    "bindKey": "submitFunc",
+                    "desc": "点击检索时调用，接收参数为格式为{filter:筛选条件}",
+                    "multiple": true
+                },
+                {
+                    "type": "pageModuleSelect",
+                    "layoutType": "block",
+                    "text": "点击发送组件消息范围",
+                    "desc": "当点击的时候需要联动其他组件结果值的组件范围",
+                    "bindKey": "submitLinkageResultPageModule",
+                    "multiple": true
+                }
+            ]
+        },
+        {
+            "text": "重置",
+            "type": "group",
+            "children": [
+                {
+                    "text": "启用",
+                    "type": "switch",
+                    "bindKey": "resetEnable",
+                    "layoutType": "inline",
+                    "default": true
+                },
+                {
+                    "type": "actionSelect",
+                    "layoutType": "block",
+                    "text": "点击事件",
+                    "bindKey": "resetFunc",
+                    "desc": "点击重置时调用，接收参数为格式为{filter:筛选条件}",
+                    "multiple": true
+                },
+                {
+                    "type": "pageModuleSelect",
+                    "layoutType": "block",
+                    "text": "点击发送组件消息范围",
+                    "desc": "当点击的时候需要联动其他组件结果值的组件范围",
+                    "bindKey": "resetLinkageResultPageModule",
+                    "multiple": true
+                }
+            ]
+        },
+        {
+            "text": "导出",
+            "type": "group",
+            "children": [
+                {
+                    "text": "启用",
+                    "type": "switch",
+                    "bindKey": "exportEnable",
+                    "layoutType": "inline",
+                    "default": true
+                },
+                {
+                    "type": "actionSelect",
+                    "layoutType": "block",
+                    "text": "点击事件",
+                    "bindKey": "exportFunc",
+                    "desc": "点击导出时调用，接收参数为格式为{filter:筛选条件}",
+                    "multiple": true
+                },
+                {
+                    "type": "pageModuleSelect",
+                    "layoutType": "block",
+                    "text": "点击发送组件消息范围",
+                    "desc": "当点击的时候需要联动其他组件结果值的组件范围",
+                    "bindKey": "exportLinkageResultPageModule",
+                    "multiple": true
+                }
+            ]
+        },
+        {
+            "type": "group",
+            "text": "外层样式",
+            "desc": "点击？查看样式设置用法指南",
+            "helpUrl": "",
+            "children": [
+                {
+                    "type": "inlineGroup",
+                    "text": "宽高",
+                    "children": [
+                        {
+                            "type": "input",
+                            "layoutType": "block",
+                            "text": "宽",
+                            "desc": "填写auto则为自适应，或者使用px、%、vw等单位，比如100%、100px、100vw等等",
+                            "bindKey": "width",
+                            "width": "60px",
+                            "default": ""
+                        },
+                        {
+                            "type": "input",
+                            "layoutType": "block",
+                            "text": "高",
+                            "desc": "填写auto则为自适应，或者使用px、%、vh等单位，比如100%、100px、100vh等等",
+                            "bindKey": "height",
+                            "width": "60px",
+                            "default": ""
+                        }
+                    ]
+                },
+                {
+                    "type": "box",
+                    "layoutType": "block",
+                    "text": "内外边距",
+                    "bindKey": "ulbox"
+                },
+                {
+                    "type": "colorPicker",
+                    "layoutType": "inline",
+                    "text": "背景色",
+                    "bindKey": "bgColor",
+                    "placeholder": "请选择颜色",
+                    "default": {
+                        "hex": "",
+                        "hex8": ""
+                    }
+                },
+                {
+                    "type": "input",
+                    "layoutType": "inline",
+                    "text": "容器阴影",
+                    "bindKey": "boxShadow",
+                    "default": ""
+                },
+                {
+                    "type": "border",
+                    "layoutType": "block",
+                    "text": "边框",
+                    "bindKey": "boxborder"
+                }
+            ]
+        },
+        {
+            "type": "group",
+            "text": "数据变动联动组件",
+            "desc": "当数据有变动会联动这里选择的组件，把当前结果的对象传递给这些组件",
+            "children": [
+                {
+                    "type": "pageModuleSelect",
+                    "layoutType": "block",
+                    "text": "需求组件范围",
+                    "desc": "当前数据变动需要联动其他组件需求值（比如下拉框选项接口参数等）的组件范围",
+                    "bindKey": "linkageDemandPageModule",
+                    "multiple": true
+                },
+                {
+                    "type": "pageModuleSelect",
+                    "layoutType": "block",
+                    "text": "结果组件范围",
+                    "desc": "当前数据变动需要联动其他组件变更结果值的组件范围",
+                    "bindKey": "linkageResultPageModule",
+                    "multiple": true
+                }
+            ]
+        },
+        {
+            "type": "table",
+            "text": "主题设置",
+            "desc": "点击？查看主题设置用法指南",
+            "bindKey": "themeList",
+            "tabText": "主题[index]",
+            "default": [
+                {
+                    "key": "blue",
+                    "mainColor": {
+                        "hex": "#0073CA",
+                        "hex8": "#0073CAFF"
+                    }
+                },
+                {
+                    "key": "red",
+                    "mainColor": {
+                        "hex": "#E21A1A",
+                        "hex8": "#E21A1AFF"
+                    }
+                },
+                {
+                    "key": "green",
+                    "mainColor": {
+                        "hex": "#0EAF64",
+                        "hex8": "#0EAF64FF"
+                    }
+                }
+            ],
+            "children": [
+                {
+                    "type": "select",
+                    "layoutType": "inline",
+                    "text": "主题标识",
+                    "bindKey": "key",
+                    "desc": "用于设置主题的标识，此项需要搭配自定义开发切换主题的功能，例如：蓝色标识为blue，用户切换主题的时候存储到数据库中的标识为blue，则这里填写为blue",
+                    "default": "",
+                    "placeholder": "例如：blue",
+                    "ctrlAttrObject": {
+                        "mode": "combobox"
+                    },
+                    "dictionary": [
+                        {
+                            "label": "blue",
+                            "value": "blue"
+                        },
+                        {
+                            "label": "red",
+                            "value": "red"
+                        },
+                        {
+                            "label": "green",
+                            "value": "green"
+                        }
+                    ]
+                },
+                {
+                    "type": "colorPicker",
+                    "layoutType": "inline",
+                    "text": "主要颜色",
+                    "bindKey": "mainColor",
+                    "desc": "主题的主要颜色",
+                    "placeholder": "请选择颜色",
+                    "display": "@[key]"
+                }
+            ]
+        }
+    ]
+}
