@@ -10,7 +10,7 @@
                     :model="filter"
                     layout="inline"
                     class="filter-form"
-                    v-if="fields.length>0 || propData.searchExendBar"
+                    v-if="fields.length > 0 || propData.searchExendBar"
                 >
                     <a-form-model-item
                         v-for="field in fields"
@@ -59,6 +59,7 @@
                     :pagination="paginationConfig"
                     :rowKey="propData.rowKey"
                     :loading="loading"
+                    :bordered="propData.bordered"
                     @change="handleTableChange"
                     @expand="handleExpand"
                     :defaultExpandAllRows="env_develop_mode"
@@ -71,7 +72,7 @@
                         (_, index) => (index % 2 == 0 ? 'odd' : 'even')
                     "
                     :columns="columns"
-                    class="table-wrap"
+                    :class="className.table"
                 >
                     <template #expandIcon="{ record, expanded, expandable }">
                         <div>
@@ -120,7 +121,21 @@ export default {
             rowKey: 'id',
             expandedRow: true,
         }),
-        bindStyle(),
+        bindStyle({
+            wrap() {
+                return this.propData
+            },
+            table() {
+                return {
+                    width: this.propData.tableWidth,
+                    height: this.propData.tableHeight,
+                    ulbox: this.propData.tableUlbox,
+                    bgColor: this.propData.tableBgColor,
+                    boxShadow: this.propData.tableBoxShadow,
+                    boxborder: this.propData.tableBoxborder,
+                }
+            },
+        }),
     ],
     data() {
         return {
