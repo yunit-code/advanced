@@ -61,68 +61,6 @@
         },
         {
             "type": "group",
-            "text": "外层样式",
-            "desc": "点击？查看样式设置用法指南",
-            "helpUrl": "",
-            "children": [
-                {
-                    "type": "inlineGroup",
-                    "text": "宽高",
-                    "children": [
-                        {
-                            "type": "input",
-                            "layoutType": "block",
-                            "text": "宽",
-                            "desc": "填写auto则为自适应，或者使用px、%、vw等单位，比如100%、100px、100vw等等",
-                            "bindKey": "width",
-                            "width": "60px",
-                            "default": ""
-                        },
-                        {
-                            "type": "input",
-                            "layoutType": "block",
-                            "text": "高",
-                            "desc": "填写auto则为自适应，或者使用px、%、vh等单位，比如100%、100px、100vh等等",
-                            "bindKey": "height",
-                            "width": "60px",
-                            "default": ""
-                        }
-                    ]
-                },
-                {
-                    "type": "box",
-                    "layoutType": "block",
-                    "text": "内外边距",
-                    "bindKey": "ulbox"
-                },
-                {
-                    "type": "colorPicker",
-                    "layoutType": "inline",
-                    "text": "背景色",
-                    "bindKey": "bgColor",
-                    "placeholder": "请选择颜色",
-                    "default": {
-                        "hex": "",
-                        "hex8": ""
-                    }
-                },
-                {
-                    "type": "input",
-                    "layoutType": "inline",
-                    "text": "容器阴影",
-                    "bindKey": "boxShadow",
-                    "default": ""
-                },
-                {
-                    "type": "border",
-                    "layoutType": "block",
-                    "text": "边框",
-                    "bindKey": "boxborder"
-                }
-            ]
-        },
-        {
-            "type": "group",
             "text": "配置数据源",
             "desc": "设置列表请求数据源方式及其他信息",
             "children": [
@@ -1243,6 +1181,138 @@
                     "text": "发送消息key",
                     "bindKey": "linkageResultMessageKey",
                     "default": "filter"
+                }
+            ]
+        },
+        {
+            "type": "group",
+            "text": "外层样式",
+            "desc": "点击？查看样式设置用法指南",
+            "helpUrl": "",
+            "children": [
+                {
+                    "type": "inlineGroup",
+                    "text": "宽高",
+                    "children": [
+                        {
+                            "type": "input",
+                            "layoutType": "block",
+                            "text": "宽",
+                            "desc": "填写auto则为自适应，或者使用px、%、vw等单位，比如100%、100px、100vw等等",
+                            "bindKey": "width",
+                            "width": "60px",
+                            "default": ""
+                        },
+                        {
+                            "type": "input",
+                            "layoutType": "block",
+                            "text": "高",
+                            "desc": "填写auto则为自适应，或者使用px、%、vh等单位，比如100%、100px、100vh等等",
+                            "bindKey": "height",
+                            "width": "60px",
+                            "default": ""
+                        }
+                    ]
+                },
+                {
+                    "type": "box",
+                    "layoutType": "block",
+                    "text": "内外边距",
+                    "bindKey": "ulbox"
+                },
+                {
+                    "type": "colorPicker",
+                    "layoutType": "inline",
+                    "text": "背景色",
+                    "bindKey": "bgColor",
+                    "placeholder": "请选择颜色",
+                    "default": {
+                        "hex": "",
+                        "hex8": ""
+                    }
+                },
+                {
+                    "type": "input",
+                    "layoutType": "inline",
+                    "text": "容器阴影",
+                    "bindKey": "boxShadow",
+                    "default": ""
+                },
+                {
+                    "type": "border",
+                    "layoutType": "block",
+                    "text": "边框",
+                    "bindKey": "boxborder"
+                }
+            ]
+        },
+        {
+            "type": "group",
+            "text": "表格样式",
+            "desc": "点击？查看样式设置用法指南",
+            "helpUrl": "",
+            "children": [
+                {
+                    "type": "switch",
+                    "text": "展示边框",
+                    "desc": "是否展示边框",
+                    "bindKey": "bordered",
+                    "default": false,
+                    "layoutType": "inline"
+                },
+                {
+                    "type": "inlineGroup",
+                    "text": "宽高",
+                    "children": [
+                        {
+                            "type": "input",
+                            "layoutType": "block",
+                            "text": "宽",
+                            "desc": "填写auto则为自适应，或者使用px、%、vw等单位，比如100%、100px、100vw等等",
+                            "bindKey": "tableWidth",
+                            "width": "60px",
+                            "default": ""
+                        },
+                        {
+                            "type": "input",
+                            "layoutType": "block",
+                            "text": "高",
+                            "desc": "填写auto则为自适应，或者使用px、%、vh等单位，比如100%、100px、100vh等等",
+                            "bindKey": "tableHeight",
+                            "width": "60px",
+                            "default": ""
+                        }
+                    ]
+                },
+                {
+                    "type": "box",
+                    "layoutType": "block",
+                    "text": "内外边距",
+                    "bindKey": "tableUlbox"
+                },
+                {
+                    "type": "colorPicker",
+                    "layoutType": "inline",
+                    "text": "背景色",
+                    "bindKey": "tableBgColor",
+                    "placeholder": "请选择颜色",
+                    "default": {
+                        "hex": "",
+                        "hex8": ""
+                    }
+                },
+                {
+                    "type": "input",
+                    "layoutType": "inline",
+                    "text": "容器阴影",
+                    "bindKey": "tableBoxShadow",
+                    "default": ""
+                },
+                {
+                    "type": "border",
+                    "layoutType": "block",
+                    "text": "边框",
+                    "bindKey": "tableBoxborder"
                 }
             ]
         }
