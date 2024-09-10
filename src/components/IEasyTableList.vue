@@ -17,14 +17,7 @@
       idm-ctrl-id：组件的id，这个必须不能为空
       idm-container-index  组件的内部容器索引，不重复唯一且不变，必选
     -->
-        <div
-            class="console-easy-tablelist-item"
-            :style="{
-                '--cellFontSize': `${propData.font?.fontSize || 14}${
-                    propData.font?.fontSizeUnit || 'px'
-                }`,
-            }"
-        >
+        <div class="console-easy-tablelist-item">
             <a-config-provider :locale="locale">
                 <a-table
                     :columns="columns"
@@ -51,6 +44,12 @@
                     :rowKey="propData.rowKey || ((r, i) => i.toString())"
                     :loading="loading"
                     @change="handleTableChange"
+                    :style="{
+                        '--cellFontSize': `${propData.font?.fontSize || 14}${
+                            propData.font?.fontSizeUnit || 'px'
+                        }`,
+                        '--bodyHeight': `${propData.scrollY}px`,
+                    }"
                 >
                     <div
                         v-for="(item, cindex) in rowCustomRenderList"
@@ -1554,6 +1553,19 @@ export default {
         .ant-table-thead > tr > th,
         .ant-table-tbody > tr > td {
             font-size: var(--cellFontSize);
+        }
+        .ant-table-scroll {
+            .ant-table-body {
+                height: var(--bodyHeight);
+                overflow-y: auto !important;
+            }
+        }
+        &.ant-table-empty {
+            .ant-table-scroll {
+                .ant-table-body {
+                    height: auto;
+                }
+            }
         }
     }
 }

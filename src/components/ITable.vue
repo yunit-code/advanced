@@ -67,14 +67,14 @@
                     :expandIconAsCell="false"
                     :expandIconColumnIndex="propData.expandIconColumnIndex || 1"
                     :indentSize="0"
-                    :scroll="{ x: '100%' }"
+                    :scroll="{ y: propData.tableMaxHeight, x: '100%' }"
                     :rowClassName="
                         (_, index) => (index % 2 == 0 ? 'odd' : 'even')
                     "
                     :columns="columns"
                     :class="className.table"
                     :style="{
-                        '--height': propData.tableMaxHeight,
+                        '--bodyHeight': propData.tableMaxHeight,
                     }"
                 >
                     <template #expandIcon="{ record, expanded, expandable }">
@@ -952,7 +952,7 @@ a,
     }
     .ant-table-scroll {
         .ant-table-body {
-            height: var(--height);
+            height: var(--bodyHeight);
             overflow-y: auto !important;
         }
     }
