@@ -224,52 +224,6 @@
 
 <script>
 import locale from 'ant-design-vue/lib/locale-provider/zh_CN'
-// const columns = [
-//   {
-//     title: "name",
-//     dataIndex: "name",
-//     key: "name",
-//   },
-//   {
-//     title: "Age",
-//     dataIndex: "age",
-//     key: "age",
-//   },
-//   {
-//     title: "Address",
-//     dataIndex: "address",
-//     key: "address",
-//   },
-//   {
-//     title: "Tags",
-//     key: "tags",
-//     dataIndex: "tags",
-//   },
-//   {
-//     // title: 'Action11',
-//     key: "action",
-//     dataIndex: "action",
-//     slots: { title: "customAction" },
-//     scopedSlots: { customRender: "action" },
-//   },
-// ];
-
-// const data = [
-//   {
-//     key: "1",
-//     name: "John Brown",
-//     age: 32,
-//     address: "New York No. 1 Lake Park",
-//     tags: ["nice", "developer"],
-//   },
-//   {
-//     key: "2",
-//     name: "Jim Green",
-//     age: 42,
-//     address: "London No. 1 Lake Park",
-//     tags: ["loser"],
-//   },
-// ];
 export default {
     name: 'IEasyTableList',
     data() {
@@ -1555,6 +1509,13 @@ export default {
             font-size: var(--cellFontSize);
         }
         .ant-table-scroll {
+            .ant-table-header {
+                padding-bottom: 0;
+                margin-bottom: 0;
+                &::-webkit-scrollbar {
+                    display: none;
+                }
+            }
             .ant-table-body {
                 height: var(--bodyHeight);
                 overflow-y: auto !important;
