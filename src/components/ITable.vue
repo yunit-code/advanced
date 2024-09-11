@@ -73,6 +73,9 @@
                     "
                     :columns="columns"
                     :class="className.table"
+                    :style="{
+                        '--bodyHeight': propData.tableMaxHeight,
+                    }"
                 >
                     <template #expandIcon="{ record, expanded, expandable }">
                         <div>
@@ -947,8 +950,11 @@ a,
     .ant-table-body {
         scrollbar-gutter: stable;
     }
-    .ant-table-body {
-        overflow-y: auto !important;
+    .ant-table-scroll {
+        .ant-table-body {
+            height: var(--bodyHeight);
+            overflow-y: auto !important;
+        }
     }
     .ant-table-thead {
         > tr {
@@ -984,6 +990,13 @@ a,
         > tr:hover:not(.ant-table-expanded-row):not(.ant-table-row-selected)
         > td {
         background: none !important;
+    }
+    &.ant-table-empty {
+        .ant-table-scroll {
+            .ant-table-body {
+                height: auto;
+            }
+        }
     }
 }
 </style>

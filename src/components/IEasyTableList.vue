@@ -17,14 +17,7 @@
       idm-ctrl-id：组件的id，这个必须不能为空
       idm-container-index  组件的内部容器索引，不重复唯一且不变，必选
     -->
-        <div
-            class="console-easy-tablelist-item"
-            :style="{
-                '--cellFontSize': `${propData.font?.fontSize || 14}${
-                    propData.font?.fontSizeUnit || 'px'
-                }`,
-            }"
-        >
+        <div class="console-easy-tablelist-item">
             <a-config-provider :locale="locale">
                 <a-table
                     :columns="columns"
@@ -34,15 +27,7 @@
                     :showHeader="propData.showHeader === false ? false : true"
                     :bordered="propData.showBordered"
                     :customRow="customRow"
-                    :scroll="
-                        propData.scrollX && propData.scrollY
-                            ? { x: propData.scrollX, y: propData.scrollY }
-                            : propData.scrollX
-                            ? { x: propData.scrollX }
-                            : propData.scrollY
-                            ? { y: propData.scrollY }
-                            : {}
-                    "
+                    :scroll="scrollOption"
                     :rowSelection="rowSelection"
                     :pagination="pagination"
                     :locale="localeEmpty"
@@ -51,6 +36,12 @@
                     :rowKey="propData.rowKey || ((r, i) => i.toString())"
                     :loading="loading"
                     @change="handleTableChange"
+                    :style="{
+                        '--cellFontSize': `${propData.font?.fontSize || 14}${
+                            propData.font?.fontSizeUnit || 'px'
+                        }`,
+                        '--bodyHeight': propData.scrollY,
+                    }"
                 >
                     <div
                         v-for="(item, cindex) in rowCustomRenderList"
@@ -210,13 +201,6 @@
                             "
                         ></div>
                     </div>
-                    <!-- <a slot="action" slot-scope="text">{{ text }}1111</a>
-          <div
-            slot="customAction"
-            v-html="`<a href='http://www.baidu.com'>123434343</a>`"
-          >
-            Name11
-          </div> -->
                 </a-table>
             </a-config-provider>
         </div>
@@ -225,52 +209,6 @@
 
 <script>
 import locale from 'ant-design-vue/lib/locale-provider/zh_CN'
-// const columns = [
-//   {
-//     title: "name",
-//     dataIndex: "name",
-//     key: "name",
-//   },
-//   {
-//     title: "Age",
-//     dataIndex: "age",
-//     key: "age",
-//   },
-//   {
-//     title: "Address",
-//     dataIndex: "address",
-//     key: "address",
-//   },
-//   {
-//     title: "Tags",
-//     key: "tags",
-//     dataIndex: "tags",
-//   },
-//   {
-//     // title: 'Action11',
-//     key: "action",
-//     dataIndex: "action",
-//     slots: { title: "customAction" },
-//     scopedSlots: { customRender: "action" },
-//   },
-// ];
-
-// const data = [
-//   {
-//     key: "1",
-//     name: "John Brown",
-//     age: 32,
-//     address: "New York No. 1 Lake Park",
-//     tags: ["nice", "developer"],
-//   },
-//   {
-//     key: "2",
-//     name: "Jim Green",
-//     age: 42,
-//     address: "London No. 1 Lake Park",
-//     tags: ["loser"],
-//   },
-// ];
 export default {
     name: 'IEasyTableList',
     data() {
@@ -284,6 +222,7 @@ export default {
                 smallPagination: true,
                 showSizeChanger: true,
                 showTotalFormat: '@[range0]-@[range1] of @[total] items',
+                scrollX: '100%',
             },
             pageSize: 10,
             current: 1,
@@ -319,6 +258,13 @@ export default {
                     }
                     if (item.width) {
                         columnObj.width = item.width
+                    }
+                    if (item.ellipsis && item.width) {
+                        columnObj.customCell = () => ({
+                            style: {
+                                maxWidth: item.width,
+                            },
+                        })
                     }
                     //标题自定义
                     var titleCustomRender = item.titleCustomRender
@@ -624,6 +570,18 @@ export default {
         localeEmpty() {
             return { emptyText: this.propData.noDataTip || '暂无数据' }
         },
+        scrollOption() {
+            if (this.propData.scrollX && this.propData.scrollY) {
+                return { x: this.propData.scrollX, y: this.propData.scrollY }
+            }
+            if (this.propData.scrollX) {
+                return { x: this.propData.scrollX }
+            }
+            if (this.propData.scrollY) {
+                return { y: this.propData.scrollY }
+            }
+            return {}
+        },
     },
     props: {},
     created() {
@@ -745,7 +703,6 @@ export default {
                     IDM.message.error('保存失败')
                 })
         },
-
         /**
          * 获取扩展行的结果
          */
@@ -1554,6 +1511,31 @@ export default {
         .ant-table-thead > tr > th,
         .ant-table-tbody > tr > td {
             font-size: var(--cellFontSize);
+        }
+        .ant-table-scroll {
+            overflow: hidden;
+        }
+        .ant-table-header,
+        .ant-table-body {
+            scrollbar-gutter: stable;
+        }
+        .ant-table-header {
+            padding-bottom: 0;
+            margin-bottom: 0;
+            &::-webkit-scrollbar {
+                display: none;
+            }
+        }
+        .ant-table-body {
+            height: var(--bodyHeight);
+            overflow-y: auto !important;
+        }
+        &.ant-table-empty {
+            .ant-table-scroll {
+                .ant-table-body {
+                    height: auto;
+                }
+            }
         }
     }
 }
