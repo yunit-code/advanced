@@ -27,15 +27,7 @@
                     :showHeader="propData.showHeader === false ? false : true"
                     :bordered="propData.showBordered"
                     :customRow="customRow"
-                    :scroll="
-                        propData.scrollX && propData.scrollY
-                            ? { x: propData.scrollX, y: propData.scrollY }
-                            : propData.scrollX
-                            ? { x: propData.scrollX }
-                            : propData.scrollY
-                            ? { y: propData.scrollY }
-                            : {}
-                    "
+                    :scroll="scrollOption"
                     :rowSelection="rowSelection"
                     :pagination="pagination"
                     :locale="localeEmpty"
@@ -48,7 +40,7 @@
                         '--cellFontSize': `${propData.font?.fontSize || 14}${
                             propData.font?.fontSizeUnit || 'px'
                         }`,
-                        '--bodyHeight': `${propData.scrollY}px`,
+                        '--bodyHeight': propData.scrollY,
                     }"
                 >
                     <div
@@ -209,13 +201,6 @@
                             "
                         ></div>
                     </div>
-                    <!-- <a slot="action" slot-scope="text">{{ text }}1111</a>
-          <div
-            slot="customAction"
-            v-html="`<a href='http://www.baidu.com'>123434343</a>`"
-          >
-            Name11
-          </div> -->
                 </a-table>
             </a-config-provider>
         </div>
@@ -237,6 +222,7 @@ export default {
                 smallPagination: true,
                 showSizeChanger: true,
                 showTotalFormat: '@[range0]-@[range1] of @[total] items',
+                scrollX: '100%',
             },
             pageSize: 10,
             current: 1,
@@ -272,6 +258,13 @@ export default {
                     }
                     if (item.width) {
                         columnObj.width = item.width
+                    }
+                    if (item.ellipsis && item.width) {
+                        columnObj.customCell = () => ({
+                            style: {
+                                maxWidth: item.width,
+                            },
+                        })
                     }
                     //标题自定义
                     var titleCustomRender = item.titleCustomRender
@@ -577,6 +570,18 @@ export default {
         localeEmpty() {
             return { emptyText: this.propData.noDataTip || '暂无数据' }
         },
+        scrollOption() {
+            if (this.propData.scrollX && this.propData.scrollY) {
+                return { x: this.propData.scrollX, y: this.propData.scrollY }
+            }
+            if (this.propData.scrollX) {
+                return { x: this.propData.scrollX }
+            }
+            if (this.propData.scrollY) {
+                return { y: this.propData.scrollY }
+            }
+            return {}
+        },
     },
     props: {},
     created() {
@@ -698,7 +703,6 @@ export default {
                     IDM.message.error('保存失败')
                 })
         },
-
         /**
          * 获取扩展行的结果
          */
@@ -1509,17 +1513,22 @@ export default {
             font-size: var(--cellFontSize);
         }
         .ant-table-scroll {
-            .ant-table-header {
-                padding-bottom: 0;
-                margin-bottom: 0;
-                &::-webkit-scrollbar {
-                    display: none;
-                }
+            overflow: hidden;
+        }
+        .ant-table-header,
+        .ant-table-body {
+            scrollbar-gutter: stable;
+        }
+        .ant-table-header {
+            padding-bottom: 0;
+            margin-bottom: 0;
+            &::-webkit-scrollbar {
+                display: none;
             }
-            .ant-table-body {
-                height: var(--bodyHeight);
-                overflow-y: auto !important;
-            }
+        }
+        .ant-table-body {
+            height: var(--bodyHeight);
+            overflow-y: auto !important;
         }
         &.ant-table-empty {
             .ant-table-scroll {

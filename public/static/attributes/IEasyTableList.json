@@ -92,17 +92,17 @@
                     "default": false
                 },
                 {
-                    "type": "inputNumber",
+                    "type": "input",
                     "layoutType": "inline",
                     "text": "X最大宽",
-                    "desc": "用于指定滚动区域的宽，为0则不设置",
+                    "desc": "用于指定滚动区域的宽，为空则不设置",
                     "bindKey": "scrollX"
                 },
                 {
-                    "type": "inputNumber",
+                    "type": "input",
                     "layoutType": "inline",
                     "text": "Y最大高",
-                    "desc": "用于指定滚动区域的高，为0则不设置",
+                    "desc": "用于指定滚动区域的高，为空则不设置",
                     "bindKey": "scrollY"
                 },
                 {

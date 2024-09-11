@@ -7,8 +7,13 @@
 ## 包名
 advanced
 ## 版本
-1.0.0
-## 组件列表
-1. 表格列表（IEasyTableList）—idm.componet.advanced.ieasytablelist
-2. 步骤条（ISteps）—idm.componet.advanced.isteps
-3. 上传控件（IUpload）—idm.componet.advanced.iupload
+- 2.2.1
+    - 时间 2024-09-11
+    - 组件
+        1. IEasyTableList
+            - 修改滚动条展示相关
+- 1.0.0
+    - 组件
+        1. 表格列表（IEasyTableList）—idm.componet.advanced.ieasytablelist
+        2. 步骤条（ISteps）—idm.componet.advanced.isteps
+        3. 上传控件（IUpload）—idm.componet.advanced.iupload
