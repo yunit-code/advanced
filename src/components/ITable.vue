@@ -60,6 +60,7 @@
                     :rowKey="propData.rowKey"
                     :loading="loading"
                     :bordered="propData.bordered"
+                    :expandedRowKeys.sync="expandedRowKeys"
                     @change="handleTableChange"
                     @expand="handleExpand"
                     :defaultExpandAllRows="env_develop_mode"
@@ -180,6 +181,7 @@ export default {
             optionData: {},
             env_develop_mode: window.IDM.env_develop_mode,
             contextDataset: [],
+            expandedRowKeys: [],
         }
     },
     computed: {
@@ -527,6 +529,7 @@ export default {
             ) {
                 return
             }
+            this.expandedRowKeys = []
             //把已选择的清空
             this.selectedRowKeys = []
             let params = {
@@ -789,13 +792,20 @@ export default {
             }
             if (expanded) {
                 nextTick(() => {
-                    this.moduleObject.dynamicRenderModuleGroupInitData?.call(
-                        this,
+                    this.moduleObject.dynamicRenderModuleGroupInitData(
                         this.moduleObject.packageid,
                         `expand-${record[this.propData.rowKey]}`,
                         {
                             record,
                         },
+                        false
+                    )
+                })
+            } else {
+                nextTick(() => {
+                    this.moduleObject.removeDynamicRenderModuleGroup(
+                        this.moduleObject.packageid,
+                        `expand-${record[this.propData.rowKey]}`,
                         false
                     )
                 })
