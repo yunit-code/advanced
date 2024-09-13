@@ -92,8 +92,8 @@
                         </div>
                     </template>
                     <template
-                        v-if="propData.expandedRow"
                         #expandedRowRender="record"
+                        v-if="propData.expandedRow"
                     >
                         <div
                             class="drag_container"
@@ -102,7 +102,13 @@
                             :idm-container-index="`expand-${
                                 record[propData.rowKey]
                             }`"
-                        ></div>
+                        >
+                            <slot
+                                :name="`${moduleObject.id}expand-${
+                                    record[propData.rowKey]
+                                }`"
+                            ></slot>
+                        </div>
                     </template>
                 </a-table>
             </div>
@@ -791,7 +797,7 @@ export default {
                 return
             }
             if (expanded) {
-                nextTick(() => {
+                setTimeout(() => {
                     this.moduleObject.dynamicRenderModuleGroupInitData(
                         this.moduleObject.packageid,
                         `expand-${record[this.propData.rowKey]}`,
@@ -800,15 +806,13 @@ export default {
                         },
                         false
                     )
-                })
+                }, 0)
             } else {
-                nextTick(() => {
-                    this.moduleObject.removeDynamicRenderModuleGroup(
-                        this.moduleObject.packageid,
-                        `expand-${record[this.propData.rowKey]}`,
-                        false
-                    )
-                })
+                this.moduleObject.removeDynamicRenderModuleGroup(
+                    this.moduleObject.packageid,
+                    `expand-${record[this.propData.rowKey]}`,
+                    false
+                )
             }
         },
         handleMenuClick(key, value, record, column) {
