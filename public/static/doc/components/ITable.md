@@ -55,7 +55,7 @@ type columnType = {
 -   select 选项
     ```typescript
     {
-        dataSourceType?:dataSourceType|'static' // 数据来源，默认'static'
+        dataSourceType?:dataSourceType|'staticData' // 数据来源，默认'static'
         selectMode?:'default'|'multiple' // 单选|多选，默认'default'
         staticData?: {
             value:string // 文本值
