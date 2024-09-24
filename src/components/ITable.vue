@@ -22,7 +22,7 @@
                             v-if="field.type == 'select'"
                             v-model="filter[field._filterKey]"
                             :mode="field.selectMode"
-                            :allowClear="true"
+                            :allowClear="field.allowClear"
                             style="min-width: 100px"
                         >
                             <a-select-option
@@ -36,14 +36,20 @@
                             <a-date-picker
                                 valueFormat="YYYY-MM-DD"
                                 v-model="filter[`${field._filterKey}Start`]"
+                                :allowClear="field.allowClear || false"
                             />
                             ~
                             <a-date-picker
                                 valueFormat="YYYY-MM-DD"
                                 v-model="filter[`${field._filterKey}End`]"
+                                :allowClear="field.allowClear || false"
                             />
                         </template>
-                        <a-input v-else v-model="filter[field._filterKey]" />
+                        <a-input
+                            v-else
+                            v-model="filter[field._filterKey]"
+                            :allowClear="field.allowClear"
+                        />
                     </a-form-model-item>
                     <a-form-model-item v-if="propData.searchExendBar">
                         <div
@@ -281,20 +287,16 @@ export default {
         },
         filter: {
             handler(filter) {
-                window.IDM.broadcast?.send({
-                    type: 'linkageDemand',
-                    messageKey:
-                        this.propData.linkageDemandMessageKey || 'filter',
-                    rangeModule: this.propData.linkageDemandPageModule,
-                    message: filter,
-                })
-                window.IDM.broadcast?.send({
-                    type: 'linkageResult',
-                    messageKey:
-                        this.propData.linkageResultMessageKey || 'filter',
-                    rangeModule: this.propData.linkageResultPageModule,
-                    message: filter,
-                })
+                this.propData.linkageStart
+                    ?.filter(n => n.actionType == 'filterChange')
+                    .forEach(n => {
+                        window.IDM.broadcast?.send({
+                            type: n.type == 'custom' ? n.customType : n.type,
+                            messageKey: this.propData.ctrlId,
+                            rangeModule: n.module?.map(item => item.moduleId),
+                            message: filter,
+                        })
+                    })
             },
             deep: true,
         },
@@ -427,7 +429,7 @@ export default {
         },
         setContextValue(object) {
             console.debug('iTable setContextValue', object)
-            this.contextDataset.push(object)
+            this.contextDataset.splice(0, 0, object)
             this.loadColumnsOptions()
                 .then(() => this.loadOptionData())
                 .then(() => this.initData())
@@ -481,6 +483,9 @@ export default {
                             break
                         case 'linkageHideModule':
                             this.hideThisModuleHandle()
+                            break
+                        case 'linkageReloadConfig':
+                            this.loadColumnsOptions()
                             break
                         case 'customFun':
                             linkageObject.resFunction?.length &&

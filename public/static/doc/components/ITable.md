@@ -39,6 +39,7 @@ type columnType = {
     fixed?: 'left' | 'right' | false // 固定列，默认false
     ellipsis?: boolean // 内容是否超出省略，默认false
     hidden?: boolean // 是否在表格中隐藏列，筛选不受影响，默认false
+    allowClear?: boolean // 是否允许清空，默认false
     children?: columnType[] // 子列集合，需要表头分组时配置
 }
 ```
@@ -69,13 +70,15 @@ type columnType = {
     -   字段名+Start 表示开始日期
     -   字段名+End 表示结束日期
 -   href 链接
+
     ```typescript
     {
         href?: string // 链接模板，支持表达式，为空时将使用javascrip:void(0)
         target?: '_blank'|'_self' // 打开目标，默认'_blank'
     }
     ```
-    链接模板和链接生成函数都为空时将使用javascrip:void(0)
+
+    链接模板和链接生成函数都为空时将使用 javascrip:void(0)
 
 -   actions 按钮组
     ```typescript
