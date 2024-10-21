@@ -1152,10 +1152,6 @@
                             "value": "linkageDemand"
                         },
                         {
-                            "label": "重新加载配置",
-                            "value": "linkageReloadConfig"
-                        },
-                        {
                             "label": "自定义",
                             "value": "custom"
                         }
@@ -1188,6 +1184,10 @@
                         {
                             "label": "无",
                             "value": "none"
+                        },
+                        {
+                            "label": "重新加载配置",
+                            "value": "linkageReloadConfig"
                         },
                         {
                             "label": "重新加载数据源",
