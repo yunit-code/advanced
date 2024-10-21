@@ -277,11 +277,11 @@ export default {
     watch: {
         'propData.customParams': {
             handler(customParams) {
-                this.filter = window.IDM.invokeCustomFunctions(
-                    customParams
-                ).reduce((carry, current) => {
-                    return Object.assign({}, carry, current)
-                }, {})
+                this.filter = window.IDM.invokeCustomFunctions
+                    .call(this, customParams)
+                    .reduce((carry, current) => {
+                        return Object.assign({}, carry, current)
+                    }, {})
             },
             immediate: true,
         },
@@ -489,13 +489,14 @@ export default {
                             break
                         case 'customFun':
                             linkageObject.resFunction?.length &&
-                                IDM.invokeCustomFunctions.apply(this, [
+                                IDM.invokeCustomFunctions.call(
+                                    this,
                                     linkageObject.resFunction,
                                     {
                                         moduleObject: this.moduleObject,
                                         messageObject: data,
-                                    },
-                                ])
+                                    }
+                                )
                             break
                     }
                 })
@@ -677,11 +678,11 @@ export default {
                         staticData: this.propData.columns,
                     },
                     {
-                        params: window.IDM.invokeCustomFunctions(
-                            this.propData.columnCustomParams
-                        ).reduce((carry, current) => {
-                            return Object.assign({}, carry, current)
-                        }, {}),
+                        params: window.IDM.invokeCustomFunctions
+                            .call(this, this.propData.columnCustomParams)
+                            .reduce((carry, current) => {
+                                return Object.assign({}, carry, current)
+                            }, {}),
                     }
                 )
                 .then(data => {
@@ -822,12 +823,16 @@ export default {
         },
         handleMenuClick(key, value, record, column) {
             if (availableArray(column.hanldeInterfaceFunc)) {
-                window.IDM.invokeCustomFunctions(column.hanldeInterfaceFunc, {
-                    key,
-                    value,
-                    record,
-                    column,
-                })
+                window.IDM.invokeCustomFunctions.call(
+                    this,
+                    column.hanldeInterfaceFunc,
+                    {
+                        key,
+                        value,
+                        record,
+                        column,
+                    }
+                )
             }
         },
         getActions(value, record, column) {
@@ -836,11 +841,15 @@ export default {
                     return []
                 }
                 return _.flatten(
-                    window.IDM.invokeCustomFunctions(column.handleActionsFunc, {
-                        value,
-                        record,
-                        column,
-                    })
+                    window.IDM.invokeCustomFunctions.call(
+                        this,
+                        column.handleActionsFunc,
+                        {
+                            value,
+                            record,
+                            column,
+                        }
+                    )
                 )
             }
             return value || []
@@ -864,34 +873,42 @@ export default {
                 on: {
                     click: event => {
                         if (availableArray(column.clickFunc)) {
-                            window.IDM.invokeCustomFunctions(column.clickFunc, {
-                                record,
-                                recordIndex,
-                                column,
-                                moduleObject: this.moduleObject,
-                                event,
-                            })
+                            window.IDM.invokeCustomFunctions.call(
+                                this,
+                                column.clickFunc,
+                                {
+                                    record,
+                                    recordIndex,
+                                    column,
+                                    moduleObject: this.moduleObject,
+                                    event,
+                                }
+                            )
                         }
                     },
                 },
             }
         },
         handleHtmlRender(value, record, column, columnIndex) {
-            return window.IDM.invokeCustomFunctions(column.htmlFunction, {
-                value,
-                record,
-                column,
-                columnIndex,
-            }).join()
+            return window.IDM.invokeCustomFunctions
+                .call(this, column.htmlFunction, {
+                    value,
+                    record,
+                    column,
+                    columnIndex,
+                })
+                .join()
         },
         getLink(value, record, column) {
             if (availableArray(column.hrefFunc)) {
-                return window.IDM.invokeCustomFunctions(column.hrefFunc, {
-                    moduleObject: this.moduleObject,
-                    record,
-                    value,
-                    column,
-                }).join()
+                return window.IDM.invokeCustomFunctions
+                    .call(this, column.hrefFunc, {
+                        moduleObject: this.moduleObject,
+                        record,
+                        value,
+                        column,
+                    })
+                    .join()
             }
             if (column.href) {
                 return this.urlGetWebPath(
