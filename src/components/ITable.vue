@@ -37,13 +37,40 @@
                                 valueFormat="YYYY-MM-DD"
                                 v-model="filter[`${field._filterKey}Start`]"
                                 :allowClear="field.allowClear || false"
+                                :disabledDate="
+                                    v =>
+                                        disabledDate(
+                                            v,
+                                            filter[`${field._filterKey}End`],
+                                            'after'
+                                        )
+                                "
                             />
                             ~
                             <a-date-picker
                                 valueFormat="YYYY-MM-DD"
                                 v-model="filter[`${field._filterKey}End`]"
                                 :allowClear="field.allowClear || false"
+                                :disabledDate="
+                                    v =>
+                                        disabledDate(
+                                            v,
+                                            filter[`${field._filterKey}Start`],
+                                            'before'
+                                        )
+                                "
                             />
+                        </template>
+                        <template v-else-if="field.type == 'dateRange'">
+                            <a-range-picker
+                                :value="getDates(field._filterKey)"
+                                @change="
+                                    dates => setDates(field._filterKey, dates)
+                                "
+                                :allowClear="field.allowClear || false"
+                                valueFormat="YYYY-MM-DD"
+                            >
+                            </a-range-picker>
                         </template>
                         <a-input
                             v-else
@@ -923,6 +950,22 @@ export default {
                 )
             }
             return ''
+        },
+        getDates(key) {
+            return [this.filter[`${key}Start`], this.filter[`${key}End`]]
+        },
+        setDates(key, dates) {
+            this.$set(this.filter, `${key}Start`, dates[0])
+            this.$set(this.filter, `${key}End`, dates[1])
+        },
+        disabledDate(source, target, type) {
+            if (!target) return false
+            if (type == 'after') {
+                return source.isAfter(target)
+            }
+            if (type == 'before') {
+                return source.isBefore(target)
+            }
         },
     },
 }
