@@ -54,7 +54,14 @@
                     "type": "switch",
                     "text": "启用分页",
                     "bindKey": "openPagination",
-                    "default": true,
+                    "default": false,
+                    "layoutType": "inline"
+                },
+                {
+                    "type": "switch",
+                    "text": "启用选择",
+                    "bindKey": "selection",
+                    "default": false,
                     "layoutType": "inline"
                 }
             ]
@@ -346,6 +353,10 @@
                                     "value": "select"
                                 },
                                 {
+                                    "label": "级联",
+                                    "value": "cascader"
+                                },
+                                {
                                     "label": "日期",
                                     "value": "date"
                                 },
@@ -395,7 +406,7 @@
                         },
                         {
                             "type": "group",
-                            "display": "@[type=='select']",
+                            "display": "@[type=='select'] || @[type=='cascader']",
                             "text": "选项设置",
                             "children": [
                                 {
@@ -1078,6 +1089,10 @@
                         {
                             "label": "筛选项变化",
                             "value": "filterChange"
+                        },
+                        {
+                            "label": "选择项变化",
+                            "value": "selectChange"
                         }
                     ]
                 },

@@ -32,6 +32,14 @@
                                 >{{ item.value }}</a-select-option
                             >
                         </a-select>
+                        <a-cascader
+                            v-else-if="field.type == 'cascader'"
+                            v-model="filter[field._filterKey]"
+                            :options="optionData[field.value]"
+                            :allowClear="field.allowClear"
+                            style="min-width: 100px"
+                        >
+                        </a-cascader>
                         <template v-else-if="field.type == 'date'">
                             <a-date-picker
                                 valueFormat="YYYY-MM-DD"
@@ -100,6 +108,7 @@
                     :expandRowByClick="!env_develop_mode"
                     :expandIconAsCell="false"
                     :expandIconColumnIndex="propData.expandIconColumnIndex || 1"
+                    :rowSelection="selectionConfig"
                     :indentSize="0"
                     :scroll="{ y: propData.tableMaxHeight, x: '100%' }"
                     :rowClassName="
@@ -221,6 +230,7 @@ export default {
             env_develop_mode: window.IDM.env_develop_mode,
             contextDataset: [],
             expandedRowKeys: [],
+            selectedRowKeys: [],
         }
     },
     computed: {
@@ -295,6 +305,15 @@ export default {
 
             return paginationConfig
         },
+        selectionConfig() {
+            if (this.propData.selection == true) {
+                return {
+                    selectedRowKeys: this.selectedRowKeys,
+                    onChange: v => (this.selectedRowKeys = v),
+                }
+            }
+            return null
+        },
     },
     mounted() {
         this.loadColumnsOptions()
@@ -326,6 +345,20 @@ export default {
                     })
             },
             deep: true,
+        },
+        selectedRowKeys: {
+            handler(selectedRowKeys) {
+                this.propData.linkageStart
+                    ?.filter(n => n.actionType == 'selectChange')
+                    .forEach(n => {
+                        window.IDM.broadcast?.send({
+                            type: n.type == 'custom' ? n.customType : n.type,
+                            messageKey: this.propData.ctrlId,
+                            rangeModule: n.module?.map(item => item.moduleId),
+                            message: selectedRowKeys,
+                        })
+                    })
+            },
         },
     },
     methods: {
@@ -766,6 +799,34 @@ export default {
                                     )
                                 }
                                 return
+                            }
+                        })
+                }
+                if (column.type == 'cascader') {
+                    dataUtil
+                        .fetchData({
+                            dataSourceType: column.dataSourceType,
+                            dataSource: column.dataSource,
+                            customInterface: {
+                                url: column.customInterfaceUrl,
+                                requestParamFun: column.requestParamFun,
+                                requestContentType: column.requestContentType,
+                                requestType: column.requestType,
+                                responseDataFun: column.responseDataFun,
+                                requestErrorFun: column.requestErrorFun,
+                            },
+                            customFunction: column.customFunction,
+                            staticData: column.staticData,
+                        })
+                        .then(data => {
+                            this.$set(this.optionData, column.value, data)
+                            const selectedItem = data.find(m => m.selected)
+                            if (selectedItem) {
+                                this.$set(
+                                    this.filter,
+                                    filterKey,
+                                    selectedItem.key
+                                )
                             }
                         })
                 }

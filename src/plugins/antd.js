@@ -12,6 +12,7 @@ import 'ant-design-vue/lib/modal/style/css'
 import 'ant-design-vue/lib/steps/style/css'
 import 'ant-design-vue/lib/upload/style/css'
 import 'ant-design-vue/lib/select/style/css'
+import 'ant-design-vue/lib/cascader/style/css'
 import 'ant-design-vue/lib/input-number/style/css'
 import 'ant-design-vue/lib/switch/style/css'
 import 'ant-design-vue/lib/form/style/css'
@@ -34,6 +35,7 @@ import {
     Input,
     Steps,
     Select,
+    Cascader,
     InputNumber,
     Switch,
     Upload,
@@ -60,6 +62,7 @@ Vue.use(Steps)
 Vue.use(Upload)
 Vue.use(ConfigProvider)
 Vue.use(Select)
+Vue.use(Cascader)
 Vue.use(InputNumber)
 Vue.use(Switch)
 Vue.use(FormModel)
