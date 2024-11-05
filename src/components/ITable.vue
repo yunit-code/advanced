@@ -23,6 +23,7 @@
                             v-model="filter[field._filterKey]"
                             :mode="field.selectMode"
                             :allowClear="field.allowClear"
+                            :placeholder="`请选择${field.label}`"
                             style="min-width: 100px"
                         >
                             <a-select-option
@@ -37,6 +38,8 @@
                             v-model="filter[field._filterKey]"
                             :options="optionData[field.value]"
                             :allowClear="field.allowClear"
+                            :placeholder="`请选择${field.label}`"
+                            notFoundContent="暂无数据"
                             style="min-width: 100px"
                         >
                         </a-cascader>
