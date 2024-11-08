@@ -28,19 +28,19 @@
                 {
                     "display": "@[expandedRow==true]",
                     "type": "inputNumber",
-                    "text": "展开行图标位置",
-                    "desc": "展开行标展示在第几列，行数据需指定expandable属性来表示是否展示图标",
+                    "text": "展开图标",
+                    "desc": "展开图标展示在第几列，行数据需指定expandable属性来表示是否展示图标",
                     "bindKey": "expandIconColumnIndex",
                     "default": 1,
                     "layoutType": "inline"
                 },
                 {
                     "type": "input",
-                    "layoutType": "input",
                     "text": "表格高度",
                     "desc": "表格最大高度，超出后显示滚动条",
                     "bindKey": "tableMaxHeight",
-                    "default": "calc(100vh - 300px)"
+                    "default": "calc(100vh - 300px)",
+                    "layoutType": "inline"
                 },
                 {
                     "type": "switch",

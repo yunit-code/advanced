@@ -24,6 +24,7 @@
                             :mode="field.selectMode"
                             :allowClear="field.allowClear"
                             :placeholder="`请选择${field.label}`"
+                            notFoundContent="暂无数据"
                             style="min-width: 100px"
                         >
                             <a-select-option
@@ -124,17 +125,15 @@
                     }"
                 >
                     <template #expandIcon="{ record, expanded, expandable }">
-                        <div>
-                            <svg-icon
-                                v-if="expandable && record.expandable"
-                                style="
-                                    font-size: 18px;
-                                    color: #134fed;
-                                    cursor: pointer;
-                                "
-                                icon-class="move"
-                            ></svg-icon>
-                        </div>
+                        <svg-icon
+                            v-if="expandable && record.expandable"
+                            style="
+                                font-size: 18px;
+                                color: #134fed;
+                                cursor: pointer;
+                            "
+                            icon-class="move"
+                        ></svg-icon>
                     </template>
                     <template
                         #expandedRowRender="record"
@@ -901,7 +900,8 @@ export default {
                         {
                             record,
                         },
-                        false
+                        false,
+                        'dynamicRenderModule'
                     )
                 }, 0)
             } else {
