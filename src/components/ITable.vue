@@ -90,6 +90,17 @@
                             :allowClear="field.allowClear"
                         />
                     </a-form-model-item>
+                    <a-form-model-item v-if="propData.searchExendBar && propData.extraButtons?.length > 0">
+                        <div class="extra-button-wrap">
+                            <a-button
+                                v-for="(n, i) in propData.extraButtons"
+                                :key="i"
+                                :type="n.type"
+                                @click="extraHandle(n)"
+                                >{{ n.text }}</a-button
+                            >
+                        </div>
+                    </a-form-model-item>
                     <a-form-model-item v-if="propData.searchExendBar">
                         <div
                             class="filter-extra drag_container"
@@ -501,13 +512,18 @@ export default {
         },
         receiveBroadcastMessage(data) {
             console.debug('iTable receiveBroadcastMessage', data)
-            switch (data.type) {
+            this.linkageAction(data, this.propData.linkageEnd)
+        },
+        linkageAction(linkageFunctions, message = null) {
+            switch (message?.type) {
                 case 'linkageDemand':
-                    switch (data.messageKey) {
+                    switch (message?.messageKey) {
                         case 'filter':
-                            _.entries(data.message).forEach(([key, value]) => {
-                                this.$set(this.filter, key, value)
-                            })
+                            _.entries(message.message).forEach(
+                                ([key, value]) => {
+                                    this.$set(this.filter, key, value)
+                                }
+                            )
                             break
                         case 'reset':
                             this.filter = {}
@@ -515,30 +531,37 @@ export default {
                     }
                     break
             }
-            if (this.propData.linkageEnd?.length) {
-                this.propData.linkageEnd.forEach(linkageObject => {
+            if (linkageFunctions.length) {
+                linkageFunctions.forEach(linkageObject => {
                     const currentItemType =
                         linkageObject.reslinkageType == 'custom'
                             ? linkageObject.reslinkageTypeCustom
                             : linkageObject.reslinkageType
-                    if (currentItemType != data.type) {
+                    if (currentItemType != message.type) {
                         return
                     }
                     //再次处理过滤条件
                     if (
                         linkageObject.resResultRule &&
-                        !IDM.getExpressData(linkageObject.resResultRule, data)
+                        !IDM.getExpressData(
+                            linkageObject.resResultRule,
+                            message
+                        )
                     ) {
                         return
                     }
                     switch (linkageObject.resType) {
                         //重新加载刷新数据
                         case 'linkageReload':
-                            this.reload(true, data.message, data.messageKey)
+                            this.reload(
+                                true,
+                                message?.message,
+                                message?.messageKey
+                            )
                             break
                         //重新加载数据来源
                         case 'linkageDemand':
-                            this.resultChangeTableData(data.message)
+                            this.resultChangeTableData(message.message)
                             break
                         case 'linkageShowModule':
                             this.showThisModuleHandle()
@@ -556,7 +579,7 @@ export default {
                                     linkageObject.resFunction,
                                     {
                                         moduleObject: this.moduleObject,
-                                        messageObject: data,
+                                        messageObject: message,
                                     }
                                 )
                             break
@@ -564,15 +587,20 @@ export default {
                 })
                 return
             }
-            if (data.type && data.type == 'linkageDemand') {
-                if (data.messageKey) {
-                    this.onReInitDataMsgKey(data.message, data.messageKey)
+            if (message?.type == 'linkageDemand') {
+                if (message.messageKey) {
+                    this.onReInitDataMsgKey(
+                        message?.message,
+                        message?.messageKey
+                    )
                 }
-                if (data?.message?.data) {
-                    this.resultChangeTableData(data.message)
+                if (message?.message?.data) {
+                    this.resultChangeTableData(message.message)
                 }
-            } else if (data.type && data.type == 'linkageReload') {
-                this.reload(data.message && data.message.reloadFirstPage)
+            } else if (message?.type == 'linkageReload') {
+                this.reload(
+                    message?.message && message?.message?.reloadFirstPage
+                )
             }
         },
         /**
@@ -1031,6 +1059,21 @@ export default {
                 return source.isBefore(target)
             }
         },
+        extraHandle(button) {
+            this.linkageAction(
+                [
+                    {
+                        reslinkageType: 'custom',
+                        reslinkageTypeCustom: 'extraButton',
+                        resType: button.resType,
+                        resFunction: button.resFunction,
+                    },
+                ],
+                {
+                    type: 'extraButton',
+                }
+            )
+        },
     },
 }
 </script>
@@ -1141,5 +1184,10 @@ a,
             }
         }
     }
+}
+.extra-button-wrap {
+    display: flex;
+    gap: 10px;
+    padding:4px 0;
 }
 </style>

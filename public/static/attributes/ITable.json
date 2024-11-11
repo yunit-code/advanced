@@ -67,6 +67,78 @@
             ]
         },
         {
+            "type": "table",
+            "text": "搜索栏按钮",
+            "bindKey": "extraButtons",
+            "tabText": "按钮[index]",
+            "desc": "在搜索项后面展示",
+            "display": "@[searchExendBar==true]",
+            "children": [
+                {
+                    "text": "文本",
+                    "bindKey": "text",
+                    "layoutType": "inline",
+                    "type": "input",
+                    "default": ""
+                },
+                {
+                    "text": "类型",
+                    "bindKey": "type",
+                    "layoutType": "inline",
+                    "type": "select",
+                    "default": "primary",
+                    "dictionary": [
+                        {
+                            "label": "主要",
+                            "value": "primary"
+                        },
+                        {
+                            "label": "次要",
+                            "value": "second"
+                        }
+                    ]
+                },
+                {
+                    "type": "select",
+                    "layoutType": "inline",
+                    "text": "响应动作",
+                    "bindKey": "resType",
+                    "desc": "选择接收其他组件传值后要执行的后续动作，也就是选择接收到的值的作用是什么",
+                    "dictionary": [
+                        {
+                            "label": "无",
+                            "value": "none"
+                        },
+                        {
+                            "label": "重新加载数据源",
+                            "value": "linkageReload"
+                        },
+                        {
+                            "label": "显示组件",
+                            "value": "linkageShowModule"
+                        },
+                        {
+                            "label": "隐藏组件",
+                            "value": "linkageHideModule"
+                        },
+                        {
+                            "label": "自定义函数",
+                            "value": "customFun"
+                        }
+                    ],
+                    "default": "none"
+                },
+                {
+                    "type": "actionSelect",
+                    "layoutType": "block",
+                    "text": "自定义函数",
+                    "bindKey": "resFunction",
+                    "desc": "其他组件传值后会把值传递到此方法并且调用，然后自定义函数返回结果，接收参数{messageObject：联动的消息,moduleObject:组件对象}",
+                    "display": "@[resType=='customFun']"
+                }
+            ]
+        },
+        {
             "type": "group",
             "text": "配置数据源",
             "desc": "设置列表请求数据源方式及其他信息",
@@ -1075,7 +1147,7 @@
         {
             "type": "table",
             "text": "联动发起",
-            "bindKey":"linkageStart",
+            "bindKey": "linkageStart",
             "tabText": "联动[index]",
             "desc": "组件之间的联动作为发起方来去设置组件之间的各种联动功能，点击？查看联动设置指南",
             "children": [
@@ -1084,7 +1156,7 @@
                     "layoutType": "inline",
                     "text": "触发动作",
                     "bindKey": "actionType",
-                    "multiple":true,
+                    "multiple": true,
                     "dictionary": [
                         {
                             "label": "筛选项变化",
@@ -1126,7 +1198,7 @@
                     "text": "联动标识",
                     "bindKey": "customType",
                     "desc": "用于设置联动类型的type标识",
-                    "display":"@[type=='custom']",
+                    "display": "@[type=='custom']",
                     "default": ""
                 },
                 {
@@ -1138,7 +1210,7 @@
                     "multiple": true
                 }
             ],
-            "default":[]
+            "default": []
         },
         {
             "type": "table",
