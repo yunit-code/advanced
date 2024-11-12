@@ -90,7 +90,12 @@
                             :allowClear="field.allowClear"
                         />
                     </a-form-model-item>
-                    <a-form-model-item v-if="propData.searchExendBar && propData.extraButtons?.length > 0">
+                    <a-form-model-item
+                        v-if="
+                            propData.searchExendBar &&
+                            propData.extraButtons?.length > 0
+                        "
+                    >
                         <div class="extra-button-wrap">
                             <a-button
                                 v-for="(n, i) in propData.extraButtons"
@@ -512,9 +517,10 @@ export default {
         },
         receiveBroadcastMessage(data) {
             console.debug('iTable receiveBroadcastMessage', data)
-            this.linkageAction(data, this.propData.linkageEnd)
+            this._messageAction(data)
+            this._linkageAction(data, this.propData.linkageEnd)
         },
-        linkageAction(linkageFunctions, message = null) {
+        _messageAction(message) {
             switch (message?.type) {
                 case 'linkageDemand':
                     switch (message?.messageKey) {
@@ -531,6 +537,23 @@ export default {
                     }
                     break
             }
+            if (message?.type == 'linkageDemand') {
+                if (message.messageKey) {
+                    this.onReInitDataMsgKey(
+                        message?.message,
+                        message?.messageKey
+                    )
+                }
+                if (message?.message?.data) {
+                    this.resultChangeTableData(message.message)
+                }
+            } else if (message?.type == 'linkageReload') {
+                this.reload(
+                    message?.message && message?.message?.reloadFirstPage
+                )
+            }
+        },
+        _linkageAction(linkageFunctions, message = null) {
             if (linkageFunctions.length) {
                 linkageFunctions.forEach(linkageObject => {
                     const currentItemType =
@@ -586,21 +609,6 @@ export default {
                     }
                 })
                 return
-            }
-            if (message?.type == 'linkageDemand') {
-                if (message.messageKey) {
-                    this.onReInitDataMsgKey(
-                        message?.message,
-                        message?.messageKey
-                    )
-                }
-                if (message?.message?.data) {
-                    this.resultChangeTableData(message.message)
-                }
-            } else if (message?.type == 'linkageReload') {
-                this.reload(
-                    message?.message && message?.message?.reloadFirstPage
-                )
             }
         },
         /**
@@ -1060,7 +1068,7 @@ export default {
             }
         },
         extraHandle(button) {
-            this.linkageAction(
+            this._linkageAction(
                 [
                     {
                         reslinkageType: 'custom',
@@ -1188,6 +1196,6 @@ a,
 .extra-button-wrap {
     display: flex;
     gap: 10px;
-    padding:4px 0;
+    padding: 4px 0;
 }
 </style>
