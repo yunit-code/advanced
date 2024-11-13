@@ -292,8 +292,8 @@ export default {
         },
     },
     methods: {
-        urlGetWebPath: window.IDM.url.getWebPath,
-        expressReplace: window.IDM.express.replace,
+        urlGetWebPath: window.IDM?.url?.getWebPath,
+        expressReplace: window.IDM?.express?.replace,
         comboColumns(columns = [], keyPrefix = 'col') {
             if (columns.length == 0) return null
             return columns
