@@ -449,7 +449,7 @@ export default {
                     const actions = this.getActions(value, record, column)
                     if (column.dropdown && actions.length > 0) {
                         return (
-                            <a-dropdown>
+                            <a-dropdown placement='bottomRight'>
                                 <a-menu
                                     slot='overlay'
                                     selectable={false}
@@ -467,26 +467,41 @@ export default {
                                 >
                                     {actions.map(action => (
                                         <a-menu-item key={action.value}>
-                                            {action.label}
+                                            <a-badge
+                                                count={action.badge}
+                                                offset={[10, 0]}
+                                            >
+                                                {action.label}
+                                            </a-badge>
                                         </a-menu-item>
                                     ))}
                                 </a-menu>
-                                <img
-                                    src={moreIcon}
-                                    onClick={e => e.stopPropagation()}
-                                />
+                                <a-badge
+                                    count={actions.reduce(
+                                        (carry, current) =>
+                                            carry + current.badge || 0,
+                                        0
+                                    )}
+                                >
+                                    <img
+                                        src={moreIcon}
+                                        onClick={e => e.stopPropagation()}
+                                    />
+                                </a-badge>
                             </a-dropdown>
                         )
                     }
                     return (
                         <a-space>
                             {actions.map(action => (
-                                <a-button
-                                    onClick={e => e.stopPropagation()}
-                                    key={action.value}
-                                >
-                                    {action.label}
-                                </a-button>
+                                <a-badge count={action.badge}>
+                                    <a-button
+                                        onClick={e => e.stopPropagation()}
+                                        key={action.value}
+                                    >
+                                        {action.label}
+                                    </a-button>
+                                </a-badge>
                             ))}
                         </a-space>
                     )

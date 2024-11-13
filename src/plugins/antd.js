@@ -23,6 +23,7 @@ import 'ant-design-vue/lib/menu/style/css'
 import 'ant-design-vue/lib/tooltip/style/css'
 import 'ant-design-vue/lib/popover/style/css'
 import 'ant-design-vue/lib/dropdown/style/css'
+import 'ant-design-vue/lib/badge/style/css'
 import {
     Button,
     Icon,
@@ -46,7 +47,8 @@ import {
     Menu,
     Tooltip,
     Popover,
-    Dropdown
+    Dropdown,
+    Badge,
 } from 'ant-design-vue'
 
 /* v1.1.3+ registration methods */
@@ -75,4 +77,5 @@ Vue.use(Menu)
 Vue.use(Tooltip)
 Vue.use(Popover)
 Vue.use(Dropdown)
+Vue.use(Badge)
 Vue.prototype.$confirm = Modal.confirm
