@@ -533,7 +533,7 @@ export default {
         receiveBroadcastMessage(data) {
             console.debug('iTable receiveBroadcastMessage', data)
             this._messageAction(data)
-            this._linkageAction(data, this.propData.linkageEnd)
+            this._linkageAction(this.propData.linkageEnd, data)
         },
         _messageAction(message) {
             switch (message?.type) {

@@ -11,6 +11,16 @@
             "children": [
                 {
                     "type": "input",
+                    "layoutType": "inline",
+                    "text": "唯一标识",
+                    "bindKey": "ctrlId",
+                    "disabled": true,
+                    "default": "@[packageid]",
+                    "desc": "",
+                    "helpUrl": ""
+                },
+                {
+                    "type": "input",
                     "text": "行标识",
                     "desc": "数据行唯一标识，一般为id",
                     "bindKey": "rowKey",
