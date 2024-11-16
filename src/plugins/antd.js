@@ -12,6 +12,7 @@ import 'ant-design-vue/lib/modal/style/css'
 import 'ant-design-vue/lib/steps/style/css'
 import 'ant-design-vue/lib/upload/style/css'
 import 'ant-design-vue/lib/select/style/css'
+import 'ant-design-vue/lib/cascader/style/css'
 import 'ant-design-vue/lib/input-number/style/css'
 import 'ant-design-vue/lib/switch/style/css'
 import 'ant-design-vue/lib/form/style/css'
@@ -22,6 +23,7 @@ import 'ant-design-vue/lib/menu/style/css'
 import 'ant-design-vue/lib/tooltip/style/css'
 import 'ant-design-vue/lib/popover/style/css'
 import 'ant-design-vue/lib/dropdown/style/css'
+import 'ant-design-vue/lib/badge/style/css'
 import {
     Button,
     Icon,
@@ -34,6 +36,7 @@ import {
     Input,
     Steps,
     Select,
+    Cascader,
     InputNumber,
     Switch,
     Upload,
@@ -44,7 +47,8 @@ import {
     Menu,
     Tooltip,
     Popover,
-    Dropdown
+    Dropdown,
+    Badge,
 } from 'ant-design-vue'
 
 /* v1.1.3+ registration methods */
@@ -60,6 +64,7 @@ Vue.use(Steps)
 Vue.use(Upload)
 Vue.use(ConfigProvider)
 Vue.use(Select)
+Vue.use(Cascader)
 Vue.use(InputNumber)
 Vue.use(Switch)
 Vue.use(FormModel)
@@ -72,4 +77,5 @@ Vue.use(Menu)
 Vue.use(Tooltip)
 Vue.use(Popover)
 Vue.use(Dropdown)
+Vue.use(Badge)
 Vue.prototype.$confirm = Modal.confirm

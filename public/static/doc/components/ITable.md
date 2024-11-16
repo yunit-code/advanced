@@ -9,10 +9,18 @@
     [columnType,...]
     ```
 -   列表
+
     ```typescript
     {
         rows: [] // 数据集合
         total: number // 总数量
+    }
+    ```
+
+-   数据特殊字段
+    ```typescript
+    {
+        expandable?:boolean // 是否有扩展行，为true时展示扩展按钮且点击行展示扩展子容器，默认false
     }
     ```
 
@@ -39,6 +47,7 @@ type columnType = {
     fixed?: 'left' | 'right' | false // 固定列，默认false
     ellipsis?: boolean // 内容是否超出省略，默认false
     hidden?: boolean // 是否在表格中隐藏列，筛选不受影响，默认false
+    allowClear?: boolean // 是否允许清空，默认false
     children?: columnType[] // 子列集合，需要表头分组时配置
 }
 ```
@@ -46,16 +55,18 @@ type columnType = {
 #### 展示类型说明及扩展配置
 
 -   index 序号
+
 -   text 文本类型
     ```typescript
     {
         textTemplate?: string // 文本模板，支持表达式，默认为字段值
     }
     ```
+
 -   select 选项
     ```typescript
     {
-        dataSourceType?:dataSourceType|'static' // 数据来源，默认'static'
+        dataSourceType?:dataSourceType|'staticData' // 数据来源，默认'staticData'
         selectMode?:'default'|'multiple' // 单选|多选，默认'default'
         staticData?: {
             value:string // 文本值
@@ -64,10 +75,15 @@ type columnType = {
         }[] // dataSourceType=static时需配置，表格中会根据当前列字段名匹配key取值
     }
     ```
+
+-   cascader 级联
+    大部分属性和选项共用，目前不支持多选
+
 -   date 日期
     日期类型启用筛选后会产生两个请求参数
     -   字段名+Start 表示开始日期
     -   字段名+End 表示结束日期
+    
 -   href 链接
     ```typescript
     {
@@ -75,7 +91,8 @@ type columnType = {
         target?: '_blank'|'_self' // 打开目标，默认'_blank'
     }
     ```
-    链接模板和链接生成函数都为空时将使用javascrip:void(0)
+
+    链接模板和链接生成函数都为空时将使用 javascrip:void(0)
 
 -   actions 按钮组
     ```typescript
@@ -84,14 +101,6 @@ type columnType = {
     }
     ```
 -   htmlFunction 自定义 html 片断
-
-#### 数据特殊字段
-
-```typescript
-{
-    expandable?:boolean // 是否有扩展行，为true时展示扩展按钮且点击行展示扩展子容器，默认false
-}
-```
 
 #### 通用类型
 

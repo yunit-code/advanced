@@ -28,19 +28,19 @@
                 {
                     "display": "@[expandedRow==true]",
                     "type": "inputNumber",
-                    "text": "展开行图标位置",
-                    "desc": "展开行标展示在第几列，行数据需指定expandable属性来表示是否展示图标",
+                    "text": "展开图标",
+                    "desc": "展开图标展示在第几列，行数据需指定expandable属性来表示是否展示图标",
                     "bindKey": "expandIconColumnIndex",
                     "default": 1,
                     "layoutType": "inline"
                 },
                 {
                     "type": "input",
-                    "layoutType": "input",
                     "text": "表格高度",
                     "desc": "表格最大高度，超出后显示滚动条",
                     "bindKey": "tableMaxHeight",
-                    "default": "calc(100vh - 300px)"
+                    "default": "calc(100vh - 300px)",
+                    "layoutType": "inline"
                 },
                 {
                     "type": "switch",
@@ -54,8 +54,87 @@
                     "type": "switch",
                     "text": "启用分页",
                     "bindKey": "openPagination",
-                    "default": true,
+                    "default": false,
                     "layoutType": "inline"
+                },
+                {
+                    "type": "switch",
+                    "text": "启用选择",
+                    "bindKey": "selection",
+                    "default": false,
+                    "layoutType": "inline"
+                }
+            ]
+        },
+        {
+            "type": "table",
+            "text": "搜索栏按钮",
+            "bindKey": "extraButtons",
+            "tabText": "按钮[index]",
+            "desc": "在搜索项后面展示",
+            "display": "@[searchExendBar==true]",
+            "children": [
+                {
+                    "text": "文本",
+                    "bindKey": "text",
+                    "layoutType": "inline",
+                    "type": "input",
+                    "default": ""
+                },
+                {
+                    "text": "类型",
+                    "bindKey": "type",
+                    "layoutType": "inline",
+                    "type": "select",
+                    "default": "primary",
+                    "dictionary": [
+                        {
+                            "label": "主要",
+                            "value": "primary"
+                        },
+                        {
+                            "label": "次要",
+                            "value": "second"
+                        }
+                    ]
+                },
+                {
+                    "type": "select",
+                    "layoutType": "inline",
+                    "text": "响应动作",
+                    "bindKey": "resType",
+                    "desc": "选择接收其他组件传值后要执行的后续动作，也就是选择接收到的值的作用是什么",
+                    "dictionary": [
+                        {
+                            "label": "无",
+                            "value": "none"
+                        },
+                        {
+                            "label": "重新加载数据源",
+                            "value": "linkageReload"
+                        },
+                        {
+                            "label": "显示组件",
+                            "value": "linkageShowModule"
+                        },
+                        {
+                            "label": "隐藏组件",
+                            "value": "linkageHideModule"
+                        },
+                        {
+                            "label": "自定义函数",
+                            "value": "customFun"
+                        }
+                    ],
+                    "default": "none"
+                },
+                {
+                    "type": "actionSelect",
+                    "layoutType": "block",
+                    "text": "自定义函数",
+                    "bindKey": "resFunction",
+                    "desc": "其他组件传值后会把值传递到此方法并且调用，然后自定义函数返回结果，接收参数{messageObject：联动的消息,moduleObject:组件对象}",
+                    "display": "@[resType=='customFun']"
                 }
             ]
         },
@@ -346,6 +425,10 @@
                                     "value": "select"
                                 },
                                 {
+                                    "label": "级联",
+                                    "value": "cascader"
+                                },
+                                {
                                     "label": "日期",
                                     "value": "date"
                                 },
@@ -395,7 +478,7 @@
                         },
                         {
                             "type": "group",
-                            "display": "@[type=='select']",
+                            "display": "@[type=='select'] || @[type=='cascader']",
                             "text": "选项设置",
                             "children": [
                                 {
@@ -711,6 +794,14 @@
                             "text": "隐藏",
                             "bindKey": "hidden",
                             "desc": "开启后不在表格中展示",
+                            "default": false
+                        },
+                        {
+                            "type": "switch",
+                            "layoutType": "inline",
+                            "text": "允许清空",
+                            "bindKey": "allowClear",
+                            "desc": "开启可清空内容",
                             "default": false
                         },
                         {
@@ -1055,6 +1146,74 @@
         },
         {
             "type": "table",
+            "text": "联动发起",
+            "bindKey": "linkageStart",
+            "tabText": "联动[index]",
+            "desc": "组件之间的联动作为发起方来去设置组件之间的各种联动功能，点击？查看联动设置指南",
+            "children": [
+                {
+                    "type": "select",
+                    "layoutType": "inline",
+                    "text": "触发动作",
+                    "bindKey": "actionType",
+                    "multiple": true,
+                    "dictionary": [
+                        {
+                            "label": "筛选项变化",
+                            "value": "filterChange"
+                        },
+                        {
+                            "label": "选择项变化",
+                            "value": "selectChange"
+                        }
+                    ]
+                },
+                {
+                    "type": "select",
+                    "layoutType": "inline",
+                    "text": "联动类型",
+                    "bindKey": "type",
+                    "dictionary": [
+                        {
+                            "label": "重新加载",
+                            "value": "linkageReload"
+                        },
+                        {
+                            "label": "联动到结果",
+                            "value": "linkageResult"
+                        },
+                        {
+                            "label": "联动到需求",
+                            "value": "linkageDemand"
+                        },
+                        {
+                            "label": "自定义",
+                            "value": "custom"
+                        }
+                    ]
+                },
+                {
+                    "type": "input",
+                    "layoutType": "inline",
+                    "text": "联动标识",
+                    "bindKey": "customType",
+                    "desc": "用于设置联动类型的type标识",
+                    "display": "@[type=='custom']",
+                    "default": ""
+                },
+                {
+                    "type": "pageModuleSelect",
+                    "layoutType": "inline",
+                    "text": "组件范围",
+                    "desc": "当满足上述触发动作和关联节点的属性条件则需要向被联动组件发送消息，此处代表着需要给哪些组件进行联动，如果未选择则会给所有组件发送消息，如果选择了则只会给选择的组件进行发消息联动",
+                    "bindKey": "module",
+                    "multiple": true
+                }
+            ],
+            "default": []
+        },
+        {
+            "type": "table",
             "text": "联动响应",
             "bindKey": "linkageEnd",
             "tabText": "响应[index]",
@@ -1112,6 +1271,10 @@
                         {
                             "label": "无",
                             "value": "none"
+                        },
+                        {
+                            "label": "重新加载配置",
+                            "value": "linkageReloadConfig"
                         },
                         {
                             "label": "重新加载数据源",

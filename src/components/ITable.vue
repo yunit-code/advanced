@@ -22,7 +22,9 @@
                             v-if="field.type == 'select'"
                             v-model="filter[field._filterKey]"
                             :mode="field.selectMode"
-                            :allowClear="true"
+                            :allowClear="field.allowClear"
+                            :placeholder="`请选择${field.label}`"
+                            notFoundContent="暂无数据"
                             style="min-width: 100px"
                         >
                             <a-select-option
@@ -32,18 +34,77 @@
                                 >{{ item.value }}</a-select-option
                             >
                         </a-select>
+                        <a-cascader
+                            v-else-if="field.type == 'cascader'"
+                            v-model="filter[field._filterKey]"
+                            :options="optionData[field.value]"
+                            :allowClear="field.allowClear"
+                            :placeholder="`请选择${field.label}`"
+                            notFoundContent="暂无数据"
+                            style="min-width: 100px"
+                        >
+                        </a-cascader>
                         <template v-else-if="field.type == 'date'">
                             <a-date-picker
                                 valueFormat="YYYY-MM-DD"
                                 v-model="filter[`${field._filterKey}Start`]"
+                                :allowClear="field.allowClear || false"
+                                :disabledDate="
+                                    v =>
+                                        disabledDate(
+                                            v,
+                                            filter[`${field._filterKey}End`],
+                                            'after'
+                                        )
+                                "
                             />
                             ~
                             <a-date-picker
                                 valueFormat="YYYY-MM-DD"
                                 v-model="filter[`${field._filterKey}End`]"
+                                :allowClear="field.allowClear || false"
+                                :disabledDate="
+                                    v =>
+                                        disabledDate(
+                                            v,
+                                            filter[`${field._filterKey}Start`],
+                                            'before'
+                                        )
+                                "
                             />
                         </template>
-                        <a-input v-else v-model="filter[field._filterKey]" />
+                        <template v-else-if="field.type == 'dateRange'">
+                            <a-range-picker
+                                :value="getDates(field._filterKey)"
+                                @change="
+                                    dates => setDates(field._filterKey, dates)
+                                "
+                                :allowClear="field.allowClear || false"
+                                valueFormat="YYYY-MM-DD"
+                            >
+                            </a-range-picker>
+                        </template>
+                        <a-input
+                            v-else
+                            v-model="filter[field._filterKey]"
+                            :allowClear="field.allowClear"
+                        />
+                    </a-form-model-item>
+                    <a-form-model-item
+                        v-if="
+                            propData.searchExendBar &&
+                            propData.extraButtons?.length > 0
+                        "
+                    >
+                        <div class="extra-button-wrap">
+                            <a-button
+                                v-for="(n, i) in propData.extraButtons"
+                                :key="i"
+                                :type="n.type"
+                                @click="extraHandle(n)"
+                                >{{ n.text }}</a-button
+                            >
+                        </div>
                     </a-form-model-item>
                     <a-form-model-item v-if="propData.searchExendBar">
                         <div
@@ -60,12 +121,14 @@
                     :rowKey="propData.rowKey"
                     :loading="loading"
                     :bordered="propData.bordered"
+                    :expandedRowKeys.sync="expandedRowKeys"
                     @change="handleTableChange"
                     @expand="handleExpand"
                     :defaultExpandAllRows="env_develop_mode"
                     :expandRowByClick="!env_develop_mode"
                     :expandIconAsCell="false"
                     :expandIconColumnIndex="propData.expandIconColumnIndex || 1"
+                    :rowSelection="selectionConfig"
                     :indentSize="0"
                     :scroll="{ y: propData.tableMaxHeight, x: '100%' }"
                     :rowClassName="
@@ -78,21 +141,19 @@
                     }"
                 >
                     <template #expandIcon="{ record, expanded, expandable }">
-                        <div>
-                            <svg-icon
-                                v-if="expandable && record.expandable"
-                                style="
-                                    font-size: 18px;
-                                    color: #134fed;
-                                    cursor: pointer;
-                                "
-                                icon-class="move"
-                            ></svg-icon>
-                        </div>
+                        <svg-icon
+                            v-if="expandable && record.expandable"
+                            style="
+                                font-size: 18px;
+                                color: #134fed;
+                                cursor: pointer;
+                            "
+                            icon-class="move"
+                        ></svg-icon>
                     </template>
                     <template
-                        v-if="propData.expandedRow"
                         #expandedRowRender="record"
+                        v-if="propData.expandedRow"
                     >
                         <div
                             class="drag_container"
@@ -101,7 +162,13 @@
                             :idm-container-index="`expand-${
                                 record[propData.rowKey]
                             }`"
-                        ></div>
+                        >
+                            <slot
+                                :name="`${moduleObject.id}expand-${
+                                    record[propData.rowKey]
+                                }`"
+                            ></slot>
+                        </div>
                     </template>
                 </a-table>
             </div>
@@ -180,6 +247,8 @@ export default {
             optionData: {},
             env_develop_mode: window.IDM.env_develop_mode,
             contextDataset: [],
+            expandedRowKeys: [],
+            selectedRowKeys: [],
         }
     },
     computed: {
@@ -254,6 +323,15 @@ export default {
 
             return paginationConfig
         },
+        selectionConfig() {
+            if (this.propData.selection == true) {
+                return {
+                    selectedRowKeys: this.selectedRowKeys,
+                    onChange: v => (this.selectedRowKeys = v),
+                }
+            }
+            return null
+        },
     },
     mounted() {
         this.loadColumnsOptions()
@@ -263,32 +341,42 @@ export default {
     watch: {
         'propData.customParams': {
             handler(customParams) {
-                this.filter = window.IDM.invokeCustomFunctions(
-                    customParams
-                ).reduce((carry, current) => {
-                    return Object.assign({}, carry, current)
-                }, {})
+                this.filter = window.IDM.invokeCustomFunctions
+                    .call(this, customParams)
+                    .reduce((carry, current) => {
+                        return Object.assign({}, carry, current)
+                    }, {})
             },
             immediate: true,
         },
         filter: {
             handler(filter) {
-                window.IDM.broadcast?.send({
-                    type: 'linkageDemand',
-                    messageKey:
-                        this.propData.linkageDemandMessageKey || 'filter',
-                    rangeModule: this.propData.linkageDemandPageModule,
-                    message: filter,
-                })
-                window.IDM.broadcast?.send({
-                    type: 'linkageResult',
-                    messageKey:
-                        this.propData.linkageResultMessageKey || 'filter',
-                    rangeModule: this.propData.linkageResultPageModule,
-                    message: filter,
-                })
+                this.propData.linkageStart
+                    ?.filter(n => n.actionType == 'filterChange')
+                    .forEach(n => {
+                        window.IDM.broadcast?.send({
+                            type: n.type == 'custom' ? n.customType : n.type,
+                            messageKey: this.propData.ctrlId,
+                            rangeModule: n.module?.map(item => item.moduleId),
+                            message: filter,
+                        })
+                    })
             },
             deep: true,
+        },
+        selectedRowKeys: {
+            handler(selectedRowKeys) {
+                this.propData.linkageStart
+                    ?.filter(n => n.actionType == 'selectChange')
+                    .forEach(n => {
+                        window.IDM.broadcast?.send({
+                            type: n.type == 'custom' ? n.customType : n.type,
+                            messageKey: this.propData.ctrlId,
+                            rangeModule: n.module?.map(item => item.moduleId),
+                            message: selectedRowKeys,
+                        })
+                    })
+            },
         },
     },
     methods: {
@@ -361,7 +449,7 @@ export default {
                     const actions = this.getActions(value, record, column)
                     if (column.dropdown && actions.length > 0) {
                         return (
-                            <a-dropdown>
+                            <a-dropdown placement='bottomRight'>
                                 <a-menu
                                     slot='overlay'
                                     selectable={false}
@@ -379,26 +467,41 @@ export default {
                                 >
                                     {actions.map(action => (
                                         <a-menu-item key={action.value}>
-                                            {action.label}
+                                            <a-badge
+                                                count={action.badge}
+                                                offset={[10, 0]}
+                                            >
+                                                {action.label}
+                                            </a-badge>
                                         </a-menu-item>
                                     ))}
                                 </a-menu>
-                                <img
-                                    src={moreIcon}
-                                    onClick={e => e.stopPropagation()}
-                                />
+                                <a-badge
+                                    count={actions.reduce(
+                                        (carry, current) =>
+                                            carry + current.badge || 0,
+                                        0
+                                    )}
+                                >
+                                    <img
+                                        src={moreIcon}
+                                        onClick={e => e.stopPropagation()}
+                                    />
+                                </a-badge>
                             </a-dropdown>
                         )
                     }
                     return (
                         <a-space>
                             {actions.map(action => (
-                                <a-button
-                                    onClick={e => e.stopPropagation()}
-                                    key={action.value}
-                                >
-                                    {action.label}
-                                </a-button>
+                                <a-badge count={action.badge}>
+                                    <a-button
+                                        onClick={e => e.stopPropagation()}
+                                        key={action.value}
+                                    >
+                                        {action.label}
+                                    </a-button>
+                                </a-badge>
                             ))}
                         </a-space>
                     )
@@ -419,7 +522,7 @@ export default {
         },
         setContextValue(object) {
             console.debug('iTable setContextValue', object)
-            this.contextDataset.push(object)
+            this.contextDataset.splice(0, 0, object)
             this.loadColumnsOptions()
                 .then(() => this.loadOptionData())
                 .then(() => this.initData())
@@ -429,13 +532,19 @@ export default {
         },
         receiveBroadcastMessage(data) {
             console.debug('iTable receiveBroadcastMessage', data)
-            switch (data.type) {
+            this._messageAction(data)
+            this._linkageAction(data, this.propData.linkageEnd)
+        },
+        _messageAction(message) {
+            switch (message?.type) {
                 case 'linkageDemand':
-                    switch (data.messageKey) {
+                    switch (message?.messageKey) {
                         case 'filter':
-                            _.entries(data.message).forEach(([key, value]) => {
-                                this.$set(this.filter, key, value)
-                            })
+                            _.entries(message.message).forEach(
+                                ([key, value]) => {
+                                    this.$set(this.filter, key, value)
+                                }
+                            )
                             break
                         case 'reset':
                             this.filter = {}
@@ -443,30 +552,54 @@ export default {
                     }
                     break
             }
-            if (this.propData.linkageEnd?.length) {
-                this.propData.linkageEnd.forEach(linkageObject => {
+            if (message?.type == 'linkageDemand') {
+                if (message.messageKey) {
+                    this.onReInitDataMsgKey(
+                        message?.message,
+                        message?.messageKey
+                    )
+                }
+                if (message?.message?.data) {
+                    this.resultChangeTableData(message.message)
+                }
+            } else if (message?.type == 'linkageReload') {
+                this.reload(
+                    message?.message && message?.message?.reloadFirstPage
+                )
+            }
+        },
+        _linkageAction(linkageFunctions, message = null) {
+            if (linkageFunctions.length) {
+                linkageFunctions.forEach(linkageObject => {
                     const currentItemType =
                         linkageObject.reslinkageType == 'custom'
                             ? linkageObject.reslinkageTypeCustom
                             : linkageObject.reslinkageType
-                    if (currentItemType != data.type) {
+                    if (currentItemType != message.type) {
                         return
                     }
                     //再次处理过滤条件
                     if (
                         linkageObject.resResultRule &&
-                        !IDM.getExpressData(linkageObject.resResultRule, data)
+                        !IDM.getExpressData(
+                            linkageObject.resResultRule,
+                            message
+                        )
                     ) {
                         return
                     }
                     switch (linkageObject.resType) {
                         //重新加载刷新数据
                         case 'linkageReload':
-                            this.reload(true, data.message, data.messageKey)
+                            this.reload(
+                                true,
+                                message?.message,
+                                message?.messageKey
+                            )
                             break
                         //重新加载数据来源
                         case 'linkageDemand':
-                            this.resultChangeTableData(data.message)
+                            this.resultChangeTableData(message.message)
                             break
                         case 'linkageShowModule':
                             this.showThisModuleHandle()
@@ -474,29 +607,23 @@ export default {
                         case 'linkageHideModule':
                             this.hideThisModuleHandle()
                             break
+                        case 'linkageReloadConfig':
+                            this.loadColumnsOptions()
+                            break
                         case 'customFun':
                             linkageObject.resFunction?.length &&
-                                IDM.invokeCustomFunctions.apply(this, [
+                                IDM.invokeCustomFunctions.call(
+                                    this,
                                     linkageObject.resFunction,
                                     {
                                         moduleObject: this.moduleObject,
-                                        messageObject: data,
-                                    },
-                                ])
+                                        messageObject: message,
+                                    }
+                                )
                             break
                     }
                 })
                 return
-            }
-            if (data.type && data.type == 'linkageDemand') {
-                if (data.messageKey) {
-                    this.onReInitDataMsgKey(data.message, data.messageKey)
-                }
-                if (data?.message?.data) {
-                    this.resultChangeTableData(data.message)
-                }
-            } else if (data.type && data.type == 'linkageReload') {
-                this.reload(data.message && data.message.reloadFirstPage)
             }
         },
         /**
@@ -527,6 +654,7 @@ export default {
             ) {
                 return
             }
+            this.expandedRowKeys = []
             //把已选择的清空
             this.selectedRowKeys = []
             let params = {
@@ -663,11 +791,11 @@ export default {
                         staticData: this.propData.columns,
                     },
                     {
-                        params: window.IDM.invokeCustomFunctions(
-                            this.propData.columnCustomParams
-                        ).reduce((carry, current) => {
-                            return Object.assign({}, carry, current)
-                        }, {}),
+                        params: window.IDM.invokeCustomFunctions
+                            .call(this, this.propData.columnCustomParams)
+                            .reduce((carry, current) => {
+                                return Object.assign({}, carry, current)
+                            }, {}),
                     }
                 )
                 .then(data => {
@@ -724,6 +852,34 @@ export default {
                                     )
                                 }
                                 return
+                            }
+                        })
+                }
+                if (column.type == 'cascader') {
+                    dataUtil
+                        .fetchData({
+                            dataSourceType: column.dataSourceType,
+                            dataSource: column.dataSource,
+                            customInterface: {
+                                url: column.customInterfaceUrl,
+                                requestParamFun: column.requestParamFun,
+                                requestContentType: column.requestContentType,
+                                requestType: column.requestType,
+                                responseDataFun: column.responseDataFun,
+                                requestErrorFun: column.requestErrorFun,
+                            },
+                            customFunction: column.customFunction,
+                            staticData: column.staticData,
+                        })
+                        .then(data => {
+                            this.$set(this.optionData, column.value, data)
+                            const selectedItem = data.find(m => m.selected)
+                            if (selectedItem) {
+                                this.$set(
+                                    this.filter,
+                                    filterKey,
+                                    selectedItem.key
+                                )
                             }
                         })
                 }
@@ -788,27 +944,37 @@ export default {
                 return
             }
             if (expanded) {
-                nextTick(() => {
-                    this.moduleObject.dynamicRenderModuleGroupInitData?.call(
-                        this,
+                setTimeout(() => {
+                    this.moduleObject.dynamicRenderModuleGroupInitData(
                         this.moduleObject.packageid,
                         `expand-${record[this.propData.rowKey]}`,
                         {
                             record,
                         },
-                        false
+                        false,
+                        'dynamicRenderModule'
                     )
-                })
+                }, 0)
+            } else {
+                this.moduleObject.removeDynamicRenderModuleGroup(
+                    this.moduleObject.packageid,
+                    `expand-${record[this.propData.rowKey]}`,
+                    false
+                )
             }
         },
         handleMenuClick(key, value, record, column) {
             if (availableArray(column.hanldeInterfaceFunc)) {
-                window.IDM.invokeCustomFunctions(column.hanldeInterfaceFunc, {
-                    key,
-                    value,
-                    record,
-                    column,
-                })
+                window.IDM.invokeCustomFunctions.call(
+                    this,
+                    column.hanldeInterfaceFunc,
+                    {
+                        key,
+                        value,
+                        record,
+                        column,
+                    }
+                )
             }
         },
         getActions(value, record, column) {
@@ -817,11 +983,15 @@ export default {
                     return []
                 }
                 return _.flatten(
-                    window.IDM.invokeCustomFunctions(column.handleActionsFunc, {
-                        value,
-                        record,
-                        column,
-                    })
+                    window.IDM.invokeCustomFunctions.call(
+                        this,
+                        column.handleActionsFunc,
+                        {
+                            value,
+                            record,
+                            column,
+                        }
+                    )
                 )
             }
             return value || []
@@ -845,34 +1015,42 @@ export default {
                 on: {
                     click: event => {
                         if (availableArray(column.clickFunc)) {
-                            window.IDM.invokeCustomFunctions(column.clickFunc, {
-                                record,
-                                recordIndex,
-                                column,
-                                moduleObject: this.moduleObject,
-                                event,
-                            })
+                            window.IDM.invokeCustomFunctions.call(
+                                this,
+                                column.clickFunc,
+                                {
+                                    record,
+                                    recordIndex,
+                                    column,
+                                    moduleObject: this.moduleObject,
+                                    event,
+                                }
+                            )
                         }
                     },
                 },
             }
         },
         handleHtmlRender(value, record, column, columnIndex) {
-            return window.IDM.invokeCustomFunctions(column.htmlFunction, {
-                value,
-                record,
-                column,
-                columnIndex,
-            }).join()
+            return window.IDM.invokeCustomFunctions
+                .call(this, column.htmlFunction, {
+                    value,
+                    record,
+                    column,
+                    columnIndex,
+                })
+                .join()
         },
         getLink(value, record, column) {
             if (availableArray(column.hrefFunc)) {
-                return window.IDM.invokeCustomFunctions(column.hrefFunc, {
-                    moduleObject: this.moduleObject,
-                    record,
-                    value,
-                    column,
-                }).join()
+                return window.IDM.invokeCustomFunctions
+                    .call(this, column.hrefFunc, {
+                        moduleObject: this.moduleObject,
+                        record,
+                        value,
+                        column,
+                    })
+                    .join()
             }
             if (column.href) {
                 return this.urlGetWebPath(
@@ -887,6 +1065,37 @@ export default {
                 )
             }
             return ''
+        },
+        getDates(key) {
+            return [this.filter[`${key}Start`], this.filter[`${key}End`]]
+        },
+        setDates(key, dates) {
+            this.$set(this.filter, `${key}Start`, dates[0])
+            this.$set(this.filter, `${key}End`, dates[1])
+        },
+        disabledDate(source, target, type) {
+            if (!target) return false
+            if (type == 'after') {
+                return source.isAfter(target)
+            }
+            if (type == 'before') {
+                return source.isBefore(target)
+            }
+        },
+        extraHandle(button) {
+            this._linkageAction(
+                [
+                    {
+                        reslinkageType: 'custom',
+                        reslinkageTypeCustom: 'extraButton',
+                        resType: button.resType,
+                        resFunction: button.resFunction,
+                    },
+                ],
+                {
+                    type: 'extraButton',
+                }
+            )
         },
     },
 }
@@ -998,5 +1207,10 @@ a,
             }
         }
     }
+}
+.extra-button-wrap {
+    display: flex;
+    gap: 10px;
+    padding: 4px 0;
 }
 </style>
