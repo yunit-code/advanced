@@ -327,7 +327,9 @@ export default {
             if (this.propData.selection == true) {
                 return {
                     selectedRowKeys: this.selectedRowKeys,
-                    onChange: v => (this.selectedRowKeys = v),
+                    onChange: keys => {
+                        this.selectedRowKeys = keys
+                    },
                 }
             }
             return null
@@ -553,7 +555,7 @@ export default {
                     break
             }
             if (message?.type == 'linkageDemand') {
-                if (message.messageKey) {
+                if (message.messageKey == 'reload') {
                     this.onReInitDataMsgKey(
                         message?.message,
                         message?.messageKey
@@ -612,7 +614,7 @@ export default {
                             break
                         case 'customFun':
                             linkageObject.resFunction?.length &&
-                                IDM.invokeCustomFunctions.call(
+                                window.IDM.invokeCustomFunctions.call(
                                     this,
                                     linkageObject.resFunction,
                                     {
