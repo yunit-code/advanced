@@ -300,7 +300,7 @@ export default {
             paginationConfig.simple = this.propData.simplePagination || false
             if (this.propData.showTotalFormat) {
                 //设置用于显示数据总量和当前数据顺序
-                paginationConfig.showTotal = function (total, range) {
+                paginationConfig.showTotal = (total, range) => {
                     return (
                         IDM.express &&
                         IDM.express.replace.call(
