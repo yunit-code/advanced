@@ -429,7 +429,12 @@ export default {
         customRender({ value, record, index, column, columnIndex }) {
             switch (column.type) {
                 case 'index':
-                    return index + 1
+                    return (
+                        (this.pagination.current - 1) *
+                            this.pagination.pageSize +
+                        index +
+                        1
+                    )
                 case 'text':
                     return this.expressReplace(
                         column.textTemplate || '@[value]',
