@@ -268,10 +268,10 @@ export default {
             }))
         },
         paginationConfig() {
-            let paginationConfig = {}
             if (!this.propData.openPagination) {
                 return false
             }
+            let paginationConfig = {}
             //分页位置
             paginationConfig.position =
                 this.propData.paginationPosition || 'bottom'
@@ -327,8 +327,17 @@ export default {
             if (this.propData.selection == true) {
                 return {
                     selectedRowKeys: this.selectedRowKeys,
-                    onChange: keys => {
-                        this.selectedRowKeys = keys
+                    onChange: (selectedRowKeys, selectedRows) => {
+                        this.selectedRowKeys = selectedRowKeys
+                    },
+                    getCheckboxProps: record => {
+                        return {
+                            props: {
+                                defaultChecked: this.selectedRowKeys.includes(
+                                    record[this.propData.rowKey]
+                                ),
+                            },
+                        }
                     },
                 }
             }
@@ -550,6 +559,7 @@ export default {
                             break
                         case 'reset':
                             this.filter = {}
+                            this.selectedRowKeys = []
                             break
                     }
                     break
@@ -642,7 +652,6 @@ export default {
             if (reloadFirstPage) {
                 this.pagination.current = 1
             }
-            this.selectedRowKeys = []
             if (messageKey) {
                 this.conditionObject[messageKey] = conditionObject
             }
@@ -657,8 +666,6 @@ export default {
                 return
             }
             this.expandedRowKeys = []
-            //把已选择的清空
-            this.selectedRowKeys = []
             let params = {
                 ...commonParam(),
                 ...this.filter,
