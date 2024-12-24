@@ -744,8 +744,9 @@ export default {
                     this.sort.reversed
             }
             this.loading = true
-            dataUtil
-                .fetchData(
+            dataUtil.fetchData
+                .call(
+                    this,
                     {
                         dataSourceType: this.propData.dataSourceType,
                         dataSource: this.propData.dataSource,
