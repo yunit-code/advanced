@@ -779,8 +779,9 @@ export default {
                 })
         },
         loadColumnsOptions() {
-            return dataUtil
-                .fetchData(
+            return dataUtil.fetchData
+                .call(
+                    this,
                     {
                         dataSourceType: this.propData.columnSourceType,
                         dataSource: this.propData.columnDataSource,
@@ -828,8 +829,8 @@ export default {
                     }
                 )
                 if (column.type == 'select') {
-                    dataUtil
-                        .fetchData({
+                    dataUtil.fetchData
+                        .call(this, {
                             dataSourceType: column.dataSourceType,
                             dataSource: column.dataSource,
                             customInterface: {
@@ -871,8 +872,8 @@ export default {
                         })
                 }
                 if (column.type == 'cascader') {
-                    dataUtil
-                        .fetchData({
+                    dataUtil.fetchData
+                        .call(this, {
                             dataSourceType: column.dataSourceType,
                             dataSource: column.dataSource,
                             customInterface: {
