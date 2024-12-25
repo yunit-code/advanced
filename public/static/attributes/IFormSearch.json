@@ -11,6 +11,22 @@
             "children": [
                 {
                     "type": "input",
+                    "layoutType": "inline",
+                    "text": "唯一标识",
+                    "bindKey": "ctrlId",
+                    "disabled": true,
+                    "default": "@[packageid]",
+                    "desc": "",
+                    "helpUrl": ""
+                }
+            ]
+        },
+        {
+            "text": "内容检索",
+            "type": "group",
+            "children": [
+                {
+                    "type": "input",
                     "text": "内容索引",
                     "layoutType": "inline",
                     "bindKey": "fieldKey",
