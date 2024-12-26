@@ -820,6 +820,7 @@ export default {
                 })
         },
         loadOptionData() {
+            console.log('iTable loadOptionData', this.columnsDataSource)
             this.columnsDataSource.forEach(column => {
                 const filterKey = this.expressReplace(
                     column.filterField || '@[value]',

@@ -38,14 +38,11 @@ export function fetchData(
                     customInterface.requestParamFun.length > 0
                 ) {
                     try {
-                        reqParam =
-                            window[customInterface.requestParamFun[0].name] &&
-                            window[
-                                customInterface.requestParamFun[0].name
-                            ].call(this, {
-                                ...params,
-                                ...customInterface.requestParamFun[0].param,
-                            })
+                        reqParam = window.IDM.invokeCustomFunctions
+                            .call(this, customInterface.requestParamFun, params)
+                            .reduce((carry, current) => {
+                                return Object.assign({}, carry, current)
+                            }, {})
                     } catch (error) {
                         reject(error)
                     }

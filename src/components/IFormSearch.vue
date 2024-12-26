@@ -11,7 +11,10 @@
             layout="inline"
             :class="className.wrap"
         >
-            <a-form-model-item :prop="propData.fieldKey">
+            <a-form-model-item
+                v-if="propData.queryEnable"
+                :prop="propData.fieldKey"
+            >
                 <a-input-search
                     v-model="filter[propData.fieldKey]"
                     placeholder="请输入检索内容"
@@ -44,6 +47,7 @@ export default {
     mixins: [
         bindProp({
             fieldKey: 'contentQuery',
+            queryEnable: true,
             submitEnable: true,
             resetEnable: true,
         }),
@@ -56,11 +60,11 @@ export default {
     },
     methods: {
         setContextValue(object) {
-            console.debug('iTable setContextValue', object)
+            console.debug('iFormSearch setContextValue', object)
         },
         propDataWatchHandle(propData) {
             this.propData = propData.compositeAttr
-            console.debug('iTable propDataWatchHandle', propData)
+            console.debug('iFormSearch propDataWatchHandle', propData)
         },
         receiveBroadcastMessage(data) {
             console.debug('iFormSearch receiveBroadcastMessage', data)

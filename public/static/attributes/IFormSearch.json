@@ -26,6 +26,13 @@
             "type": "group",
             "children": [
                 {
+                    "text": "启用",
+                    "type": "switch",
+                    "bindKey": "queryEnable",
+                    "layoutType": "inline",
+                    "default": true
+                },
+                {
                     "type": "input",
                     "text": "内容索引",
                     "layoutType": "inline",
