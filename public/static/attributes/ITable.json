@@ -746,6 +746,15 @@
                             "default": "@[value]"
                         },
                         {
+                            "display": "@[filter==true]",
+                            "type": "input",
+                            "layoutType": "inline",
+                            "text": "控件宽度",
+                            "bindKey": "filterControlWidth",
+                            "desc": "筛选控件宽度,支持文本、选项、级联,默认100px",
+                            "default": ""
+                        },
+                        {
                             "type": "switch",
                             "layoutType": "inline",
                             "text": "排序",

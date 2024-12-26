@@ -25,7 +25,9 @@
                             :allowClear="field.allowClear"
                             :placeholder="`请选择${field.label}`"
                             notFoundContent="暂无数据"
-                            style="min-width: 100px"
+                            :style="{
+                                width: field.filterControlWidth || '100px',
+                            }"
                         >
                             <a-select-option
                                 v-for="item in optionData[field.value]"
@@ -41,7 +43,9 @@
                             :allowClear="field.allowClear"
                             :placeholder="`请选择${field.label}`"
                             notFoundContent="暂无数据"
-                            style="min-width: 100px"
+                            :style="{
+                                width: field.filterControlWidth || '100px',
+                            }"
                         >
                         </a-cascader>
                         <template v-else-if="field.type == 'date'">
@@ -88,6 +92,9 @@
                             v-else
                             v-model="filter[field._filterKey]"
                             :allowClear="field.allowClear"
+                            :style="{
+                                width: field.filterControlWidth || '100px',
+                            }"
                         />
                     </a-form-model-item>
                     <a-form-model-item
