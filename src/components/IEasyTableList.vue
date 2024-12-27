@@ -1346,30 +1346,8 @@ export default {
     .ant-table-tbody > tr > td {
       font-size: var(--cellFontSize);
     }
-    .ant-table-scroll {
-      overflow: hidden;
-    }
-    .ant-table-header,
-    .ant-table-body {
-      scrollbar-gutter: stable;
-    }
-    .ant-table-header {
-      padding-bottom: 0;
-      margin-bottom: 0;
-      &::-webkit-scrollbar {
-        display: none;
-      }
-    }
     .ant-table-body {
       height: var(--bodyHeight);
-      overflow-y: auto !important;
-    }
-    &.ant-table-empty {
-      .ant-table-scroll {
-        .ant-table-body {
-          height: auto;
-        }
-      }
     }
   }
 }
