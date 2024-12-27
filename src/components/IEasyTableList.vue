@@ -1346,9 +1346,6 @@ export default {
     .ant-table-tbody > tr > td {
       font-size: var(--cellFontSize);
     }
-    .ant-table-body {
-      height: var(--bodyHeight);
-    }
   }
 }
 </style>
