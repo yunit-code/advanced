@@ -2,7 +2,7 @@
  * idm核心框架提供给组件开发的核心包
  * 注意：此核心包不会包含上传到组件代码中，只是用于组件开发使用
  */
- (function(){
+(function(){
     var setting = {
         //核心包的版本
         version:"1.0.0",
@@ -61,6 +61,141 @@
          */
         var util = {
             /**
+             * 组件内手动渲染属性样式到页面的head中
+             * @param {*} attrArray 样式属性对象，必须是数组格式
+             * @param {*} moduleObject 组件对象，不能为空
+             * @param {*} otherObject 能在使用条件或者样式中使用的表达式对象
+             * @returns 返回渲染的数量
+             */
+            renderAttrStyleToPage: function (attrArray, moduleObject, otherObject) {
+                if (!moduleObject || IDM.type(moduleObject) != "object" || (IDM.type(moduleObject) == "object" && Object.keys(moduleObject).length == 0)) {
+                    return "组件对象参数不能为空";
+                }
+                if (IDM.type(attrArray) === "array") {
+                    var paramCom = {
+                        moduleObject,
+                    };
+                    if (otherObject && IDM.type(otherObject) == "object") {
+                        Object.assign(paramCom, otherObject);
+                    }
+                    var renderCount = 0;
+                    for (var index = 0; index < attrArray.length; index++) {
+                        const item = attrArray[index];
+                        if (
+                            item.styleUUID &&
+                            item.styleType &&
+                            item.cssCode &&
+                            // item.idmCoreLoad !== true &&
+                            IDM.type(item.cssCode) === "string"
+                        ) {
+                            //进行表达式转换
+                            if (
+                                !item.styleCondition ||
+                                (item.styleCondition && IDM.getExpressData(item.styleCondition, paramCom))
+                            ) {
+                                renderCount++;
+                                var newUUID = item.styleUUID+"_"+item.styleRenderUUID?IDM.getExpressData(item.styleRenderUUID, paramCom, "", false):IDM.uuid();
+                                IDM.setStyleHtmlToPageHead(
+                                    newUUID,
+                                    IDM.getExpressData(item.cssCode, paramCom, "", false)
+                                );
+                            }
+                        }
+                    }
+                    return renderCount;
+                } else {
+                    return false;
+                }
+            },
+            /**
+             * 获取属性的最终结果值，优先去获取指定属性的变量绑定的执行结果，如果表达式没有则返回属性设置的结果
+             * @param {*} _this 当前组件的this对象
+             * @param {*} propData 当前组件的所有属性数据
+             * @param {*} attrName 要获取的属性名称
+             * @param {*} moduleObject 当前组件的对象
+             * @param {*} extendPrefixName 当前属性的扩展前缀名称
+             * @param {*} extendData 表达式绑定中提供的扩展数据对象
+             */
+            getAttrVarBindResultData:function(_this,propData,attrName,moduleObject,extendPrefixName,extendData){
+                var afterStr = "_idmVarBind";
+                if (propData.hasOwnProperty.call(propData, attrName+afterStr)) {
+                    var element = propData[attrName+afterStr];
+                    if (IDM.isUnDef(element)||(element&&!element.content)) {
+                        //为空直接返回属性
+                        return propData[attrName]
+                    }
+                    //不为空
+                    try {
+                        //IDM.express.eval("function(ctx){var aaa =abcdd(123)+ctx.ddd;return aaa}(@[abd])",{abd:{ddd:"abcdef"}})
+                        if(element.js){
+                            //是js函数来执行
+                            return IDM.express.eval("function(_this,moduleObject,"+extendPrefixName+"){"+element.content+"}(@[_this],@[moduleObject],@["+extendPrefixName+"])",{
+                                _this,
+                                moduleObject,
+                                [extendPrefixName]:extendData
+                            })
+                        }
+                        //表达式执行
+                        return IDM.getExpressData(element.content,{
+                            _this,
+                            moduleObject,
+                            [extendPrefixName]:extendData
+                        })
+                    } catch (error) {
+                        return propData[attrName]
+                    }
+                }
+                return propData[attrName]
+            },
+            /**
+             * 通用的获取表达式匹配后的结果
+             * 例1：IDM.getExpressData("data.dataFieldName",{data:{dataFieldName:"1234"}})  // => 1234
+             * 例2：IDM.getExpressData("_idm_[0].data.dataFieldName",[{data:{dataFieldName:"1234"}}])  // => 1234
+             * 例3：IDM.getExpressData("_idm_","这里是字符串1234")  // => 这里是字符串1234
+             * 例4：IDM.getExpressData("mydata[0].data.dataFieldName",[{data:{dataFieldName:"1234"}}],"mydata")  // => 1234
+             * @param {*} expressStr 表达式字符串，不包含@[]
+             * @param {*} objectData 表达式所使用的对象数据，如果为object类型则可直接使用，如果为数组或者其他类型则会默认给添加到 _idm_ 字段中，因此表达式需要带上 _idm_.dataFieldName 这样
+             * @param {*} defaultPrefix 为数组或者其他类型的默认字段名称，默认为 _idm_ ，如果需要定义其他可以传此参数
+             * @param {*} addAt 是否自动追加艾特@符号 '@[]',默认为追加，为false则不追加
+             * @returns 
+             */
+            getExpressData: function (expressStr, objectData, defaultPrefix,addAt) {
+                //给defaultValue设置dataFiled的值
+                var resultData;
+                if (expressStr) {
+                    var dataObject = { IDM: window.IDM, window };
+                    if (IDM.type(objectData) == "object") {
+                        //直接合并
+                        Object.assign(dataObject, objectData);
+                    } else {
+                        dataObject[defaultPrefix || "_idm_"] = objectData;
+                    }
+                    resultData = window.IDM.express.replace(
+                        addAt===false?expressStr:"@[" + expressStr + "]",
+                        dataObject
+                    );
+                }
+                return resultData;
+            },
+            /**
+             * 将样式html字符串添加到head标签
+             * @param {*} selector
+             * @param {*} styleHtml
+             */
+            setStyleHtmlToPageHead: function(selector, styleHtml){
+                var oldStyleElement = this.findStyleElement(selector)
+              if(oldStyleElement){
+                if(oldStyleElement.innerHTML !== styleHtml){
+                    oldStyleElement.innerHTML = styleHtml
+                }
+                return
+              }
+              var newStyleElement=document.createElement("style");
+              newStyleElement.setAttribute("from",selector);
+              newStyleElement.innerHTML=styleHtml
+              document.getElementsByTagName('head')[0].appendChild(newStyleElement)
+            },
+            /**
              * 更新vue的data
              * @param {*} _this vue对象
              * @param {*} dataName data的名称
@@ -96,18 +231,35 @@
             /**
              * 把object样式转换为style标签样式并添加到head的标签中
              */
-            setStyleToPageHead:function(id,object){
-              var style = "";
-              for (const key in object) {
-                if (Object.hasOwnProperty.call(object, key)) {
-                  const element = object[key];
-                  style+=`${key}:${element};`
+            setStyleToPageHead:function(selector,object){
+                const oldStyleElement = this.findStyleElement(selector)
+                let newStyleStr = "";
+                for (const key in object) {
+                  if (Object.hasOwnProperty.call(object, key)) {
+                    const element = object[key];
+                    newStyleStr+=`${key}:${element};`
+                  }
                 }
-              }
-              var ele=document.createElement("style");
-              ele.setAttribute("from",id);
-              ele.innerHTML=`${id.indexOf(".")==0?"":"#"}${id}{${style}}`;
-              document.getElementsByTagName('head')[0].appendChild(ele)
+                newStyleStr = `${selector.indexOf(".")==0?"":"#"}${selector}{${newStyleStr}}`;
+                if(oldStyleElement){
+                  if(oldStyleElement.innerHTML !== newStyleStr){
+                      oldStyleElement.innerHTML = newStyleStr
+                  }
+                  return
+                }
+                const newStyleElement=document.createElement("style");
+                newStyleElement.setAttribute("from",selector);
+                newStyleElement.innerHTML=newStyleStr
+                document.getElementsByTagName('head')[0].appendChild(newStyleElement)
+            },
+            /**
+             * 根据from找style元素
+             */
+            findStyleElement(selector) {
+                const styles = document.getElementsByTagName('style')
+                const styleElement = Array.prototype.find.call(styles, el => el.getAttribute("from") === selector)
+                if(styleElement) return styleElement
+                return false
             },
             /**
              * 获取浏览器可视区域宽高方法
@@ -331,7 +483,109 @@
                     if (~index) return IMD().util.array.removeAt(target, index);
                     return false;
                 }
+            },
+            dateFormat:function (timestamp, formats) {
+                // formats格式包括
+                // 1. Y-m-d
+                // 2. Y-m-d H:i:s
+                // 3. Y年m月d日
+                // 4. Y年m月d日 H时i分
+                formats = formats || 'Y-m-d';
+            
+                var zero = function (value) {
+                    if (value < 10) {
+                        return '0' + value;
+                    }
+                    return value;
+                };
+            
+                var myDate = timestamp? new Date(timestamp): new Date();
+            
+                var year = myDate.getFullYear();
+                var month = zero(myDate.getMonth() + 1);
+                var day = zero(myDate.getDate());
+            
+                var hour = zero(myDate.getHours());
+                var minite = zero(myDate.getMinutes());
+                var second = zero(myDate.getSeconds());
+            
+                return formats.replace(/Y|m|d|H|i|s/ig, function (matches) {
+                    return ({
+                        Y: year,
+                        m: month,
+                        d: day,
+                        H: hour,
+                        i: minite,
+                        s: second
+                    })[matches];
+                });
+            },
+            /**
+             * 获取cookie
+             * @param {*} t 
+             * @returns 
+             */
+            getCookie:function(t){
+                for(var i=document.cookie.split("; "),e=0;e<i.length;e++){
+                    var s=i[e].split("=");
+                    if(t==s[0])
+                    return s[1]
+                }
+                return null
+            },
+            /**
+             * hex8转换为rgba的字符串格式
+             * @returns 
+             */
+            hex8ToRgbaString:function(hex){
+                if (hex.length < 9 || hex[0] != '#') return hex
+                let r = parseInt(hex.slice(1, 3), 16)
+                let g = parseInt(hex.slice(3, 5), 16)
+                let b = parseInt(hex.slice(5, 7), 16)
+                let a = parseInt(hex.slice(7, 9), 16)/255
+                let res = 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')'
+                return res
+            },
+            /**
+             * hex8转换为rgba对象格式
+             * {
+                "r": 218,
+                "g": 12,
+                "b": 12,
+                "a": 1
             }
+             * @returns 
+             */
+            hex8ToRgbaObject:function(hex){
+                if (hex.length < 9 || hex[0] != '#') return hex
+                let r = parseInt(hex.slice(1, 3), 16)
+                let g = parseInt(hex.slice(3, 5), 16)
+                let b = parseInt(hex.slice(5, 7), 16)
+                let a = parseInt(hex.slice(7, 9), 16)/255
+                return {
+                    r,g,b,a
+                }
+            },
+            invokeCustomFunctions(...args) {
+              if (args.length === 0) return console.error('IDM.invokeCustomFunctions need functions list')
+              const functions = args[0], customOptions = args[1] || {}
+              if (!functions || functions.length === 0) return []
+              const results = []
+              functions.forEach(func => {
+                  const result = window?.[func.name]?.call(this, {
+                      pageId: window.IDM.broadcast && window.IDM.broadcast.pageModule ? window.IDM.broadcast.pageModule.id : "",
+                      _this: this,
+                      ...IDM.url.queryObject(),
+                      ...(func.param || {}),
+                      ...customOptions
+                  })
+                  results.push(result)
+              })
+              return results
+            },
+            getFormURLParam:function(key){
+              return (IDM.form.getQueryObject()||IDM.url.queryObject()||{})[key];
+            },
         }
         /**
          * url获取方法
@@ -354,6 +608,7 @@
                 let isHtmlDir = false;
                 let isAssetsDir = false;
                 let isModuleDir = false;
+                const base64Reg = RegExp(/^data:(image|audio)\/.*;base64,/)
                 if (url.startsWiths("~")) {
                     isHtmlDir = true;
                     url = url.substr(1);
@@ -363,6 +618,10 @@
                 } else if (url.startsWiths("@")) {
                     isModuleDir = true;
                     url = url.substr(1);
+                } else if (base64Reg.test(url)) {
+                    return url
+                } else if (url.startsWiths(rootPath || IDM.setting.webRoot.default)){
+                    return url
                 }
                 if (url.startsWiths("/")) {
                     url = url.substr(1);
@@ -579,6 +838,120 @@
             }
         }
         /**
+         * 设置样式方法
+         */
+        const style = {
+            /**
+             * 设置border对象属性
+             * @param {*} styleObject
+             * @param {*} element
+             * @param {*} isImportant
+             */
+            setBorderStyle(styleObject, element, isImportant = false) {
+                const importantStr = isImportant ? ' !important' : ''
+                if (element.border.top.width > 0) {
+                    styleObject['border-top-width'] = element.border.top.width + element.border.top.widthUnit + importantStr
+                    styleObject['border-top-style'] = element.border.top.style + importantStr
+                    if (element.border.top.colors.hex8) {
+                        styleObject['border-top-color'] = IDM.hex8ToRgbaString(element.border.top.colors.hex8) + importantStr
+                    }
+                }
+                if (element.border.right.width > 0) {
+                    styleObject['border-right-width'] = element.border.right.width + element.border.right.widthUnit + importantStr
+                    styleObject['border-right-style'] = element.border.right.style + importantStr
+                    if (element.border.right.colors.hex8) {
+                        styleObject['border-right-color'] = IDM.hex8ToRgbaString(element.border.right.colors.hex8) + importantStr
+                    }
+                }
+                if (element.border.bottom.width > 0) {
+                    styleObject['border-bottom-width'] = element.border.bottom.width + element.border.bottom.widthUnit + importantStr
+                    styleObject['border-bottom-style'] = element.border.bottom.style + importantStr
+                    if (element.border.bottom.colors.hex8) {
+                        styleObject['border-bottom-color'] = IDM.hex8ToRgbaString(element.border.bottom.colors.hex8) + importantStr
+                    }
+                }
+                if (element.border.left.width > 0) {
+                    styleObject['border-left-width'] = element.border.left.width + element.border.left.widthUnit + importantStr
+                    styleObject['border-left-style'] = element.border.left.style + importantStr
+                    if (element.border.left.colors.hex8) {
+                        styleObject['border-left-color'] = IDM.hex8ToRgbaString(element.border.left.colors.hex8) + importantStr
+                    }
+                }
+            
+                styleObject['border-top-left-radius'] = element.radius.leftTop.radius + element.radius.leftTop.radiusUnit + importantStr
+                styleObject['border-top-right-radius'] = element.radius.rightTop.radius + element.radius.rightTop.radiusUnit + importantStr
+                styleObject['border-bottom-left-radius'] = element.radius.leftBottom.radius + element.radius.leftBottom.radiusUnit + importantStr
+                styleObject['border-bottom-right-radius'] =
+                    element.radius.rightBottom.radius + element.radius.rightBottom.radiusUnit + importantStr
+            },
+            /**
+             * 设置box对象属性
+             * @param {*} styleObject
+             * @param {*} element
+             * @param {*} isImportant
+             */
+            setBoxStyle(styleObject, element, isImportant = false) {
+                const importantStr = isImportant ? ' !important' : ''
+                if (element.marginTopVal) {
+                    styleObject['margin-top'] = element.marginTopVal + importantStr
+                }
+                if (element.marginRightVal) {
+                    styleObject['margin-right'] = element.marginRightVal + importantStr
+                }
+                if (element.marginBottomVal) {
+                    styleObject['margin-bottom'] = element.marginBottomVal + importantStr
+                }
+                if (element.marginLeftVal) {
+                    styleObject['margin-left'] = element.marginLeftVal + importantStr
+                }
+                if (element.paddingTopVal) {
+                    styleObject['padding-top'] = element.paddingTopVal + importantStr
+                }
+                if (element.paddingRightVal) {
+                    styleObject['padding-right'] = element.paddingRightVal + importantStr
+                }
+                if (element.paddingBottomVal) {
+                    styleObject['padding-bottom'] = element.paddingBottomVal + importantStr
+                }
+                if (element.paddingLeftVal) {
+                    styleObject['padding-left'] = element.paddingLeftVal + importantStr
+                }
+            },
+            /**
+             * 设置font对象属性
+             * @param {*} styleObject
+             * @param {*} element
+             * @param {*} isImportant
+             */
+            setFontStyle(styleObject, element, isImportant = false) {
+                const importantStr = isImportant ? ' !important' : ''
+                styleObject['font-family'] = element.fontFamily + importantStr
+                if (element.fontColors && element.fontColors.hex8) {
+                    styleObject['color'] = IDM.hex8ToRgbaString(element.fontColors.hex8) + importantStr
+                }
+                styleObject['font-weight'] = element.fontWeight && element.fontWeight.split(' ')[0] + importantStr
+                styleObject['font-style'] = element.fontStyle + importantStr
+                styleObject['font-size'] = element.fontSize + element.fontSizeUnit + importantStr
+                styleObject['line-height'] =
+                    element.fontLineHeight + (element.fontLineHeightUnit == '-' ? '' : element.fontLineHeightUnit) + importantStr
+                styleObject['text-align'] = element.fontTextAlign + importantStr
+                styleObject['text-decoration'] = element.fontDecoration + importantStr
+                styleObject['letter-spacing'] = element.fontLetterSpacing + element.fontLetterSpacingUnit + importantStr
+            },
+            
+            /**
+             * 批量生成css类名
+             * @param {前缀选择器} selectorPrefix
+             * @param {子级选择器} subSelectorArray
+             * @returns css 选择器字符串
+             */
+             generateClassName(selectorPrefix, subSelectorArray) {
+                const selectorStr = subSelectorArray.map(el => selectorPrefix + el).join(',')
+                if(selectorStr.startsWith('#')) return selectorStr.substr(1)
+                return selectorStr
+            },
+        }
+        /**
          * 获取数据http
          */
         var http={
@@ -594,7 +967,7 @@
                     "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
                     Code: "idm"
                 },
-                withCredentials: true
+                withCredentials: false
             });
         
             const DEFAULT_ERROR = "网络存在异常";
@@ -688,7 +1061,7 @@
                 }
                 path = IDM.url.getWebPath(path, rootPath);
                 let configContentType = options && options.headers && options.headers["Content-Type"] ? options.headers["Content-Type"] : "";
-                if (configContentType.indexOf('application/json')==-1) {
+                if (configContentType.indexOf('application/json')==-1 && configContentType !== "multipart/form-data") {
                     params = qs.stringify(params);
                 }
                 // if (configContentType !== "multipart/form-data") {
@@ -743,7 +1116,7 @@
                 function recursionLoad(callback) {
                     let f = loadFiles.shift();
                     if (f) {
-                        loadFile(f)
+                        http.loadFile(f)
                             .then(result => {
                                 states.push(result);
                                 result = null;
@@ -1247,6 +1620,395 @@
             return validatorMap[validator].validator.apply(this, params);
         }
         validate.map = validatorMap;
+        /**
+         * form表单公共方法
+         */
+        var form = {
+          formObject: {
+            //表单初始化的参数
+            _Q_: {},
+            //表单的存储数据
+            __FORMDATA: null,
+            //模块元数据配置信息
+            METACONFIG: [],
+            //页面上所有组件已绑定元数据的所需要的数据源
+            COMPONENTDATA: [],
+            //依据表单&节点权限设置信息
+            ROLEDATA: null,
+            //节点列表信息
+            FLOWNODE: null,
+            //按钮列表集合
+            BUTTONS: [],
+            //表单主键集合信息
+            PRIMARYLIST: [],
+            //初始化的数据
+            INITIALDATA: null,
+            //模块的附件配置信息
+            ATTACHMENTCONFIG:null
+          },
+          getAttachmentConfig() {
+            return this.formObject.ATTACHMENTCONFIG;
+          },
+          setAttachmentConfig(Data) {
+              this.formObject.ATTACHMENTCONFIG = Data;
+          },
+          getQueryObject() {
+              return this.formObject._Q_;
+          },
+          setQueryObject(_Q_) {
+              this.formObject._Q_ = _Q_;
+          },
+          setQueryObjectKeyVal(key, val) {
+              this.formObject._Q_[key] = val;
+          },
+          getFormData() {
+              return this.formObject.__FORMDATA;
+          },
+          setFormData(Data) {
+              this.formObject.__FORMDATA = Data;
+          },
+          getMetaConfig() {
+              return this.formObject.METACONFIG;
+          },
+          setMetaConfig(Data) {
+              this.formObject.METACONFIG = Data;
+          },
+          getComponentData() {
+              return this.formObject.COMPONENTDATA;
+          },
+          setComponentData(Data) {
+              this.formObject.COMPONENTDATA = Data;
+          },
+          getRoleData() {
+              return this.formObject.ROLEDATA;
+          },
+          setRoleData(Data) {
+              this.formObject.ROLEDATA = Data;
+          },
+          getFlowNode() {
+              return this.formObject.FLOWNODE;
+          },
+          setFlowNode(Data) {
+              this.formObject.FLOWNODE = Data;
+          },
+          getButtons() {
+              return this.formObject.BUTTONS;
+          },
+          setButtons(Data) {
+              this.formObject.BUTTONS = Data;
+          },
+          getPrimaryList() {
+              return this.formObject.PRIMARYLIST;
+          },
+          setPrimaryList(Data) {
+              this.formObject.PRIMARYLIST = Data;
+          },
+          getInitialData() {
+              return this.formObject.INITIALDATA;
+          },
+          setInitialData(routerId) {
+              this.formObject.INITIALDATA = this.getCurrentEnterFromData(routerId);
+          },
+          /**
+           * 获取当前输入的表单数据
+           * @param {*} routerId 路由ID，为空则是主页面的
+           * @returns 
+           */
+          getCurrentEnterFromData(routerId) {
+              const propData = IDM.broadcast?.pageModule?.page?.layout?.props?.compositeAttr;
+              if (!propData) {
+                  return false;
+              }
+              /**
+                 * 组件范围选择返回的格式：
+                 * [
+                 *  {
+                 *  moduleId:packageid,
+                 *  moduleName:asName
+                 *  }
+                 * ]
+                 */
+              let pageModuleSelectDataMultiple = propData.pageModuleSelectDataMultiple;
+              //表单分组标识
+              let formGroupKey = propData.formGroupKey;
+              //所有返回结果
+              let moduleAllData = IDM.broadcast.getModuleContextValue(pageModuleSelectDataMultiple, formGroupKey, routerId, { noVerify: true });
+              return moduleAllData;
+          },
+          /**
+           * 根据元数据ID获取当前控件的值
+           * @param {*} metaId 
+           * @returns 
+           */
+          getCurrentControlValueByMetaId(metaId) {
+              let resultData = IDM.form.getCurrentEnterFromData()?.resultData || [];
+              let result = null;
+              for (let index = 0; index < resultData.length; index++) {
+                  const element = resultData[index];
+                  if (element.key == metaId) {
+                      result = element.data;
+                      break;
+                  }
+              }
+              if (result === null) {
+                  resultData = IDM.form.getPrimaryList() || [];
+                  for (let index = 0; index < resultData.length; index++) {
+                      const element = resultData[index];
+                      if (element.name == metaId) {
+                          result = element.value;
+                          break;
+                      }
+                  }
+              }
+              return result;
+          },
+          /**
+           * 保存表单数据
+           * @param {*} paramObject ,例如：{routerId:路由ID，单页面应用非首页不能为空,canVerify:true代表要验证}
+           * @param {*} callback 
+           * @returns 
+           */
+          saveFormData(paramObject, callback) {
+              const propData = IDM.broadcast?.pageModule?.page?.layout?.props?.compositeAttr;
+              if (!propData) {
+                  callback && callback(false, "attr");
+                  return false;
+              }
+              /**
+                 * 组件范围选择返回的格式：
+                 * [
+                 *  {
+                 *  moduleId:packageid,
+                 *  moduleName:asName
+                 *  }
+                 * ]
+                 */
+              let pageModuleSelectDataMultiple = propData.pageModuleSelectDataMultiple;
+              //表单分组标识
+              let formGroupKey = propData.formGroupKey;
+              //所有返回结果
+              let moduleAllData = IDM.broadcast.getModuleContextValue(pageModuleSelectDataMultiple, formGroupKey, paramObject?.routerId, { noVerify: paramObject?.canVerify !== true });
+              if (moduleAllData.errorData.length > 0) {
+                  //有校验失败的，不提交
+                  callback && callback(false, "verify", moduleAllData.errorData);
+                  return false;
+              }
+              //所有已经校验通过的返回结果,数组形式
+              let moduleDataArray = moduleAllData.resultData;
+              let _formatData = {};
+              //数据格式转换
+              if (propData.saveFormDataFunction?.length) {
+                  //自定义转换 
+                  result = IDM.invokeCustomFunctions.apply(this, [
+                      propData.saveFormDataFunction,
+                      {
+                          formData: moduleDataArray
+                      }
+                  ]);
+                  _formatData = result && result.length > 0 ? result[0] : _formatData;
+              } else {
+                  //系统设置的转换
+                  _formatData = {
+                      maininfo: {},
+                      flowinfo: {}
+                  }
+                  //处理主键信息 getPrimaryList
+                  const primaryList = IDM.form.getPrimaryList() || [];
+                  primaryList.forEach(item => {
+                      _formatData.maininfo[item.name] = {
+                          values: [{
+                              "key": "value",
+                              "value": item.value
+                          }]
+                      };
+                  })
+                  moduleDataArray?.forEach(item => {
+                      /**
+                       * {
+                              "key":"value",
+                              "value":"230720183801RtLYLqvPLIfAnpHDVr4,230720204410kUBqyD2WwyeSspmBaAZ,230714142357C60tDfec7A5xacNvudE"
+                          },
+                          {
+                              "key":"text",
+                              "value":"罗谭珍,罗谭珍,胡越阳1"
+                          },
+                          {
+                              "key":"schema",
+                              "value":"1::22111017014473kTk0Zzq2wEoRp5xU8,1::22111017014473kTk0Zzq2wEoRp5xU8,1::22111017014473kTk0Zzq2wEoRp5xU8"
+                          }
+                      */
+                      let valueObject = { values: [] };
+                      _formatData.maininfo[item.key] = valueObject;
+                      const contentKeyMap = item.keyMap || { value: "key", text: "label" }//,schema:"schema"
+                      // for(const key in contentKeyMap){
+                      // }
+                      switch (IDM.type(item.data)) {
+                          case "string":
+                          case "boolean":
+                              valueObject.values.push({
+                                  key: "value",
+                                  value: item.data
+                              })
+                              break;
+                          case "object":
+                              for (const key in contentKeyMap) {
+                                  if (IDM.isUnDef(item.data[contentKeyMap[key]])) {
+                                      continue;
+                                  }
+                                  valueObject.values.push({
+                                      key: key,
+                                      value: item.data[contentKeyMap[key]]
+                                  })
+                              }
+                              break;
+                          case "array":
+                              let valarray = [], textarray = [];
+                              item.data.forEach(vitem => {
+                                  if (IDM.type(vitem) != "object") {
+                                      valarray.push(vitem)
+                                      return;
+                                  }
+                                  for (const key in contentKeyMap) {
+                                      if (IDM.isUnDef(vitem[contentKeyMap[key]])) {
+                                          continue;
+                                      }
+                                      if (key == "value") {
+                                          valarray.push(vitem[contentKeyMap[key]])
+                                      } else if (key == "text") {
+                                          textarray.push(vitem[contentKeyMap[key]])
+                                      }
+                                  }
+                              })
+                              if (valarray.length) {
+                                  valueObject.values.push({
+                                      key: "value",
+                                      value: valarray.join(",")
+                                  })
+                              }
+                              if (textarray.length) {
+                                  valueObject.values.push({
+                                      key: "text",
+                                      value: textarray.join(",")
+                                  })
+                              }
+          
+                              break;
+                      }
+                      if (item.schema) {
+                          valueObject.values.push({
+                              key: "schema",
+                              value: item.schema
+                          })
+                      }
+                  })
+              }
+          
+              const formQ = IDM.form.getQueryObject();
+              //提取不存在表单上的主表元数据
+              //{main:[],sub:[]} => main^1,2$sub^3,4
+              let notVaildateMetasObject = {};
+              const metaConfig = IDM.form.getMetaConfig();
+              const existsMetaId = Object.keys(_formatData.maininfo || {});
+              metaConfig?.forEach(meta => {
+                  if (!existsMetaId.includes(meta.metaId)) {
+                      if (!notVaildateMetasObject.main) {
+                          notVaildateMetasObject.main = [];
+                      }
+                      notVaildateMetasObject.main.push(meta.metaId)
+                  }
+              })
+              var notVaildateMetasArray = [];
+              for (var key in notVaildateMetasObject) {
+                  var metaKeys = notVaildateMetasObject[key];
+                  if (key && metaKeys && metaKeys.length > 0) {
+                      notVaildateMetasArray.push(key + "^" + metaKeys.join(","));
+                  }
+              }
+          
+              var notVaildateMetas = "";
+              if (notVaildateMetasArray.length > 0) {
+                  notVaildateMetas = notVaildateMetasArray.join("$")
+              }
+              let extendParam = {};
+              if (notVaildateMetas) {
+                  extendParam["notVaildateMetas"] = notVaildateMetas;
+              }
+              if (paramObject._autoGenerateFileCode) {
+                  extendParam._autoGenerateFileCode = paramObject._autoGenerateFileCode;
+              }
+          
+              propData.formSaveDataApi && IDM.http.post(IDM.getExpressData(propData.formSaveDataApi, {}), {
+                  ...formQ,
+                  ...extendParam,
+                  [propData.saveFormDataKeyName || IDM.setting.form.saveApiDataParamNameSetting]: JSON.stringify(_formatData)
+              }, {
+                  headers: propData.formSaveContentType ? {
+                      "Content-Type": propData.formSaveContentType || "application/json;charset=UTF-8"
+                  } : {}
+              }).then((res) => {
+                  //调用后续自定义函数
+                  if (res?.data?.type == "success") {
+                      callback && callback(true, res);
+                  } else {
+                      callback && callback(false, res);
+                  }
+              })
+                  .catch(function (error) {
+                      callback && callback(false, "network",error);
+                  })
+          },
+          /**
+           * 重新加载表单按钮，按钮工具栏可按需调用
+           * @param {*} callback 
+           * @returns 
+           */
+          getReloadButtons(callback) {
+              const propData = IDM.broadcast?.pageModule?.page?.layout?.props?.compositeAttr;
+              if (!propData) {
+                  callback && callback(false, "attr");
+                  return false;
+              }
+              const btnApi = propData.reloadFormButtonApi;
+              if (!btnApi) {
+                  callback && callback(false, "apiempty");
+                  return;
+              }
+              let formQ = IDM.form.getQueryObject();
+              if (propData.reloadFormButtonParamFunction?.length) {
+                  //自定义转换 
+                  const result = IDM.invokeCustomFunctions.apply(this, [
+                      propData.reloadFormButtonParamFunction,
+                      {
+                          formQ
+                      }
+                  ]);
+                  formQ = result && result.length > 0 ? result[0] : formQ;
+              }
+              IDM.http.post(btnApi, formQ, {
+                  headers: propData.reloadFormButtonContentType ? {
+                      "Content-Type": propData.reloadFormButtonContentType || "application/json;charset=UTF-8"
+                  } : {}
+              }).then((res) => {
+                  //调用后续自定义函数
+                  callback && callback(true, res);
+              })
+                  .catch(function (error) {
+                      callback && callback(false, "network");
+                  })
+          },
+          
+          /**
+           * 在idm Tab页模式下，获得父标签页
+           * @returns {*}
+           */
+          getIdmParentTab(){
+              var isUseMainTab = top.window.useMainTab && top.window.$$iframeCtrl && top.window.$$iframeCtrl.addTab;
+              var existRefresh = parent && parent.window && parent.window.$$iframeCtrl;
+              if (isUseMainTab && existRefresh && parent.window.$$iframeCtrl.getParentWindow) {
+                  return parent.window.$$iframeCtrl.getParentWindow(window.frameElement.name);
+              }
+          }
+        }
         return {
             util,
             url,
@@ -1255,7 +2017,9 @@
             app,
             theme,
             watermark,
-            validate
+            validate,
+            style,
+            form
         }
     }
     /**
@@ -3643,9 +4407,11 @@
         theme:idmFun().theme,
         watermark:idmFun().watermark,
         validate:idmFun().validate,
+        style: idmFun().style,
         message:idmMessage(),
         express,
-        layer
+        layer,
+        form: idmFun().form
     }
     IDM.layer.run();
 })();

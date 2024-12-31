@@ -3,9 +3,10 @@
         idm-ctrl="idm_module"
         :id="moduleObject.id"
         :idm-ctrl-id="moduleObject.id"
+        class="idm-advanced-itable"
     >
         <a-config-provider :locale="locale">
-            <div class="table-container" :class="className.wrap">
+            <div class="table-container">
                 <a-form-model
                     :model="filter"
                     layout="inline"
@@ -146,6 +147,7 @@
                     :style="{
                         '--bodyHeight': propData.tableMaxHeight,
                     }"
+                    ref="table"
                 >
                     <template #expandIcon="{ record, expanded, expandable }">
                         <svg-icon
@@ -196,10 +198,10 @@ export default {
             columnSourceType: '',
             columns: [],
             rowKey: 'id',
-            expandedRow: true,
+            expandedRow: false,
         }),
         bindStyle({
-            wrap() {
+            _root() {
                 return this.propData
             },
             table() {
@@ -256,6 +258,8 @@ export default {
             contextDataset: [],
             expandedRowKeys: [],
             selectedRowKeys: [],
+            scrollHeight: 'auto',
+            resizeObserve: null,
         }
     },
     computed: {
@@ -352,9 +356,16 @@ export default {
         },
     },
     mounted() {
+        this.resizeObserve = new ResizeObserver(els => {
+            this.setBodyHeight(els[0].target)
+        })
+        this.resizeObserve.observe(this.$refs.table.$el)
         this.loadColumnsOptions()
             .then(() => this.loadOptionData())
             .then(() => this.initData())
+    },
+    unmounted() {
+        this.resizeObserve.disconnect()
     },
     watch: {
         'propData.customParams': {
@@ -398,6 +409,18 @@ export default {
         },
     },
     methods: {
+        setBodyHeight(el) {
+            const tableHeight = el.clientHeight
+            const headHeight =
+                el.querySelector('.ant-table-header')?.clientHeight ||
+                el.querySelector('.ant-table-thead').clientHeight ||
+                0
+            const pageHeight =
+                el.querySelector('.ant-table-pagination')?.clientHeight || 0
+            this.propData.tableMaxHeight = `${
+                tableHeight - headHeight - pageHeight
+            }px`
+        },
         urlGetWebPath: window.IDM?.url?.getWebPath,
         expressReplace: window.IDM?.express?.replace,
         comboColumns(columns = [], keyPrefix = 'col') {
@@ -1126,6 +1149,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.idm-advanced-itable {
+    position: absolute;
+    inset: 0;
+}
 a,
 .href {
     color: #2673d3;
@@ -1137,6 +1164,7 @@ a,
     display: flex;
     flex-direction: column;
     gap: 20px;
+    height: 100%;
 }
 .filter-form {
     padding: 10px;
@@ -1176,17 +1204,60 @@ a,
         --bg: #e3000021;
     }
 }
+:deep(.ant-table-wrapper) {
+    flex: 1;
+    height: 0;
+    .ant-spin-nested-loading {
+        height: 100%;
+        .ant-spin-container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            .ant-table-pagination.ant-pagination {
+                align-self: flex-end;
+                margin: 0;
+                padding: 10px 0;
+            }
+        }
+    }
+}
 :deep(.ant-table) {
     border: 1px solid #e8e8e8;
     border-radius: 3px;
-    .ant-table-header,
-    .ant-table-body {
-        scrollbar-gutter: stable;
+    flex: 1;
+    height: 0;
+    &.ant-table-empty {
+        .ant-table-content {
+            height: 100%;
+            .ant-table-scroll {
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                .ant-table-placeholder {
+                    flex: 1;
+                    height: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+            }
+        }
     }
     .ant-table-scroll {
+        .ant-table-header,
         .ant-table-body {
-            height: var(--bodyHeight);
-            overflow-y: auto !important;
+            &::-webkit-scrollbar {
+                background-color: transparent;
+                &-thumb {
+                    background-color: #ddd;
+                    border-radius: 8px;
+                    background-clip: padding-box;
+                    border: 2px solid transparent;
+                    &:hover {
+                        background-color: #8b8b8b;
+                    }
+                }
+            }
         }
     }
     .ant-table-thead {
@@ -1223,13 +1294,6 @@ a,
         > tr:hover:not(.ant-table-expanded-row):not(.ant-table-row-selected)
         > td {
         background: none !important;
-    }
-    &.ant-table-empty {
-        .ant-table-scroll {
-            .ant-table-body {
-                height: auto;
-            }
-        }
     }
 }
 .extra-button-wrap {

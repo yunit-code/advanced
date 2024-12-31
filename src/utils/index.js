@@ -41,7 +41,7 @@ export const propToStyle = props => {
                 carry['box-shadow'] = value
                 break
             case 'boxborder':
-                IDM.style.setBorderStyle(carry, value)
+                window.IDM.style.setBorderStyle(carry, value)
                 break
             case 'font':
                 carry['font-family'] = value.fontFamily
@@ -59,6 +59,9 @@ export const propToStyle = props => {
                         : value.fontLineHeightUnit)
                 carry['text-align'] = value.fontTextAlign
                 carry['text-decoration'] = value.fontDecoration
+                break
+            case 'flex':
+                carry['flex'] = value
                 break
         }
         return carry

@@ -10,7 +10,11 @@ export default function bindStyle(
         data() {
             return {
                 className: Object.keys(list).reduce((carry, current) => {
-                    carry[current] = `${current}-${window.IDM.uuid()}`
+                    if (['_root'].includes(current)) {
+                        carry[current] = current
+                    } else {
+                        carry[current] = `${current}-${window.IDM.uuid()}`
+                    }
                     return carry
                 }, {}),
             }
@@ -36,29 +40,40 @@ export default function bindStyle(
                 const themeNamePrefix =
                     window.IDM?.setting?.applications?.themeNamePrefix ||
                     'idm-theme-'
-                themeList.forEach(item => {
-                    IDM.setStyleToPageHead(
-                        `.${themeNamePrefix}${item.key} #${
+                window.IDM.setStyleObjectToPageHead(
+                    this.moduleObject.packageid,
+                    themeList.map(theme => ({
+                        selector: `.${themeNamePrefix}${theme.key} #${
                             this.moduleObject.id || 'module_demo'
-                        } .${this.className.wrap}`,
-                        {
+                        }`,
+                        style: {
                             '--theme-color': window.IDM?.hex8ToRgbaString(
-                                item.mainColor.hex8
+                                theme.mainColor.hex8
                             ),
-                        }
-                    )
-                })
+                        },
+                    }))
+                )
             },
             /**
              * @Desc 设置样式
              */
             _bindStyle() {
-                _.entries(this.className).forEach(([key, className]) => {
-                    window.IDM.setStyleToPageHead(
-                        `${this.moduleObject.id} .${className}`,
-                        propToStyle(list[key].call(this))
-                    )
-                })
+                window.IDM.setStyleObjectToPageHead(
+                    this.moduleObject.packageid,
+                    _.toPairs(this.className)
+                        .map(([key, className]) => {
+                            if (key == '_root') {
+                                return {
+                                    selector: `#${this.moduleObject.packageid}`,
+                                    style: propToStyle(list[key].call(this)),
+                                }
+                            }
+                            return {
+                                selector: `#${this.moduleObject.id} .${className}`,
+                                style: propToStyle(list[key].call(this)),
+                            }
+                        })
+                )
             },
         },
     }
