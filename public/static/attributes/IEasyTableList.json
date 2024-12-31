@@ -965,6 +965,12 @@
                     "layoutType": "block",
                     "text": "表头文字",
                     "bindKey": "tableTitleFont"
+                },
+                {
+                    "type": "inputNumber",
+                    "layoutType": "inline",
+                    "text": "flex",
+                    "bindKey": "flex"
                 }
             ]
         },

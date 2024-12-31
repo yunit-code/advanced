@@ -4,202 +4,175 @@
         :id="moduleObject.id"
         :idm-ctrl-id="moduleObject.id"
         v-show="propData.defaultStatus != 'hidden'"
+        class="idm-advanced-iEasyTableList"
     >
-        <!--
-      组件内部容器
-      增加class="drag_container" 必选
-      idm-ctrl-id：组件的id，这个必须不能为空
-      idm-container-index  组件的内部容器索引，不重复唯一且不变，必选
-    -->
-        <div class="console-easy-tablelist-item">
-            <a-config-provider :locale="locale">
-                <a-table
-                    :columns="columns"
-                    :data-source="dataRows"
-                    :size="propData.size || 'middle'"
-                    :tableLayout="propData.tableLayout || ''"
-                    :showHeader="propData.showHeader === false ? false : true"
-                    :bordered="propData.showBordered"
-                    :customRow="customRow"
-                    :scroll="scrollOption"
-                    :rowSelection="rowSelection"
-                    :pagination="pagination"
-                    :locale="localeEmpty"
-                    :customHeaderRow="customHeaderRow"
-                    :rowClassName="rowClassNameHandle"
-                    :rowKey="propData.rowKey || ((r, i) => i.toString())"
-                    :loading="loading"
-                    @change="handleTableChange"
-                    :style="{
-                        '--cellFontSize': `${
-                            (propData.font && propData.font.fontSize) || 14
-                        }${
-                            (propData.font && propData.font.fontSizeUnit) ||
-                            'px'
-                        }`,
-                    }"
+        <a-config-provider :locale="locale">
+            <a-table
+                :columns="columns"
+                :data-source="dataRows"
+                :size="propData.size || 'middle'"
+                :tableLayout="propData.tableLayout || ''"
+                :showHeader="propData.showHeader === false ? false : true"
+                :bordered="propData.showBordered"
+                :customRow="customRow"
+                :scroll="scrollOption"
+                :rowSelection="rowSelection"
+                :pagination="pagination"
+                :locale="localeEmpty"
+                :customHeaderRow="customHeaderRow"
+                :rowClassName="rowClassNameHandle"
+                :rowKey="propData.rowKey || ((r, i) => i.toString())"
+                :loading="loading"
+                @change="handleTableChange"
+                :style="{
+                    '--cellFontSize': `${
+                        (propData.font && propData.font.fontSize) || 14
+                    }${(propData.font && propData.font.fontSizeUnit) || 'px'}`,
+                }"
+                ref="table"
+            >
+                <div
+                    v-for="(item, cindex) in rowCustomRenderList"
+                    :slot="item.scopedSlots.customRender"
+                    slot-scope="text, record, index"
+                    :key="cindex"
                 >
-                    <div
-                        v-for="(item, cindex) in rowCustomRenderList"
-                        :slot="item.scopedSlots.customRender"
-                        slot-scope="text, record, index"
-                        :key="cindex"
-                    >
-                        <a-input
-                            :size="propData.size"
-                            v-if="item.type == 'input'"
-                            style="margin: -5px 0"
-                            v-model="record[item.dataIndex]"
-                            @blur="saveDataHandle(record, item)"
-                        />
-                        <a-input-number
-                            :size="propData.size"
-                            v-else-if="item.type == 'inputNumber'"
-                            style="margin: -5px 0"
-                            v-model="record[item.dataIndex]"
-                            @change="saveDataHandle(record, item)"
-                        />
-                        <a-switch
-                            :size="propData.size"
-                            style="margin: -5px 0"
-                            v-else-if="item.type == 'switch'"
-                            v-model="record[item.dataIndex]"
-                            @change="saveDataHandle(record, item)"
-                        ></a-switch>
-                        <a-select
-                            :size="propData.size"
-                            @change="saveDataHandle(record, item)"
-                            :labelInValue="item.type == 'mSelect'"
-                            :mode="
-                                item.type == 'mSelect' ? 'multiple' : 'default'
-                            "
-                            v-else-if="
-                                item.type == 'select' || item.type == 'mSelect'
-                            "
-                            v-model="record[item.dataIndex]"
-                            style="margin: -5px 0; min-width: 100%"
-                        >
-                            <a-select-option
-                                v-for="oitem in item.dictionary"
-                                :key="oitem.key"
-                                :value="oitem.key"
-                            >
-                                {{ oitem.label }}
-                            </a-select-option>
-                        </a-select>
-                        <a-radio-group
-                            :size="propData.size"
-                            v-else-if="item.type == 'radio'"
-                            :name="item.dataIndex"
-                            v-model="record[item.dataIndex]"
-                            @change="saveDataHandle(record, item)"
-                        >
-                            <a-radio
-                                v-for="oitem in item.dictionary"
-                                :key="oitem.key"
-                                :value="oitem.key"
-                            >
-                                {{ oitem.label }}
-                            </a-radio>
-                        </a-radio-group>
-                        <template v-else>
-                            <div
-                                v-if="item.rowsCustomRenderReturnType == 'text'"
-                            >
-                                {{
-                                    getRowsCustomRender(
-                                        item,
-                                        text,
-                                        record,
-                                        index
-                                    )
-                                }}
-                            </div>
-                            <div
-                                v-else-if="
-                                    item.rowsCustomRenderReturnType == 'html'
-                                "
-                                v-html="
-                                    getRowsCustomRender(
-                                        item,
-                                        text,
-                                        record,
-                                        index
-                                    )
-                                "
-                            ></div>
-                        </template>
-                    </div>
-                    <template v-for="(item, cindex) in columns">
-                        <!--------------自定义标题-------------->
-                        <!--返回text格式-->
-                        <div
-                            v-if="
-                                item.slots &&
-                                item.customTitleReturnType == 'text'
-                            "
-                            :slot="item.slots.title"
-                            :key="cindex"
-                        >
-                            {{ item.customTitle }}
-                        </div>
-                        <!--返回html格式-->
-                        <div
-                            v-else-if="
-                                item.slots &&
-                                item.customTitleReturnType == 'html'
-                            "
-                            :slot="item.slots.title"
-                            v-html="item.customTitle"
-                            :key="cindex + 'h'"
-                        ></div>
-                    </template>
-                    <div
-                        v-if="
-                            propData.expandedRowRender &&
-                            propData.expandedRowRender.length > 0
+                    <a-input
+                        :size="propData.size"
+                        v-if="item.type == 'input'"
+                        style="margin: -5px 0"
+                        v-model="record[item.dataIndex]"
+                        @blur="saveDataHandle(record, item)"
+                    />
+                    <a-input-number
+                        :size="propData.size"
+                        v-else-if="item.type == 'inputNumber'"
+                        style="margin: -5px 0"
+                        v-model="record[item.dataIndex]"
+                        @change="saveDataHandle(record, item)"
+                    />
+                    <a-switch
+                        :size="propData.size"
+                        style="margin: -5px 0"
+                        v-else-if="item.type == 'switch'"
+                        v-model="record[item.dataIndex]"
+                        @change="saveDataHandle(record, item)"
+                    ></a-switch>
+                    <a-select
+                        :size="propData.size"
+                        @change="saveDataHandle(record, item)"
+                        :labelInValue="item.type == 'mSelect'"
+                        :mode="item.type == 'mSelect' ? 'multiple' : 'default'"
+                        v-else-if="
+                            item.type == 'select' || item.type == 'mSelect'
                         "
-                        :slot="`expandedRowRender${
-                            propData.expandedRowRender &&
-                            propData.expandedRowRender.length > 0
-                                ? ''
-                                : 'close'
-                        }`"
-                        slot-scope="record, index, indent, expanded"
+                        v-model="record[item.dataIndex]"
+                        style="margin: -5px 0; min-width: 100%"
                     >
-                        <div
-                            v-if="
-                                propData.expandedRowRenderReturnType &&
-                                propData.expandedRowRenderReturnType == 'text'
-                            "
+                        <a-select-option
+                            v-for="oitem in item.dictionary"
+                            :key="oitem.key"
+                            :value="oitem.key"
                         >
-                            {{
-                                getRowsExpandedCustomRender(
-                                    record,
-                                    index,
-                                    indent,
-                                    expanded
-                                )
-                            }}
+                            {{ oitem.label }}
+                        </a-select-option>
+                    </a-select>
+                    <a-radio-group
+                        :size="propData.size"
+                        v-else-if="item.type == 'radio'"
+                        :name="item.dataIndex"
+                        v-model="record[item.dataIndex]"
+                        @change="saveDataHandle(record, item)"
+                    >
+                        <a-radio
+                            v-for="oitem in item.dictionary"
+                            :key="oitem.key"
+                            :value="oitem.key"
+                        >
+                            {{ oitem.label }}
+                        </a-radio>
+                    </a-radio-group>
+                    <template v-else>
+                        <div v-if="item.rowsCustomRenderReturnType == 'text'">
+                            {{ getRowsCustomRender(item, text, record, index) }}
                         </div>
                         <div
                             v-else-if="
-                                propData.expandedRowRenderReturnType &&
-                                propData.expandedRowRenderReturnType == 'html'
+                                item.rowsCustomRenderReturnType == 'html'
                             "
                             v-html="
-                                getRowsExpandedCustomRender(
-                                    record,
-                                    index,
-                                    indent,
-                                    expanded
-                                )
+                                getRowsCustomRender(item, text, record, index)
                             "
                         ></div>
+                    </template>
+                </div>
+                <template v-for="(item, cindex) in columns">
+                    <!--------------自定义标题-------------->
+                    <!--返回text格式-->
+                    <div
+                        v-if="
+                            item.slots && item.customTitleReturnType == 'text'
+                        "
+                        :slot="item.slots.title"
+                        :key="cindex"
+                    >
+                        {{ item.customTitle }}
                     </div>
-                </a-table>
-            </a-config-provider>
-        </div>
+                    <!--返回html格式-->
+                    <div
+                        v-else-if="
+                            item.slots && item.customTitleReturnType == 'html'
+                        "
+                        :slot="item.slots.title"
+                        v-html="item.customTitle"
+                        :key="cindex + 'h'"
+                    ></div>
+                </template>
+                <div
+                    v-if="
+                        propData.expandedRowRender &&
+                        propData.expandedRowRender.length > 0
+                    "
+                    :slot="`expandedRowRender${
+                        propData.expandedRowRender &&
+                        propData.expandedRowRender.length > 0
+                            ? ''
+                            : 'close'
+                    }`"
+                    slot-scope="record, index, indent, expanded"
+                >
+                    <div
+                        v-if="
+                            propData.expandedRowRenderReturnType &&
+                            propData.expandedRowRenderReturnType == 'text'
+                        "
+                    >
+                        {{
+                            getRowsExpandedCustomRender(
+                                record,
+                                index,
+                                indent,
+                                expanded
+                            )
+                        }}
+                    </div>
+                    <div
+                        v-else-if="
+                            propData.expandedRowRenderReturnType &&
+                            propData.expandedRowRenderReturnType == 'html'
+                        "
+                        v-html="
+                            getRowsExpandedCustomRender(
+                                record,
+                                index,
+                                indent,
+                                expanded
+                            )
+                        "
+                    ></div>
+                </div>
+            </a-table>
+        </a-config-provider>
     </div>
 </template>
 
@@ -228,6 +201,7 @@ export default {
             rowCustomRenderList: [],
             selectedRowKeys: [],
             sorter: {},
+            resizeObserve: null,
         }
     },
     computed: {
@@ -580,23 +554,37 @@ export default {
             return {}
         },
     },
-    props: {},
     created() {
         this.moduleObject = this.$root.moduleObject
         this.pageSize = this.propData.defaultPageSize || 10
-        // console.log(this.moduleObject)
         this.convertAttrToStyleObject()
         this.initData()
     },
     mounted() {
+        this.resizeObserve = new ResizeObserver(els => {
+            this.setBodyHeight(els[0].target)
+        })
+        this.resizeObserve.observe(this.$refs.table.$el)
         //赋值给window提供跨页面调用
         this.$nextTick(function (params) {
             window[this.moduleObject.packageid] = this
         })
     },
     updated() {},
-    destroyed() {},
+    destroyed() {
+        this.resizeObserve.disconnect()
+    },
     methods: {
+        setBodyHeight(el) {
+            const tableHeight = el.clientHeight
+            const headHeight =
+                el.querySelector('.ant-table-header')?.clientHeight ||
+                el.querySelector('.ant-table-thead').clientHeight ||
+                0
+            const pageHeight =
+                el.querySelector('.ant-table-pagination')?.clientHeight || 0
+            this.propData.scrollY = `${tableHeight - headHeight - pageHeight}px`
+        },
         /**
          * 保存数据
          * @param {*} record 整条数据
@@ -1335,15 +1323,22 @@ export default {
                         case 'tableTitleFont':
                             IDM.style.setFontStyle(tableTitleObj, element)
                             break
+                        case 'flex':
+                            styleObject['flex'] = element
+                            break
                     }
                 }
             }
-            window.IDM.setStyleToPageHead(this.moduleObject.id, styleObject)
-            window.IDM.setStyleToPageHead(
-                this.moduleObject.id +
-                    ' .ant-table-thead>tr>th .ant-table-column-title',
-                tableTitleObj
-            )
+            window.IDM.setStyleObjectToPageHead(this.moduleObject.packageid, [
+                {
+                    selector: `#${this.moduleObject.packageid}`,
+                    style: styleObject,
+                },
+                {
+                    selector: `#${this.moduleObject.id} .ant-table-thead>tr>th .ant-table-column-title`,
+                    style: tableTitleObj,
+                },
+            ])
         },
         showThisModuleHandle() {
             this.propData.defaultStatus = 'default'
@@ -1505,8 +1500,45 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.console-easy-tablelist-item {
+.idm-advanced-iEasyTableList {
+    position: absolute;
+    inset: 0;
+    :deep(.ant-table-wrapper) {
+        height: 100%;
+        .ant-spin-nested-loading {
+            height: 100%;
+            .ant-spin-container {
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                .ant-table-pagination.ant-pagination {
+                    align-self: flex-end;
+                    margin: 0;
+                    padding: 10px 0;
+                }
+            }
+        }
+    }
     :deep(.ant-table) {
+        flex: 1;
+        height: 0;
+        &.ant-table-empty {
+            .ant-table-content {
+                height: 100%;
+                .ant-table-scroll {
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    .ant-table-placeholder {
+                        flex: 1;
+                        height: 100%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                }
+            }
+        }
         .ant-table-thead > tr > th,
         .ant-table-tbody > tr > td {
             font-size: var(--cellFontSize);
