@@ -258,7 +258,6 @@ export default {
             contextDataset: [],
             expandedRowKeys: [],
             selectedRowKeys: [],
-            resizeObserve: null,
         }
     },
     computed: {
@@ -355,16 +354,12 @@ export default {
         },
     },
     mounted() {
-        this.resizeObserve = new ResizeObserver(els => {
-            this.setBodyHeight(els[0].target)
-        })
-        this.resizeObserve.observe(this.$refs.table.$el)
         this.loadColumnsOptions()
             .then(() => this.loadOptionData())
             .then(() => this.initData())
-    },
-    destroyed() {
-        this.resizeObserve.disconnect()
+        this.$nextTick(function (params) {
+            this.setBodyHeight(this.$refs.table.$el)
+        })
     },
     watch: {
         'propData.customParams': {
@@ -405,6 +400,14 @@ export default {
                         })
                     })
             },
+        },
+        pagination: {
+            handler() {
+                this.$nextTick(() => {
+                    this.setBodyHeight(this.$refs.table.$el)
+                })
+            },
+            deep: true,
         },
     },
     methods: {
@@ -669,7 +672,9 @@ export default {
                             break
                     }
                 })
-                return
+            }
+            if (message?.type == 'pageResize') {
+                this.setBodyHeight(this.$refs.table.$el)
             }
         },
         /**

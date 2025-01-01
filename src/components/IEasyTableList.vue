@@ -201,7 +201,6 @@ export default {
             rowCustomRenderList: [],
             selectedRowKeys: [],
             sorter: {},
-            resizeObserve: null,
         }
     },
     computed: {
@@ -554,6 +553,15 @@ export default {
             return {}
         },
     },
+    watch: {
+        totalCount: {
+            handler() {
+                this.$nextTick(() => {
+                    this.setBodyHeight(this.$refs.table.$el)
+                })
+            },
+        },
+    },
     created() {
         this.moduleObject = this.$root.moduleObject
         this.pageSize = this.propData.defaultPageSize || 10
@@ -561,18 +569,11 @@ export default {
         this.initData()
     },
     mounted() {
-        this.resizeObserve = new ResizeObserver(els => {
-            this.setBodyHeight(els[0].target)
-        })
-        this.resizeObserve.observe(this.$refs.table.$el)
         //赋值给window提供跨页面调用
-        this.$nextTick(function (params) {
+        this.$nextTick(() => {
             window[this.moduleObject.packageid] = this
+            this.setBodyHeight(this.$refs.table.$el)
         })
-    },
-    updated() {},
-    destroyed() {
-        this.resizeObserve.disconnect()
     },
     methods: {
         setBodyHeight(el) {
@@ -1417,6 +1418,8 @@ export default {
                 this.showThisModuleHandle()
             } else if (object && object.type == 'linkageHideModule') {
                 this.hideThisModuleHandle()
+            } else if (object?.type == 'pageResize') {
+                this.setBodyHeight(this.$refs.table.$el)
             }
         },
         /**
