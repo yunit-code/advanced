@@ -357,7 +357,7 @@ export default {
         this.loadColumnsOptions()
             .then(() => this.loadOptionData())
             .then(() => this.initData())
-        this.$nextTick(function (params) {
+        this.$nextTick(() => {
             this.setBodyHeight(this.$refs.table.$el)
         })
     },
@@ -1155,7 +1155,10 @@ export default {
 <style lang="scss" scoped>
 .idm-advanced-itable {
     position: absolute;
-    inset: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
     a,
     .href {
         color: #2673d3;
