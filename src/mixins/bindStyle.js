@@ -45,7 +45,7 @@ export default function bindStyle(styles = {}) {
             _bindTheme() {
                 const themeList = this.propData.themeList || []
                 if (!_.isArray(themeList) || themeList.length == 0) {
-                    return
+                    return []
                 }
                 const themeNamePrefix =
                     window.IDM?.setting?.applications?.themeNamePrefix ||
