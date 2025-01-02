@@ -201,13 +201,8 @@ export default {
             expandedRow: false,
         }),
         bindStyle({
-            _root() {
-                return this.propData
-            },
             table() {
                 return {
-                    width: this.propData.tableWidth,
-                    height: this.propData.tableHeight,
                     ulbox: this.propData.tableUlbox,
                     bgColor: this.propData.tableBgColor,
                     boxShadow: this.propData.tableBoxShadow,
@@ -854,7 +849,7 @@ export default {
                 })
         },
         loadOptionData() {
-            console.log('iTable loadOptionData', this.columnsDataSource)
+            console.debug('iTable loadOptionData', this.columnsDataSource)
             this.columnsDataSource.forEach(column => {
                 const filterKey = this.expressReplace(
                     column.filterField || '@[value]',
@@ -1162,6 +1157,7 @@ export default {
     a,
     .href {
         color: #2673d3;
+        color: var(--main-color, #2673d3);
         &:hover {
             text-decoration: underline;
         }

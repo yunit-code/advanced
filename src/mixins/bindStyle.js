@@ -1,30 +1,40 @@
 import { propToStyle } from '../utils'
-export default function bindStyle(
-    list = {
-        wrap() {
-            return this.propData
+export default function bindStyle(styles = {}) {
+    const comboStyles = _.assign(
+        {},
+        {
+            _root() {
+                return this.propData
+            },
         },
-    }
-) {
+        styles
+    )
     return {
         data() {
             return {
-                className: Object.keys(list).reduce((carry, current) => {
-                    if (['_root'].includes(current)) {
-                        carry[current] = current
-                    } else {
-                        carry[current] = `${current}-${window.IDM.uuid()}`
-                    }
-                    return carry
-                }, {}),
+                className: _.reduce(
+                    _.keys(comboStyles),
+                    (carry, current) => {
+                        if (['_root'].includes(current)) {
+                            carry[current] = current
+                        } else {
+                            carry[current] = `${current}-${window.IDM.uuid()}`
+                        }
+                        return carry
+                    },
+                    {}
+                ),
             }
         },
         watch: {
             propData: {
                 handler() {
-                    this._bindTheme()
-                    this._bindStyle()
+                    window.IDM.setStyleObjectToPageHead(
+                        this.moduleObject.packageid,
+                        [...this._bindTheme(), ...this._bindStyle()]
+                    )
                 },
+                deep: true,
                 immediate: true,
             },
         },
@@ -40,40 +50,33 @@ export default function bindStyle(
                 const themeNamePrefix =
                     window.IDM?.setting?.applications?.themeNamePrefix ||
                     'idm-theme-'
-                window.IDM.setStyleObjectToPageHead(
-                    this.moduleObject.packageid,
-                    themeList.map(theme => ({
-                        selector: `.${themeNamePrefix}${theme.key} #${
-                            this.moduleObject.id || 'module_demo'
-                        }`,
-                        style: {
-                            '--theme-color': window.IDM?.hex8ToRgbaString(
-                                theme.mainColor.hex8
-                            ),
-                        },
-                    }))
-                )
+                return _.map(themeList, theme => ({
+                    selector: `.${themeNamePrefix}${theme.key} #${
+                        this.moduleObject.id || 'module_demo'
+                    }`,
+                    style: {
+                        '--main-color': window.IDM?.hex8ToRgbaString(
+                            theme.mainColor.hex8
+                        ),
+                    },
+                }))
             },
             /**
              * @Desc 设置样式
              */
             _bindStyle() {
-                window.IDM.setStyleObjectToPageHead(
-                    this.moduleObject.packageid,
-                    _.toPairs(this.className)
-                        .map(([key, className]) => {
-                            if (key == '_root') {
-                                return {
-                                    selector: `#${this.moduleObject.packageid}`,
-                                    style: propToStyle(list[key].call(this)),
-                                }
-                            }
-                            return {
-                                selector: `#${this.moduleObject.id} .${className}`,
-                                style: propToStyle(list[key].call(this)),
-                            }
-                        })
-                )
+                return _.map(_.toPairs(this.className), ([key, className]) => {
+                    if (key == '_root') {
+                        return {
+                            selector: `#${this.moduleObject.packageid}`,
+                            style: propToStyle(comboStyles[key].call(this)),
+                        }
+                    }
+                    return {
+                        selector: `#${this.moduleObject.id} .${className}`,
+                        style: propToStyle(comboStyles[key].call(this)),
+                    }
+                })
             },
         },
     }

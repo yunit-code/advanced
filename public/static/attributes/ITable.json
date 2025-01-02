@@ -1417,10 +1417,25 @@
                     "bindKey": "boxborder"
                 },
                 {
-                    "type": "inputNumber",
-                    "layoutType": "inline",
-                    "text": "flex",
-                    "bindKey": "flex"
+                    "type": "table",
+                    "layoutType": "block",
+                    "text": "自定义样式",
+                    "tabText": "样式[index]",
+                    "bindKey": "styleList",
+                    "children": [
+                        {
+                            "type": "input",
+                            "bindKey":"property",
+                            "text": "属性",
+                            "layoutType": "inline"
+                        },
+                        {
+                            "type": "input",
+                            "bindKey":"value",
+                            "text": "值",
+                            "layoutType": "inline"
+                        }
+                    ]
                 }
             ]
         },
@@ -1467,6 +1482,136 @@
                     "layoutType": "block",
                     "text": "边框",
                     "bindKey": "tableBoxborder"
+                }
+            ]
+        },
+        {
+            "type": "table",
+            "text": "主题设置",
+            "desc": "点击？查看主题设置用法指南",
+            "bindKey": "themeList",
+            "tabText": "主题[index]",
+            "default": [
+                {
+                    "key": "red",
+                    "mainColor": {
+                        "hex": "#E21A1A",
+                        "hex8": "#E21A1AFF"
+                    }
+                },
+                {
+                    "key": "green",
+                    "mainColor": {
+                        "hex": "#0EAF64",
+                        "hex8": "#0EAF64FF"
+                    }
+                },
+                {
+                    "key": "blue",
+                    "mainColor": {
+                        "hex": "#0073CA",
+                        "hex8": "#0073CAFF"
+                    }
+                },
+                {
+                    "key": "zwblue",
+                    "mainColor": {
+                        "hex": "#0086D9",
+                        "hex8": "#0086D9FF"
+                    }
+                },
+                {
+                    "key": "inblue",
+                    "mainColor": {
+                        "hex": "#0080FF",
+                        "hex8": "#0080FFFF"
+                    }
+                },
+                {
+                    "key": "ycgreen",
+                    "mainColor": {
+                        "hex": "#026A52",
+                        "hex8": "#026A52FF"
+                    }
+                },
+                {
+                    "key": "black",
+                    "mainColor": {
+                        "hex": "#333333",
+                        "hex8": "#333333FF"
+                    }
+                },
+                {
+                    "key": "orange",
+                    "mainColor": {
+                        "hex": "#ff6a00",
+                        "hex8": "#ff6a00FF"
+                    }
+                },
+                {
+                    "key": "elegant",
+                    "mainColor": {
+                        "hex": "#438eb9",
+                        "hex8": "#438eb9FF"
+                    }
+                }
+            ],
+            "children": [
+                {
+                    "type": "select",
+                    "layoutType": "inline",
+                    "text": "主题标识",
+                    "bindKey": "key",
+                    "desc": "用于设置主题的标识，此项需要搭配自定义开发切换主题的功能，例如：蓝色标识为blue，用户切换主题的时候存储到数据库中的标识为blue，则这里选择blue",
+                    "default": "",
+                    "placeholder": "例如：blue",
+                    "ctrlAttrObject": {
+                        "mode": "combobox"
+                    },
+                    "dictionary": [
+                        {
+                            "label": "red",
+                            "value": "red"
+                        },
+                        {
+                            "label": "green",
+                            "value": "green"
+                        },
+                        {
+                            "label": "blue",
+                            "value": "blue"
+                        },
+                        {
+                            "label": "inblue",
+                            "value": "inblue"
+                        },
+                        {
+                            "label": "ycgreen",
+                            "value": "ycgreen"
+                        },
+                        {
+                            "label": "black",
+                            "value": "black"
+                        },
+                        {
+                            "label": "orange",
+                            "value": "orange"
+                        },
+                        {
+                            "label": "elegant",
+                            "value": "elegant"
+                        }
+                    ]
+                },
+                {
+                    "type": "colorPicker",
+                    "layoutType": "inline",
+                    "text": "主要颜色",
+                    "bindKey": "mainColor",
+                    "desc": "主题的主要颜色",
+                    "placeholder": "请选择颜色",
+                    "display": "@[key]",
+                    "default": {}
                 }
             ]
         }

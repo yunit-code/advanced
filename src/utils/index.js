@@ -23,49 +23,61 @@ export const commonParam = () => {
     }
 }
 export const propToStyle = props => {
-    return _.entries(props).reduce((carry, [key, value]) => {
-        switch (key) {
-            case 'width':
-                carry['width'] = value
-                break
-            case 'height':
-                carry['height'] = value
-                break
-            case 'ulbox':
-                IDM.style.setBoxStyle(carry, value)
-                break
-            case 'bgColor':
-                carry['background-color'] = value && value.hex8
-                break
-            case 'boxShadow':
-                carry['box-shadow'] = value
-                break
-            case 'boxborder':
-                window.IDM.style.setBorderStyle(carry, value)
-                break
-            case 'font':
-                carry['font-family'] = value.fontFamily
-                if (value.fontColors.hex8) {
-                    carry['color'] = value.fontColors.hex8
-                }
-                carry['font-weight'] =
-                    value.fontWeight && value.fontWeight.split(' ')[0]
-                carry['font-style'] = value.fontStyle
-                carry['font-size'] = value.fontSize + value.fontSizeUnit
-                carry['line-height'] =
-                    value.fontLineHeight +
-                    (value.fontLineHeightUnit == '-'
-                        ? ''
-                        : value.fontLineHeightUnit)
-                carry['text-align'] = value.fontTextAlign
-                carry['text-decoration'] = value.fontDecoration
-                break
-            case 'flex':
-                carry['flex'] = value
-                break
-        }
-        return carry
-    }, {})
+    return _.reduce(
+        _.toPairs(props),
+        (carry, [key, value]) => {
+            switch (key) {
+                case 'width':
+                    carry['width'] = value
+                    break
+                case 'height':
+                    carry['height'] = value
+                    break
+                case 'ulbox':
+                    IDM.style.setBoxStyle(carry, value)
+                    break
+                case 'bgColor':
+                    carry['background-color'] = value && value.hex8
+                    break
+                case 'boxShadow':
+                    carry['box-shadow'] = value
+                    break
+                case 'boxborder':
+                    window.IDM.style.setBorderStyle(carry, value)
+                    break
+                case 'font':
+                    carry['font-family'] = value.fontFamily
+                    if (value.fontColors.hex8) {
+                        carry['color'] = value.fontColors.hex8
+                    }
+                    carry['font-weight'] =
+                        value.fontWeight && value.fontWeight.split(' ')[0]
+                    carry['font-style'] = value.fontStyle
+                    carry['font-size'] = value.fontSize + value.fontSizeUnit
+                    carry['line-height'] =
+                        value.fontLineHeight +
+                        (value.fontLineHeightUnit == '-'
+                            ? ''
+                            : value.fontLineHeightUnit)
+                    carry['text-align'] = value.fontTextAlign
+                    carry['text-decoration'] = value.fontDecoration
+                    break
+                case 'styleFunc':
+                    carry = _.assign(
+                        carry,
+                        ...window.IDM.invokeCustomFunctions(value)
+                    )
+                    break
+                case 'styleList':
+                    _.forEach(value, value => {
+                        carry[value.property] = value.value
+                    })
+                    break
+            }
+            return carry
+        },
+        {}
+    )
 }
 export const availableArray = value => _.isArray(value) && value.length > 0
 export { default as dataUtil } from './dataUtil'
