@@ -1321,43 +1321,6 @@
         },
         {
             "type": "group",
-            "text": "筛选变动联动组件",
-            "desc": "当筛选有变动会联动这里选择的组件，把当前筛选条件的对象传递给这些组件",
-            "children": [
-                {
-                    "type": "pageModuleSelect",
-                    "layoutType": "block",
-                    "text": "需求组件范围",
-                    "desc": "当前筛选变动需要联动其他组件需求值的组件范围",
-                    "bindKey": "linkageDemandPageModule",
-                    "multiple": true
-                },
-                {
-                    "type": "text",
-                    "layoutType": "inline",
-                    "text": "发送消息key",
-                    "bindKey": "linkageDemandMessageKey",
-                    "default": "filter"
-                },
-                {
-                    "type": "pageModuleSelect",
-                    "layoutType": "block",
-                    "text": "结果组件范围",
-                    "desc": "当前筛选变动需要联动其他组件变更结果值的组件范围",
-                    "bindKey": "linkageResultPageModule",
-                    "multiple": true
-                },
-                {
-                    "type": "text",
-                    "layoutType": "inline",
-                    "text": "发送消息key",
-                    "bindKey": "linkageResultMessageKey",
-                    "default": "filter"
-                }
-            ]
-        },
-        {
-            "type": "group",
             "text": "外层样式",
             "desc": "点击？查看样式设置用法指南",
             "helpUrl": "",

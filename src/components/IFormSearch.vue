@@ -3,13 +3,13 @@
         idm-ctrl="idm_module"
         :id="moduleObject.id"
         :idm-ctrl-id="moduleObject.id"
+        class="idm-advanced-iFormSearch"
     >
         <a-form-model
             :model="filter"
             @submit="submitHandle"
             @submit.native.prevent
             layout="inline"
-            :class="className.wrap"
         >
             <a-form-model-item
                 v-if="propData.queryEnable"
@@ -125,14 +125,21 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-:deep(.ant-btn-primary) {
-    background-color: var(--theme-color, #1890ff);
-    border-color: var(--theme-color, #1890ff);
-    &:hover,
-    &:active,
-    &:focus {
+.idm-advanced-iFormSearch {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    :deep(.ant-btn-primary) {
         background-color: var(--theme-color, #1890ff);
         border-color: var(--theme-color, #1890ff);
+        &:hover,
+        &:active,
+        &:focus {
+            background-color: var(--theme-color, #1890ff);
+            border-color: var(--theme-color, #1890ff);
+        }
     }
 }
 </style>

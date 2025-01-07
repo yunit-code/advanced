@@ -221,13 +221,6 @@
             "tabText": "主题[index]",
             "default": [
                 {
-                    "key": "blue",
-                    "mainColor": {
-                        "hex": "#0073CA",
-                        "hex8": "#0073CAFF"
-                    }
-                },
-                {
                     "key": "red",
                     "mainColor": {
                         "hex": "#E21A1A",
@@ -240,6 +233,55 @@
                         "hex": "#0EAF64",
                         "hex8": "#0EAF64FF"
                     }
+                },
+                {
+                    "key": "blue",
+                    "mainColor": {
+                        "hex": "#0073CA",
+                        "hex8": "#0073CAFF"
+                    }
+                },
+                {
+                    "key": "zwblue",
+                    "mainColor": {
+                        "hex": "#0086D9",
+                        "hex8": "#0086D9FF"
+                    }
+                },
+                {
+                    "key": "inblue",
+                    "mainColor": {
+                        "hex": "#0080FF",
+                        "hex8": "#0080FFFF"
+                    }
+                },
+                {
+                    "key": "ycgreen",
+                    "mainColor": {
+                        "hex": "#026A52",
+                        "hex8": "#026A52FF"
+                    }
+                },
+                {
+                    "key": "black",
+                    "mainColor": {
+                        "hex": "#333333",
+                        "hex8": "#333333FF"
+                    }
+                },
+                {
+                    "key": "orange",
+                    "mainColor": {
+                        "hex": "#ff6a00",
+                        "hex8": "#ff6a00FF"
+                    }
+                },
+                {
+                    "key": "elegant",
+                    "mainColor": {
+                        "hex": "#438eb9",
+                        "hex8": "#438eb9FF"
+                    }
                 }
             ],
             "children": [
@@ -248,7 +290,7 @@
                     "layoutType": "inline",
                     "text": "主题标识",
                     "bindKey": "key",
-                    "desc": "用于设置主题的标识，此项需要搭配自定义开发切换主题的功能，例如：蓝色标识为blue，用户切换主题的时候存储到数据库中的标识为blue，则这里填写为blue",
+                    "desc": "用于设置主题的标识，此项需要搭配自定义开发切换主题的功能，例如：蓝色标识为blue，用户切换主题的时候存储到数据库中的标识为blue，则这里选择blue",
                     "default": "",
                     "placeholder": "例如：blue",
                     "ctrlAttrObject": {
@@ -256,16 +298,36 @@
                     },
                     "dictionary": [
                         {
-                            "label": "blue",
-                            "value": "blue"
-                        },
-                        {
                             "label": "red",
                             "value": "red"
                         },
                         {
                             "label": "green",
                             "value": "green"
+                        },
+                        {
+                            "label": "blue",
+                            "value": "blue"
+                        },
+                        {
+                            "label": "inblue",
+                            "value": "inblue"
+                        },
+                        {
+                            "label": "ycgreen",
+                            "value": "ycgreen"
+                        },
+                        {
+                            "label": "black",
+                            "value": "black"
+                        },
+                        {
+                            "label": "orange",
+                            "value": "orange"
+                        },
+                        {
+                            "label": "elegant",
+                            "value": "elegant"
                         }
                     ]
                 },
@@ -276,7 +338,8 @@
                     "bindKey": "mainColor",
                     "desc": "主题的主要颜色",
                     "placeholder": "请选择颜色",
-                    "display": "@[key]"
+                    "display": "@[key]",
+                    "default": {}
                 }
             ]
         }
