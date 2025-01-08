@@ -150,7 +150,7 @@
                     ref="table"
                 >
                     <template #expandIcon="{ record, expanded, expandable }">
-                        <svg-icon
+                        <!-- <svg-icon
                             v-if="expandable && record.expandable"
                             style="
                                 font-size: 18px;
@@ -158,7 +158,11 @@
                                 cursor: pointer;
                             "
                             icon-class="move"
-                        ></svg-icon>
+                        ></svg-icon> -->
+                        <template v-if="expandable && record.expandable">
+                            <img v-if="expanded" src="../assets/expand.png" />
+                            <img v-else src="../assets/collapse.png" />
+                        </template>
                     </template>
                     <template
                         #expandedRowRender="record"

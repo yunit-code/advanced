@@ -126,11 +126,6 @@ export default {
 </script>
 <style lang="scss" scoped>
 .idm-advanced-iFormSearch {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
     :deep(.ant-btn-primary) {
         background-color: var(--theme-color, #1890ff);
         border-color: var(--theme-color, #1890ff);
