@@ -150,19 +150,15 @@
                     ref="table"
                 >
                     <template #expandIcon="{ record, expanded, expandable }">
-                        <!-- <svg-icon
+                        <svg-icon
                             v-if="expandable && record.expandable"
                             style="
                                 font-size: 18px;
                                 color: #134fed;
                                 cursor: pointer;
                             "
-                            icon-class="move"
-                        ></svg-icon> -->
-                        <template v-if="expandable && record.expandable">
-                            <img v-if="expanded" src="../assets/expand.png" />
-                            <img v-else src="../assets/collapse.png" />
-                        </template>
+                            :icon-class="expanded ? 'expand' : 'collapse'"
+                        ></svg-icon>
                     </template>
                     <template
                         #expandedRowRender="record"
