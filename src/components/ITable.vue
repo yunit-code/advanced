@@ -144,9 +144,6 @@
                     "
                     :columns="columns"
                     :class="className.table"
-                    :style="{
-                        '--bodyHeight': propData.tableMaxHeight,
-                    }"
                     ref="table"
                 >
                     <template #expandIcon="{ record, expanded, expandable }">
