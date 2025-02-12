@@ -99,11 +99,30 @@
                     "bindKey": "scrollX"
                 },
                 {
+                    "type": "radio",
+                    "layoutType": "inline",
+                    "text": "高度模式",
+                    "bindKey": "heightMode",
+                    "desc": "跟随容器：需将容器设置为固定高度，内容超出后会出现滚动条",
+                    "dictionary": [
+                        {
+                            "label": "跟随容器",
+                            "value": "fixed"
+                        },
+                        {
+                            "label": "自动",
+                            "value": "auto"
+                        }
+                    ],
+                    "default": "fixed"
+                },
+                {
                     "type": "input",
                     "layoutType": "inline",
                     "text": "Y最大高",
                     "desc": "用于指定滚动区域的高，为空则不设置",
-                    "bindKey": "scrollY"
+                    "bindKey": "scrollY",
+                    "display":"@[heightMode=='fixed']"
                 },
                 {
                     "type": "switch",

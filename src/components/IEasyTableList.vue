@@ -178,21 +178,24 @@
 
 <script>
 import locale from 'ant-design-vue/lib/locale-provider/zh_CN'
+import bindProp from '../mixins/bindProp'
 export default {
     name: 'IEasyTableList',
+    mixins: [
+        bindProp({
+            defaultStatus: 'default',
+            openPagination: true,
+            smallPagination: true,
+            showSizeChanger: true,
+            showTotalFormat: '@[range0]-@[range1] of @[total] items',
+            scrollX: '100%',
+            heightMode: 'fixed',
+        }),
+    ],
     data() {
         return {
             locale,
             dataRows: [],
-            moduleObject: {},
-            propData: this.$root.propData.compositeAttr || {
-                defaultStatus: 'default',
-                openPagination: true,
-                smallPagination: true,
-                showSizeChanger: true,
-                showTotalFormat: '@[range0]-@[range1] of @[total] items',
-                scrollX: '100%',
-            },
             pageSize: 10,
             current: 1,
             totalCount: 0,
@@ -541,16 +544,14 @@ export default {
             return { emptyText: this.propData.noDataTip || '暂无数据' }
         },
         scrollOption() {
-            if (this.propData.scrollX && this.propData.scrollY) {
-                return { x: this.propData.scrollX, y: this.propData.scrollY }
-            }
+            const option = {}
             if (this.propData.scrollX) {
-                return { x: this.propData.scrollX }
+                option.x = this.propData.scrollX
             }
-            if (this.propData.scrollY) {
-                return { y: this.propData.scrollY }
+            if (this.propData.scrollY && this.propData.heightMode == 'fixed') {
+                option.y = this.propData.scrollY
             }
-            return {}
+            return option
         },
     },
     watch: {
@@ -1504,11 +1505,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .idm-advanced-iEasyTableList {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
+    height: 100%;
     :deep(.ant-table-wrapper) {
         height: 100%;
         .ant-spin-nested-loading {
