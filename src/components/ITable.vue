@@ -8,10 +8,11 @@
         <a-config-provider :locale="locale">
             <div class="table-container">
                 <a-form-model
+                    v-if="fields.length > 0 || propData.searchExendBar"
                     :model="filter"
                     layout="inline"
                     class="filter-form"
-                    v-if="fields.length > 0 || propData.searchExendBar"
+                    ref="filterForm"
                 >
                     <a-form-model-item
                         v-for="field in fields"
@@ -122,6 +123,14 @@
                             idm-container-index="filter-extra"
                         ></div>
                     </a-form-model-item>
+                    <div
+                        v-if="propData.searchRowCount > 0"
+                        @click="formExpanded = !formExpanded"
+                        class="btn-collapse"
+                    >
+                        <a-icon v-if="formExpanded" type="up" />
+                        <a-icon v-else type="down" />
+                    </div>
                 </a-form-model>
                 <a-table
                     :dataSource="dataSource"
@@ -138,7 +147,7 @@
                     :expandIconColumnIndex="propData.expandIconColumnIndex || 1"
                     :rowSelection="selectionConfig"
                     :indentSize="0"
-                    :scroll="{ y: propData.tableMaxHeight, x: '100%' }"
+                    :scroll="{ y: tableScrollHeight, x: '100%' }"
                     :rowClassName="
                         (_, index) => (index % 2 == 0 ? 'odd' : 'even')
                     "
@@ -196,14 +205,15 @@ export default {
             columns: [],
             rowKey: 'id',
             expandedRow: false,
+            searchRowCount: 0,
         }),
         bindStyle({
             table() {
                 return {
-                    ulbox: this.propData.tableUlbox,
-                    bgColor: this.propData.tableBgColor,
-                    boxShadow: this.propData.tableBoxShadow,
-                    boxborder: this.propData.tableBoxborder,
+                    ulbox: this.propData.tableUlbox || {},
+                    bgColor: this.propData.tableBgColor || {},
+                    boxShadow: this.propData.tableBoxShadow || {},
+                    boxborder: this.propData.tableBoxborder || {},
                 }
             },
         }),
@@ -219,6 +229,26 @@ export default {
                 {
                     label: 'ID',
                     value: 'id',
+                },
+                {
+                    label: '标题',
+                    value: 'title',
+                    filter: true,
+                },
+                {
+                    label: '标题',
+                    value: 'title',
+                    filter: true,
+                },
+                {
+                    label: '标题',
+                    value: 'title',
+                    filter: true,
+                },
+                {
+                    label: '标题',
+                    value: 'title',
+                    filter: true,
                 },
                 {
                     label: '标题',
@@ -250,6 +280,8 @@ export default {
             contextDataset: [],
             expandedRowKeys: [],
             selectedRowKeys: [],
+            formExpanded: false,
+            tableScrollHeight: this.$root.propData.compositeAttr.tableMaxHeight,
         }
     },
     computed: {
@@ -349,9 +381,11 @@ export default {
         this.loadColumnsOptions()
             .then(() => this.loadOptionData())
             .then(() => this.initData())
-        this.$nextTick(() => {
-            this.setBodyHeight(this.$refs.table.$el)
+        window.addEventListener('resize', this.collapseForm)
+        this.tableOb = new ResizeObserver(() => {
+            this.setMaxScrollHeight(this.$refs.table.$el)
         })
+        this.tableOb.observe(this.$refs.table.$el.querySelector('.ant-table'))
     },
     watch: {
         'propData.customParams': {
@@ -393,25 +427,52 @@ export default {
                     })
             },
         },
-        pagination: {
-            handler() {
-                this.$nextTick(() => {
-                    this.setBodyHeight(this.$refs.table.$el)
-                })
-            },
-            deep: true,
+        formExpanded(value) {
+            if (value) {
+                this.$refs.filterForm.$el
+                    .querySelectorAll('.ant-form-item')
+                    .values()
+                    .forEach(n => {
+                        n.classList.remove('hidden')
+                    })
+                return
+            }
+            this.collapseForm()
+        },
+        fields() {
+            this.$nextTick(() => {
+                this.collapseForm()
+            })
         },
     },
     methods: {
-        setBodyHeight(el) {
+        collapseForm() {
+            if (this.propData.searchRowCount == 0) {
+                return
+            }
+            const formEl = this.$refs.filterForm.$el
+            formEl
+                .querySelectorAll('.ant-form-item')
+                .values()
+                .reduce((carry, current) => {
+                    carry -= current.clientWidth + 16
+                    if (carry < 0) {
+                        current.classList.add('hidden')
+                    } else {
+                        current.classList.remove('hidden')
+                    }
+                    return carry
+                }, formEl.clientWidth * this.propData.searchRowCount - 30)
+        },
+        setMaxScrollHeight(el) {
             const tableHeight = el.clientHeight
             const headHeight =
                 el.querySelector('.ant-table-header')?.clientHeight ||
-                el.querySelector('.ant-table-thead').clientHeight ||
+                el.querySelector('.ant-table-thead')?.clientHeight ||
                 0
             const pageHeight =
                 el.querySelector('.ant-table-pagination')?.clientHeight || 0
-            this.propData.tableMaxHeight = `${
+            this.tableScrollHeight = `${
                 tableHeight - headHeight - pageHeight
             }px`
         },
@@ -664,9 +725,6 @@ export default {
                             break
                     }
                 })
-            }
-            if (message?.type == 'pageResize') {
-                this.setBodyHeight(this.$refs.table.$el)
             }
         },
         /**
@@ -1162,12 +1220,33 @@ export default {
         height: 100%;
     }
     .filter-form {
-        padding: 10px;
+        padding: 5px;
         background-color: #f5f5f5;
-        :deep(.ant-form-item-label) {
-            color: #333333;
-            font-size: 16px;
-            font-weight: 500;
+        position: relative;
+        padding-right: 20px;
+        :deep(.ant-form-item) {
+            &.hidden {
+                display: none;
+            }
+            .ant-form-item-label {
+                color: #333333;
+                font-size: 16px;
+                font-weight: 500;
+            }
+        }
+        .btn-collapse {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 20px;
+            border: 1px solid #ccc;
+            background-color: #eee;
+            color: #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
         }
     }
     :deep(.tag) {
