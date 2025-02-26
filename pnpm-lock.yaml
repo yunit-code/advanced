@@ -17,6 +17,9 @@ importers:
       core-js:
         specifier: ^3.6.5
         version: 3.39.0
+      resize-observer-polyfill:
+        specifier: ^1.5.1
+        version: 1.5.1
       sass-loader:
         specifier: ^8.0.2
         version: 8.0.2(sass@1.80.6)(webpack@4.47.0)

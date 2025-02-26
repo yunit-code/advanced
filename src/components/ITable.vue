@@ -44,6 +44,7 @@
                             :options="optionData[field.value]"
                             :allowClear="field.allowClear"
                             :placeholder="`请选择${field.label}`"
+                            :changeOnSelect="field.changeOnSelect"
                             notFoundContent="暂无数据"
                             :style="{
                                 width: field.filterControlWidth || '100px',
@@ -197,6 +198,7 @@ import { bindProp, bindStyle } from '../mixins'
 import { nextTick } from 'vue'
 import zh_CN from 'ant-design-vue/lib/locale/zh_CN'
 import moreIcon from '../assets/more.png'
+import ResizeObserver from 'resize-observer-polyfill'
 export default {
     mixins: [
         bindProp({

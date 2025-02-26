@@ -649,6 +649,15 @@
                             ]
                         },
                         {
+                            "display": "@[type=='cascader']",
+                            "type": "switch",
+                            "layoutType": "inline",
+                            "text": "选择即变",
+                            "bindKey": "changeOnSelect",
+                            "desc": "选择即改变表单值",
+                            "default": false
+                        },
+                        {
                             "type": "switch",
                             "layoutType": "inline",
                             "text": "筛选",
