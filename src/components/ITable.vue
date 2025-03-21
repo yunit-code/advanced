@@ -164,7 +164,7 @@
                                 color: #134fed;
                                 cursor: pointer;
                             "
-                            :icon-class="expanded ? 'expand' : 'collapse'"
+                            :icon-class="expanded ? 'row-expand' : 'row-collapse'"
                         ></svg-icon>
                     </template>
                     <template
