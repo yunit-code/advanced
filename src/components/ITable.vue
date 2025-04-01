@@ -64,6 +64,9 @@
                                             'after'
                                         )
                                 "
+                                :style="{
+                                    width: field.filterControlWidth || '120px',
+                                }"
                             />
                             ~
                             <a-date-picker
@@ -78,6 +81,9 @@
                                             'before'
                                         )
                                 "
+                                :style="{
+                                    width: field.filterControlWidth || '120px',
+                                }"
                             />
                         </template>
                         <template v-else-if="field.type == 'dateRange'">
@@ -88,6 +94,9 @@
                                 "
                                 :allowClear="field.allowClear || false"
                                 valueFormat="YYYY-MM-DD"
+                                :style="{
+                                    width: field.filterControlWidth || '400px',
+                                }"
                             >
                             </a-range-picker>
                         </template>
@@ -164,7 +173,9 @@
                                 color: #134fed;
                                 cursor: pointer;
                             "
-                            :icon-class="expanded ? 'row-expand' : 'row-collapse'"
+                            :icon-class="
+                                expanded ? 'row-expand' : 'row-collapse'
+                            "
                         ></svg-icon>
                     </template>
                     <template
