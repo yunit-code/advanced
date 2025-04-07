@@ -35,8 +35,7 @@
                                 v-for="item in optionData[field.value]"
                                 :key="item.key"
                                 :value="item.key"
-                                >{{ item.value }}</a-select-option
-                            >
+                                >{{ item.value }}</a-select-option>
                         </a-select>
                         <a-cascader
                             v-else-if="field.type == 'cascader'"
@@ -110,10 +109,7 @@
                         />
                     </a-form-model-item>
                     <a-form-model-item
-                        v-if="
-                            propData.searchExendBar &&
-                            propData.extraButtons?.length > 0
-                        "
+                        v-if="propData.searchExendBar && propData.extraButtons && (propData.extraButtons.length > 0)"
                     >
                         <div class="extra-button-wrap">
                             <a-button
@@ -340,6 +336,10 @@ export default {
             //设置是否可以改变每页的大小
             paginationConfig.showSizeChanger =
                 this.propData.showSizeChanger || false
+            //设置是否可以改变每页的大小
+            paginationConfig.showSizeChange = (current,size) => {
+                this.selectedRowKeys = []
+            }
             //设置是否是小尺寸分页
             paginationConfig.size = this.propData.smallPagination || false
             //设置是否显示为简单分页
