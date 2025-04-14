@@ -336,10 +336,6 @@ export default {
             //设置是否可以改变每页的大小
             paginationConfig.showSizeChanger =
                 this.propData.showSizeChanger || false
-            //设置是否可以改变每页的大小
-            paginationConfig.showSizeChange = (current,size) => {
-                this.selectedRowKeys = []
-            }
             //设置是否是小尺寸分页
             paginationConfig.size = this.propData.smallPagination || false
             //设置是否显示为简单分页
@@ -1001,6 +997,9 @@ export default {
         },
         handleTableChange(pagination, filters, sorter) {
             this.pagination.current = pagination.current
+            if (this.pagination.pageSize != pagination.pageSize) {
+                this.selectedRowKeys = []
+            }
             this.pagination.pageSize = pagination.pageSize
             this.sort = sorter.order
                 ? {
@@ -1237,7 +1236,7 @@ export default {
         background-color: #f5f5f5;
         position: relative;
         padding-right: 20px;
-        :deep(.ant-form-item) {
+        ::v-deep .ant-form-item {
             &.hidden {
                 display: none;
             }
@@ -1262,7 +1261,7 @@ export default {
             cursor: pointer;
         }
     }
-    :deep(.tag) {
+    ::v-deep .tag {
         color: var(--color);
         &.tag-border {
             border: 1px solid var(--color);
@@ -1296,7 +1295,7 @@ export default {
         gap: 10px;
         padding: 4px 0;
     }
-    :deep(.ant-table-wrapper) {
+    ::v-deep .ant-table-wrapper {
         flex: 1;
         height: 0;
         .ant-spin-nested-loading {
@@ -1313,7 +1312,7 @@ export default {
             }
         }
     }
-    :deep(.ant-table) {
+    ::v-deep .ant-table {
         border: 1px solid #e8e8e8;
         border-radius: 3px;
         flex: 1;
