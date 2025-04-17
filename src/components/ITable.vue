@@ -482,7 +482,7 @@ export default {
             const pageHeight =
                 el.querySelector('.ant-table-pagination')?.clientHeight || 0
             this.tableScrollHeight = `${
-                tableHeight - headHeight - pageHeight
+                tableHeight - headHeight - pageHeight - 2
             }px`
         },
         urlGetWebPath: window.IDM?.url?.getWebPath,
