@@ -1506,7 +1506,7 @@ export default {
 <style lang="scss" scoped>
 .idm-advanced-iEasyTableList {
     height: 100%;
-    :deep(.ant-table-wrapper) {
+    ::v-deep .ant-table-wrapper {
         height: 100%;
         .ant-spin-nested-loading {
             height: 100%;
@@ -1522,7 +1522,7 @@ export default {
             }
         }
     }
-    :deep(.ant-table) {
+    ::v-deep .ant-table {
         flex: 1;
         height: 0;
         &.ant-table-empty {

@@ -126,7 +126,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .idm-advanced-iFormSearch {
-    :deep(.ant-btn-primary) {
+    ::v-deep .ant-btn-primary {
         background-color: var(--theme-color, #1890ff);
         border-color: var(--theme-color, #1890ff);
         &:hover,
