@@ -395,6 +395,20 @@ export default {
             this.setMaxScrollHeight(this.$refs.table.$el)
         })
         this.tableOb.observe(this.$refs.table.$el.querySelector('.ant-table'))
+
+        $(document).on("mouseenter",".idm-advanced-itable .hoverDiv",function (event) {
+            $(this).find(".inner").css({
+                display: 'block',
+                left:$(this).offset().left - 40 + 'px',
+                top:$(this).offset().top - 170 + 'px',
+            })
+        })
+        $(document).on("mouseleave",".idm-advanced-itable .hoverDiv",function (event) {
+            $(this).find(".inner").css({
+                display: 'none'
+            })
+        })
+        
     },
     watch: {
         'propData.customParams': {
@@ -1288,6 +1302,32 @@ export default {
         &.tag-danger {
             --color: #e30000;
             --bg: #e3000021;
+        }
+        
+        &.hoverDiv{
+            position:relative;
+            .inner{
+                display:none;
+                position:fixed;
+                min-width: 200px;
+                color: #333;
+                background: #fff;
+                border: 1px solid #ccc;
+                z-index: 99;
+                border-radius:4px;
+                p{
+                    line-height:34px;
+                    font-size:14px;
+                    margin:0;
+                    padding: 0 10px;
+                    text-align:left;
+                    span:first-child{
+                        display:inline-block;
+                        width: 80px;
+                        text-align:right;
+                    }
+                }
+            }
         }
     }
     .extra-button-wrap {
