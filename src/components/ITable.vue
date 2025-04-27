@@ -222,7 +222,7 @@ export default {
                     ulbox: this.propData.tableUlbox || {},
                     bgColor: this.propData.tableBgColor || {},
                     boxShadow: this.propData.tableBoxShadow || {},
-                    boxborder: this.propData.tableBoxborder || {},
+                    boxborder: this.propData.tableBoxborder || {}
                 }
             },
         }),
@@ -1231,6 +1231,9 @@ export default {
 <style lang="scss" scoped>
 .idm-advanced-itable {
     height: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     a,
     .href {
         color: #2673d3;
@@ -1240,6 +1243,7 @@ export default {
         }
     }
     .table-container {
+        flex:1;
         display: flex;
         flex-direction: column;
         gap: 20px;
