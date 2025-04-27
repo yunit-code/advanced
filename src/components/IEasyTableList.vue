@@ -1562,6 +1562,10 @@ export default {
                     }
                 }
             }
+            .ant-table-header{
+                padding-bottom:0 !important;
+                margin-bottom:0 !important;
+            }
         }
     }
 }
