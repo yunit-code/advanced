@@ -1045,6 +1045,33 @@ export default {
             })
             nextTick(() => {
                 this.renderExpand()
+
+
+                if ($(".ant-table-content .ant-table-fixed-left").length != 0 &&$(".ant-table-content .ant-table-fixed-left").find('.ant-table-header .ant-table-fixed').length !=0) {
+                    let scrollHeader = $(".ant-table-content .ant-table-scroll").find('.ant-table-header .ant-table-fixed');
+                    let scrollBody = $(".ant-table-content .ant-table-scroll").find('.ant-table-body .ant-table-fixed');
+                    
+                    let $fixedHeader = $(".ant-table-content .ant-table-fixed-left").find('.ant-table-header .ant-table-fixed');
+                    let $fixedBody = $(".ant-table-content .ant-table-fixed-left").find('.ant-table-body-outer .ant-table-fixed');
+                    
+                    let len = $fixedHeader.find("tr th").length;
+                    
+                    let scrollHeaderWidth = 0;
+                    let scrollBodyWidth = 0;
+                    if (len != 0) {
+
+                        for (let i = 0; i < len; i++) {
+                            scrollHeaderWidth += scrollHeader.find("tr th").eq(i).outerWidth();
+                            scrollBodyWidth += scrollBody.find("tr").eq(0).find("td").eq(i).outerWidth();
+                        }
+                        setTimeout(()=>{
+
+                        $fixedHeader.attr("style",`width: ${scrollHeaderWidth}px !important`)
+                        $fixedBody.attr("style",`width: ${scrollBodyWidth}px !important`)
+                        },100)
+                    }
+                }
+
             })
         },
         renderExpand() {
