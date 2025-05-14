@@ -65,6 +65,13 @@
                     "bindKey": "selection",
                     "default": false,
                     "layoutType": "inline"
+                },
+                {
+                    "type": "switch",
+                    "text": "初次加载",
+                    "bindKey": "firstLoad",
+                    "default": true,
+                    "layoutType": "inline"
                 }
             ]
         },

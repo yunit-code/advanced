@@ -390,7 +390,11 @@ export default {
     mounted() {
         this.loadColumnsOptions()
             .then(() => this.loadOptionData())
-            .then(() => this.initData())
+            .then(() => {
+                if (this.propData.firstLoad) {
+                    this.initData()
+                }
+            })
         window.addEventListener('resize', this.collapseForm)
         this.tableOb = new ResizeObserver(() => {
             this.setMaxScrollHeight(this.$refs.table.$el)
