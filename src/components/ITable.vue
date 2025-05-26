@@ -171,7 +171,7 @@
                                 cursor: pointer;
                             "
                             :icon-class="
-                                expanded ? 'row-expand' : 'row-collapse'
+                                expanded ? 'arrow-down' : 'arrow-right'
                             "
                         ></svg-icon>
                     </template>
@@ -391,7 +391,7 @@ export default {
         this.loadColumnsOptions()
             .then(() => this.loadOptionData())
             .then(() => {
-                if (this.propData.firstLoad) {
+                if (this.propData.firstLoad || typeof this.propData.firstLoad == 'undefined') {
                     this.initData()
                 }
             })
@@ -649,7 +649,16 @@ export default {
                             {actions.map(action => (
                                 <a-badge count={action.badge}>
                                     <a-button
-                                        onClick={e => e.stopPropagation()}
+                                        onClick={e => {
+                                                this.handleMenuClick(
+                                                    action.value,
+                                                    value,
+                                                    record,
+                                                    column
+                                                );
+                                                e.stopPropagation()
+                                            }
+                                        }
                                         key={action.value}
                                     >
                                         {action.label}
