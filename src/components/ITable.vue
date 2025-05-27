@@ -725,7 +725,7 @@ export default {
                 if (message?.message?.data) {
                     this.resultChangeTableData(message.message)
                 }
-            } else if (message?.type == 'linkageReload') {
+            } else if (message?.type == 'linkageReload' || message?.type == 'websocket') {
                 this.reload(
                     message?.message && message?.message?.reloadFirstPage
                 )
