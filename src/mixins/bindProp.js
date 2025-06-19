@@ -6,7 +6,7 @@ export default function bindProp(defaultPropData) {
                 propData: Object.assign(
                     {},
                     defaultPropData,
-                    this.$root.propData.compositeAttr
+                    this.$root.propData.compositeAttr || {}
                 ),
             }
         },

@@ -291,7 +291,7 @@ export default {
             expandedRowKeys: [],
             selectedRowKeys: [],
             formExpanded: false,
-            tableScrollHeight: this.$root.propData.compositeAttr.tableMaxHeight,
+            tableScrollHeight: this.$root.propData.compositeAttr ? this.$root.propData.compositeAttr.tableMaxHeight : "100%",
         }
     },
     computed: {
@@ -397,7 +397,9 @@ export default {
             })
         window.addEventListener('resize', this.collapseForm)
         this.tableOb = new ResizeObserver(() => {
-            this.setMaxScrollHeight(this.$refs.table.$el)
+            if (this.$refs.table) {
+                this.setMaxScrollHeight(this.$refs.table.$el)
+            }
             if ($(".ant-table-content .ant-table-fixed-left").length != 0 &&$(".ant-table-content .ant-table-fixed-left").find('.ant-table-header .ant-table-fixed').length !=0) {
                     let scrollHeader = $(".ant-table-content .ant-table-scroll").find('.ant-table-header .ant-table-fixed');
                     let scrollBody = $(".ant-table-content .ant-table-scroll").find('.ant-table-body .ant-table-fixed');
@@ -423,7 +425,10 @@ export default {
                     }
                 }
         })
-        this.tableOb.observe(this.$refs.table.$el.querySelector('.ant-table'))
+        
+        if (this.$refs.table) {
+            this.tableOb.observe(this.$refs.table.$el.querySelector('.ant-table'))
+        }
 
         $(document).on("mouseenter",".idm-advanced-itable .hoverDiv",function (event) {
             $(this).find(".inner").css({
