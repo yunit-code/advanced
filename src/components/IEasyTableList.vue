@@ -929,6 +929,46 @@ export default {
                 case 'pageContainer':
                     that.loading = false
                     break
+                case 'dataSource':
+                  if (this.propData.dataSource && this.propData.dataSource.length) {
+                    IDM.datasource.request(this.propData.dataSource[0].id, {
+                      moduleObject: this.moduleObject,
+                      param: {
+                        ...params
+                      }
+                    }, function (res) {
+                      let resultData = res && res.data
+                      if ( that.propData.responseDataFun && that.propData.responseDataFun.length > 0 ) {
+                        try {
+                            resultData =
+                                window[
+                                    that.propData.responseDataFun[0]
+                                        .name
+                                ] &&
+                                window[
+                                    that.propData.responseDataFun[0]
+                                        .name
+                                ].call(this, {
+                                    resultData: res,
+                                    ...params,
+                                    ...that.propData
+                                        .responseDataFun[0].param,
+                                    moduleObject: that.moduleObject,
+                                    _this: that,
+                                })
+                        } catch (error) {
+                          console.log(error)
+                        }
+                      }
+                      that.resultChangeTableData(resultData)
+                    }, function (error) {
+                      //这里是请求失败的返回结果
+                      console.log('error', error)
+                    })
+                  } 
+                  if (this.moduleObject.env == 'develop') {
+                    that.loading = false
+                  }
             }
         },
         /**
@@ -1405,10 +1445,10 @@ export default {
                 return
             }
             if (object.type && object.type == 'linkageDemand') {
+                console.log('组件收到linkageDemand消息',object?.message)
                 if (object.messageKey) {
                     this.onReInitDataMsgKey(object.message, object.messageKey)
                 }
-                console.log(object?.message, '<------------------------')
                 if (object?.message?.data) {
                     this.resultChangeTableData(object.message)
                 }

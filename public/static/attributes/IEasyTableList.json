@@ -300,9 +300,21 @@
                         {
                             "label": "分页容器",
                             "value": "pageContainer"
+                        },
+                        {
+                          "label":"数据源",
+                          "value":"dataSource"
                         }
                     ],
                     "default": "customInterface"
+                },
+                {
+                  "type": "dataSourceSelect",
+                  "layoutType": "inline",
+                  "text": "数据源",
+                  "bindKey": "dataSource",
+                  "desc": "数据源接收参数:{urlData,pageIndex,pageSize,sorter}。返回格式:{rows: [], total: 10}",
+                  "display":"@[dataSourceType=='dataSource']"
                 },
                 {
                     "type": "input",
@@ -319,7 +331,7 @@
                     "bindKey": "pageIndex",
                     "desc":"提交请求给后端的当前页数的索引参数名",
                     "default":"pageIndex",
-                    "display":"@[dataSourceType=='customInterface']"
+                    "display":"@[dataSourceType=='customInterface'||dataSourceType=='dataSource']"
                 },
                 {
                     "type": "input",
@@ -328,7 +340,7 @@
                     "bindKey": "pageSize",
                     "desc":"提交请求给后端的每页大小的索引参数名",
                     "default":"pageSize",
-                    "display":"@[dataSourceType=='customInterface']"
+                    "display":"@[dataSourceType=='customInterface'||dataSourceType=='dataSource']"
                 },{
                     "type": "radio",
                     "layoutType": "inline",
@@ -384,7 +396,7 @@
                     "text": "接收其他组件联动参数",
                     "bindKey": "linkageParamList",
                     "tabText": "参数[index]",
-                    "display": "@[dataSourceType=='customInterface']",
+                    "display": "@[dataSourceType=='customInterface'||dataSourceType=='dataSource']",
                     "children": [
                         {
                             "type": "input",
@@ -415,7 +427,7 @@
                     "text": "返回数据处理函数",
                     "bindKey": "responseDataFun",
                     "desc": "针对请求接口成功后返回的数据格式处理，返回列表需要的数据格式",
-                    "display": "@[dataSourceType=='customInterface']",
+                    "display": "@[dataSourceType=='customInterface'||dataSourceType=='dataSource']",
                     "multiple": false
                 },
                 {
