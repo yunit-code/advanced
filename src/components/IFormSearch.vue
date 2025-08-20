@@ -23,6 +23,9 @@
             <a-form-model-item v-if="propData.submitEnable">
                 <a-button type="primary" htmlType="submit">检索</a-button>
             </a-form-model-item>
+            <a-form-model-item v-if="propData.cuibanEnable">
+                <a-button type="primary">批量催办</a-button>
+            </a-form-model-item>
             <a-form-model-item v-if="propData.resetEnable">
                 <a-button @click="resetHandle">重置</a-button>
             </a-form-model-item>

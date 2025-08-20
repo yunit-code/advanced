@@ -71,6 +71,27 @@
             ]
         },
         {
+            "text": "批量催办",
+            "type": "group",
+            "children": [
+                {
+                    "text": "启用",
+                    "type": "switch",
+                    "bindKey": "cuibanEnable",
+                    "layoutType": "inline",
+                    "default": true
+                },
+                {
+                    "type": "actionSelect",
+                    "layoutType": "block",
+                    "text": "侧边导航点击自定义函数",
+                    "bindKey": "cuibanFunc",
+                    "desc": "参数为{commonParam: 组件信息, customParam: 用户自定义参数}",
+                    "multiple": true
+                }
+            ]
+        },
+        {
             "text": "重置",
             "type": "group",
             "children": [
