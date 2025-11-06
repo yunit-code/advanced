@@ -239,6 +239,15 @@ export default {
                             },
                         })
                     }
+                    //列显示依据自定义函数，这里拿到item.isShowFun返回的值，true显示false不显示
+                    columnObj.isShow =
+                        item.isShowFun &&
+                        window[item.isShowFun.name] &&
+                        window[item.isShowFun.name].call(this, {
+                            ...that.commonParam(),
+                            _this: this,
+                        })
+
                     //标题自定义
                     var titleCustomRender = item.titleCustomRender
                     titleCustomRender &&
@@ -319,6 +328,8 @@ export default {
                     console.log(customOptions, columnObj)
                     columnList.push(columnObj)
                 })
+            // 某个列isShow为false，则不显示
+            columnList = columnList.filter(item => item.ishow)
             return columnList
         },
         /**

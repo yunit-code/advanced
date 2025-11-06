@@ -80,7 +80,7 @@
                     "layoutType": "inline",
                     "text": "显示表头",
                     "bindKey": "showHeader",
-                    "desc":"设置是否显示表格的表头",
+                    "desc": "设置是否显示表格的表头",
                     "default": true
                 },
                 {
@@ -88,7 +88,7 @@
                     "layoutType": "inline",
                     "text": "显示边框",
                     "bindKey": "showBordered",
-                    "desc":"是否展示外边框和列边框",
+                    "desc": "是否展示外边框和列边框",
                     "default": false
                 },
                 {
@@ -122,14 +122,14 @@
                     "text": "Y最大高",
                     "desc": "用于指定滚动区域的高，为空则不设置",
                     "bindKey": "scrollY",
-                    "display":"@[heightMode=='fixed']"
+                    "display": "@[heightMode=='fixed']"
                 },
                 {
                     "type": "switch",
                     "layoutType": "inline",
                     "text": "启用选择",
                     "bindKey": "rowSelection",
-                    "desc":"设置列表项是否可选择",
+                    "desc": "设置列表项是否可选择",
                     "default": false
                 },
                 {
@@ -137,7 +137,7 @@
                     "layoutType": "inline",
                     "text": "启用分页",
                     "bindKey": "openPagination",
-                    "desc":"设置表格是否支持分页",
+                    "desc": "设置表格是否支持分页",
                     "default": true
                 },
                 {
@@ -145,7 +145,7 @@
                     "layoutType": "inline",
                     "text": "为空提示",
                     "bindKey": "noDataTip",
-                    "desc":"空数据下显示的文字",
+                    "desc": "空数据下显示的文字",
                     "default": "暂无数据"
                 },
                 {
@@ -153,7 +153,7 @@
                     "layoutType": "inline",
                     "text": "唯一主键",
                     "bindKey": "rowKey",
-                    "desc":"表格行 key 的取值，可以是返回数据的唯一主键的字段名称，不填写则默认为表格内置索引"
+                    "desc": "表格行 key 的取值，可以是返回数据的唯一主键的字段名称，不填写则默认为表格内置索引"
                 },
                 {
                     "type": "textarea",
@@ -167,15 +167,15 @@
                     "layoutType": "inline",
                     "text": "保存主键",
                     "bindKey": "saveFormKey",
-                    "default":"S-BASE-0001",
-                    "desc":"保存提交的必须得主键"
+                    "default": "S-BASE-0001",
+                    "desc": "保存提交的必须得主键"
                 }
             ]
         },
         {
             "type": "group",
             "text": "分页设置",
-            "display":"@[openPagination]",
+            "display": "@[openPagination]",
             "children": [
                 {
                     "type": "radio",
@@ -203,7 +203,7 @@
                     "layoutType": "inline",
                     "text": "分页条数",
                     "bindKey": "pageSizeOptions",
-                    "desc":"指定每页可以显示多少条，以逗号隔开，例如：10,20,30,40",
+                    "desc": "指定每页可以显示多少条，以逗号隔开，例如：10,20,30,40",
                     "default": "10,20,30,40"
                 },
                 {
@@ -213,7 +213,7 @@
                     "bindKey": "defaultPageSize",
                     "maxLength": 300,
                     "minLength": 1,
-                    "desc":"默认的每页条数，一般指定分页条数设置的其中一个即可",
+                    "desc": "默认的每页条数，一般指定分页条数设置的其中一个即可",
                     "default": 10
                 },
                 {
@@ -221,7 +221,7 @@
                     "layoutType": "inline",
                     "text": "单页隐藏",
                     "bindKey": "hideOnSinglePage",
-                    "desc":"设置只有一页时是否隐藏分页器",
+                    "desc": "设置只有一页时是否隐藏分页器",
                     "default": false
                 },
                 {
@@ -236,7 +236,7 @@
                     "layoutType": "inline",
                     "text": "快速跳转",
                     "bindKey": "showQuickJumper",
-                    "desc":"设置是否可以快速跳转至某页",
+                    "desc": "设置是否可以快速跳转至某页",
                     "default": false
                 },
                 {
@@ -244,7 +244,7 @@
                     "layoutType": "inline",
                     "text": "改变分页",
                     "bindKey": "showSizeChanger",
-                    "desc":"设置是否可以改变每页的大小",
+                    "desc": "设置是否可以改变每页的大小",
                     "default": false
                 },
                 {
@@ -252,7 +252,7 @@
                     "layoutType": "inline",
                     "text": "迷你分页",
                     "bindKey": "smallPagination",
-                    "desc":"设置是否是小尺寸分页",
+                    "desc": "设置是否是小尺寸分页",
                     "default": false
                 },
                 {
@@ -260,7 +260,7 @@
                     "layoutType": "inline",
                     "text": "简单分页",
                     "bindKey": "simplePagination",
-                    "desc":"设置是否显示为简单分页",
+                    "desc": "设置是否显示为简单分页",
                     "default": false
                 },
                 {
@@ -268,8 +268,8 @@
                     "layoutType": "block",
                     "text": "总量显示格式化",
                     "bindKey": "showTotalFormat",
-                    "desc":"设置用于显示数据总量和当前数据顺序，示例：@[range[0]]-@[range[1]] of @[total] items",
-                    "placeholder":"示例：@[range[0]]-@[range[1]] of @[total] items",
+                    "desc": "设置用于显示数据总量和当前数据顺序，示例：@[range[0]]-@[range[1]] of @[total] items",
+                    "placeholder": "示例：@[range[0]]-@[range[1]] of @[total] items",
                     "default": ""
                 }
             ]
@@ -302,46 +302,47 @@
                             "value": "pageContainer"
                         },
                         {
-                          "label":"数据源",
-                          "value":"dataSource"
+                            "label": "数据源",
+                            "value": "dataSource"
                         }
                     ],
                     "default": "customInterface"
                 },
                 {
-                  "type": "dataSourceSelect",
-                  "layoutType": "inline",
-                  "text": "数据源",
-                  "bindKey": "dataSource",
-                  "desc": "数据源接收参数:{urlData,pageIndex,pageSize,sorter}。返回格式:{rows: [], total: 10}",
-                  "display":"@[dataSourceType=='dataSource']"
+                    "type": "dataSourceSelect",
+                    "layoutType": "inline",
+                    "text": "数据源",
+                    "bindKey": "dataSource",
+                    "desc": "数据源接收参数:{urlData,pageIndex,pageSize,sorter}。返回格式:{rows: [], total: 10}",
+                    "display": "@[dataSourceType=='dataSource']"
                 },
                 {
                     "type": "input",
                     "layoutType": "inline",
                     "text": "接口地址",
                     "bindKey": "customInterfaceUrl",
-                    "desc":"用于获取数据源的接口地址，请按照统一标准的返回格式返回数组格式的数据，格式如下：{\"code\":\"200\",\"data\":[{...},...],...}",
-                    "display":"@[dataSourceType=='customInterface']"
+                    "desc": "用于获取数据源的接口地址，请按照统一标准的返回格式返回数组格式的数据，格式如下：{\"code\":\"200\",\"data\":[{...},...],...}",
+                    "display": "@[dataSourceType=='customInterface']"
                 },
                 {
                     "type": "input",
                     "layoutType": "inline",
                     "text": "索引参数",
                     "bindKey": "pageIndex",
-                    "desc":"提交请求给后端的当前页数的索引参数名",
-                    "default":"pageIndex",
-                    "display":"@[dataSourceType=='customInterface'||dataSourceType=='dataSource']"
+                    "desc": "提交请求给后端的当前页数的索引参数名",
+                    "default": "pageIndex",
+                    "display": "@[dataSourceType=='customInterface'||dataSourceType=='dataSource']"
                 },
                 {
                     "type": "input",
                     "layoutType": "inline",
                     "text": "页量参数",
                     "bindKey": "pageSize",
-                    "desc":"提交请求给后端的每页大小的索引参数名",
-                    "default":"pageSize",
-                    "display":"@[dataSourceType=='customInterface'||dataSourceType=='dataSource']"
-                },{
+                    "desc": "提交请求给后端的每页大小的索引参数名",
+                    "default": "pageSize",
+                    "display": "@[dataSourceType=='customInterface'||dataSourceType=='dataSource']"
+                },
+                {
                     "type": "radio",
                     "layoutType": "inline",
                     "text": "请求方式",
@@ -356,15 +357,15 @@
                             "value": "get"
                         }
                     ],
-                    "default":"get",
-                    "display":"@[dataSourceType=='customInterface']"
+                    "default": "get",
+                    "display": "@[dataSourceType=='customInterface']"
                 },
                 {
                     "type": "select",
                     "layoutType": "inline",
                     "text": "请求类型",
                     "bindKey": "requestContentType",
-                    "desc":"请求接口的数据类型，请根据后端需求进行选择",
+                    "desc": "请求接口的数据类型，请根据后端需求进行选择",
                     "dictionary": [
                         {
                             "label": "默认",
@@ -404,7 +405,8 @@
                             "text": "表单标识",
                             "bindKey": "msgKey",
                             "default": ""
-                        },{
+                        },
+                        {
                             "type": "input",
                             "layoutType": "inline",
                             "text": "参数别名",
@@ -447,7 +449,7 @@
                     "desc": "页面接口设定的结果集名称，位置为：页面设置》高级设置》页面接口",
                     "default": "",
                     "placeholder": "示例：resultData",
-                    "display":"@[dataSourceType=='pageCommonInterface']"
+                    "display": "@[dataSourceType=='pageCommonInterface']"
                 },
                 {
                     "type": "textarea",
@@ -457,7 +459,7 @@
                     "desc": "根据接口返回数据格式指定结果集的字段，比如结果集名为resultData且它的值为{data:{filedName:[{}]}}，则这里应该填写data.filedName",
                     "default": "",
                     "placeholder": "示例：data.filedName 或者 [0].data[0].filedName",
-                    "display":"@[dataSourceType=='pageCommonInterface']"
+                    "display": "@[dataSourceType=='pageCommonInterface']"
                 },
                 {
                     "type": "actionSelect",
@@ -480,26 +482,37 @@
                     "type": "input",
                     "layoutType": "inline",
                     "text": "列头标题",
-                    "desc":"列头显示的文字",
+                    "desc": "列头显示的文字",
                     "bindKey": "title"
-                },{
+                },
+                {
                     "type": "input",
                     "layoutType": "inline",
                     "text": "数据字段",
-                    "desc":"列数据在数据项中对应的 key，支持 a.b.c 的嵌套写法",
+                    "desc": "列数据在数据项中对应的 key，支持 a.b.c 的嵌套写法",
                     "bindKey": "dataIndex"
-                },{
+                },
+                {
+                    "type": "actionSelect",
+                    "layoutType": "block",
+                    "text": "列显示依据自定义函数",
+                    "bindKey": "isShowFun",
+                    "desc": "自定义标题的展示内容的自定义函数，可返回html和text，接收参数格式为：{...自定义的}，注意：设置了此方法列头标题则无效",
+                    "multiple": false
+                },
+                {
                     "type": "input",
                     "layoutType": "inline",
                     "text": "数据KEY",
-                    "desc":"Vue 需要的 key。如果已经设置了唯一的 数据字段，可以忽略这个属性不填写",
+                    "desc": "Vue 需要的 key。如果已经设置了唯一的 数据字段，可以忽略这个属性不填写",
                     "bindKey": "key"
-                },{
+                },
+                {
                     "type": "radio",
                     "layoutType": "inline",
                     "text": "对齐方式",
                     "bindKey": "align",
-                    "desc":"设置列内容的对齐方式",
+                    "desc": "设置列内容的对齐方式",
                     "dictionary": [
                         {
                             "label": "left",
@@ -515,12 +528,13 @@
                         }
                     ],
                     "default": "left"
-                },{
+                },
+                {
                     "type": "radio",
                     "layoutType": "inline",
                     "text": "列固定",
                     "bindKey": "fixed",
-                    "desc":"设置列是否固定以及固定方式",
+                    "desc": "设置列是否固定以及固定方式",
                     "dictionary": [
                         {
                             "label": "不固定",
@@ -536,11 +550,12 @@
                         }
                     ],
                     "default": "none"
-                },{
+                },
+                {
                     "type": "input",
                     "layoutType": "inline",
                     "text": "列宽度",
-                    "desc":"设置列的宽度，可为数字或字符串，格式：100 或 100px 或 10%",
+                    "desc": "设置列的宽度，可为数字或字符串，格式：100 或 100px 或 10%",
                     "bindKey": "width"
                 },
                 {
@@ -548,7 +563,7 @@
                     "layoutType": "inline",
                     "text": "超宽省略",
                     "bindKey": "ellipsis",
-                    "desc":"超过宽度将自动省略。设置为 true 时，表格布局将变成 tableLayout=\"fixed\""
+                    "desc": "超过宽度将自动省略。设置为 true 时，表格布局将变成 tableLayout=\"fixed\""
                 },
                 {
                     "type": "actionSelect",
@@ -557,12 +572,13 @@
                     "bindKey": "titleCustomRender",
                     "desc": "自定义标题的展示内容的自定义函数，可返回html和text，接收参数格式为：{...自定义的}，注意：设置了此方法列头标题则无效",
                     "multiple": false
-                },{
+                },
+                {
                     "type": "radio",
                     "layoutType": "inline",
                     "text": "返回格式",
                     "bindKey": "titleCustomRenderReturnType",
-                    "desc":"设置标题自定义函数返回格式",
+                    "desc": "设置标题自定义函数返回格式",
                     "dictionary": [
                         {
                             "label": "html",
@@ -575,6 +591,7 @@
                     ],
                     "default": "text"
                 },
+
                 {
                     "type": "select",
                     "layoutType": "inline",
@@ -621,7 +638,7 @@
                     "layoutType": "inline",
                     "text": "默认值",
                     "bindKey": "defaultValue",
-                    "display":"@[type!='switch'&type!='readonly'&type!='custom']",
+                    "display": "@[type!='switch'&type!='readonly'&type!='custom']",
                     "default": ""
                 },
                 {
@@ -629,7 +646,7 @@
                     "layoutType": "inline",
                     "text": "默认状态",
                     "bindKey": "defaultValue",
-                    "display":"@[type=='switch']",
+                    "display": "@[type=='switch']",
                     "default": true
                 },
                 {
@@ -637,7 +654,7 @@
                     "layoutType": "block",
                     "text": "选项自定义函数",
                     "bindKey": "dictionaryFun",
-                    "desc":"自定义控件选项，返回格式为：[{key,label}]",
+                    "desc": "自定义控件选项，返回格式为：[{key,label}]",
                     "display": "@[type!=''&&type!='input'&&type!='inputNumber'&&type!='switch'&&type!='treeSelect'&type!='readonly'&type!='custom']",
                     "multiple": false
                 },
@@ -648,13 +665,14 @@
                     "bindKey": "rowsCustomRender",
                     "desc": "生成复杂数据的渲染函数，参数分别为当前行的值，当前行数据，行索引，可返回html和text，接收参数格式为：{...自定义的,text, record, index}",
                     "multiple": false,
-                    "display":"@[type=='custom']"
-                },{
+                    "display": "@[type=='custom']"
+                },
+                {
                     "type": "radio",
                     "layoutType": "inline",
                     "text": "返回格式",
                     "bindKey": "rowsCustomRenderReturnType",
-                    "desc":"行自定义渲染函数返回格式",
+                    "desc": "行自定义渲染函数返回格式",
                     "dictionary": [
                         {
                             "label": "html",
@@ -666,7 +684,7 @@
                         }
                     ],
                     "default": "text",
-                    "display":"@[type=='custom']"
+                    "display": "@[type=='custom']"
                 },
                 {
                     "type": "actionSelect",
@@ -682,20 +700,20 @@
             "type": "group",
             "text": "选择列配置",
             "desc": "设置列表的选择功能的配置",
-            "display":"@[rowSelection]",
+            "display": "@[rowSelection]",
             "children": [
                 {
                     "type": "input",
                     "layoutType": "inline",
                     "text": "列宽度",
-                    "desc":"自定义列表选择框宽度",
+                    "desc": "自定义列表选择框宽度",
                     "bindKey": "rowSelectionColumnWidth"
                 },
                 {
                     "type": "input",
                     "layoutType": "inline",
                     "text": "列标题",
-                    "desc":"自定义列表选择框标题",
+                    "desc": "自定义列表选择框标题",
                     "bindKey": "rowSelectionColumnTitle"
                 },
                 {
@@ -703,7 +721,7 @@
                     "layoutType": "inline",
                     "text": "固定左边",
                     "bindKey": "rowSelectionFixed",
-                    "desc":"设置是否把选择框列固定在左边",
+                    "desc": "设置是否把选择框列固定在左边",
                     "default": false
                 },
                 {
@@ -711,7 +729,7 @@
                     "layoutType": "inline",
                     "text": "隐藏全选",
                     "bindKey": "hideDefaultSelections",
-                    "desc":"设置是否去掉『全选』『反选』两个默认选项",
+                    "desc": "设置是否去掉『全选』『反选』两个默认选项",
                     "default": false
                 },
                 {
@@ -1008,7 +1026,7 @@
         {
             "type": "table",
             "text": "联动发起",
-            "bindKey":"linkageStart",
+            "bindKey": "linkageStart",
             "tabText": "联动[index]",
             "desc": "组件之间的联动作为发起方来去设置组件之间的各种联动功能，点击？查看联动设置指南",
             "children": [
@@ -1017,7 +1035,7 @@
                     "layoutType": "inline",
                     "text": "触发动作",
                     "bindKey": "actionType",
-                    "multiple":true,
+                    "multiple": true,
                     "dictionary": [
                         {
                             "label": "数据选择项变化",
@@ -1055,7 +1073,7 @@
                     "text": "联动标识",
                     "bindKey": "customType",
                     "desc": "用于设置联动类型的type标识",
-                    "display":"@[type=='custom']",
+                    "display": "@[type=='custom']",
                     "default": ""
                 },
                 {
@@ -1067,12 +1085,12 @@
                     "multiple": true
                 }
             ],
-            "default":[]
+            "default": []
         },
         {
             "type": "table",
             "text": "联动响应",
-            "bindKey":"linkageEnd",
+            "bindKey": "linkageEnd",
             "tabText": "响应[index]",
             "desc": "组件之间的联动作为接收方来去设置组件之间的各种联动功能，点击？查看联动设置指南",
             "children": [
@@ -1081,7 +1099,7 @@
                     "layoutType": "inline",
                     "text": "响应标识",
                     "bindKey": "reslinkageType",
-                    "desc":"联动到需求则指定数据结果将用作于控件的选项等数据，通过选择标识来过滤其他组件发送过来的消息",
+                    "desc": "联动到需求则指定数据结果将用作于控件的选项等数据，通过选择标识来过滤其他组件发送过来的消息",
                     "dictionary": [
                         {
                             "label": "联动重新加载",
@@ -1100,7 +1118,7 @@
                             "value": "custom"
                         }
                     ],
-                    "default":"linkageReload"
+                    "default": "linkageReload"
                 },
                 {
                     "type": "input",
@@ -1108,7 +1126,7 @@
                     "text": "指定标识",
                     "bindKey": "reslinkageTypeCustom",
                     "desc": "用于设置联动类型的type标识",
-                    "display":"@[reslinkageType=='custom']",
+                    "display": "@[reslinkageType=='custom']",
                     "default": ""
                 },
                 {
@@ -1161,7 +1179,7 @@
                     "display": "@[resType=='customFun']"
                 }
             ],
-            "default":[]
+            "default": []
         },
         {
             "type": "group",
@@ -1183,12 +1201,13 @@
                     "bindKey": "expandedRowRender",
                     "desc": "如果需要展示额外的展开行，可以这里自定义函数，可返回html和text，接收参数格式为：{...自定义的,record, index, indent, expanded}",
                     "multiple": false
-                },{
+                },
+                {
                     "type": "radio",
                     "layoutType": "inline",
                     "text": "返回格式",
                     "bindKey": "expandedRowRenderReturnType",
-                    "desc":"额外的展示行函数返回格式",
+                    "desc": "额外的展示行函数返回格式",
                     "dictionary": [
                         {
                             "label": "html",
