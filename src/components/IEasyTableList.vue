@@ -242,11 +242,19 @@ export default {
                     //列显示依据自定义函数，这里拿到item.isShowFun返回的值，true显示false不显示
                     columnObj.isShow =
                         item.isShowFun &&
-                        window[item.isShowFun.name] &&
-                        window[item.isShowFun.name].call(this, {
+                        window[item.isShowFun[0].name] &&
+                        window[item.isShowFun[0].name].call(this, {
                             ...that.commonParam(),
+                            customParam: item.isShowFun[0].param,
                             _this: this,
                         })
+                        console.log(window[item.isShowFun[0].name] &&
+                        window[item.isShowFun[0].name].call(this, {
+                            ...that.commonParam(),
+                            customParam: item.isShowFun[0]  .param,
+                            _this: this,
+                        }),"columnObj.isShow");
+                        
 
                     //标题自定义
                     var titleCustomRender = item.titleCustomRender
@@ -326,10 +334,13 @@ export default {
 
                     columnObj = Object.assign(customOptions, columnObj)
                     console.log(customOptions, columnObj)
-                    columnList.push(columnObj)
+                    // 某个列isShow为false，则不显示
+                    if(columnObj.isShow === true){
+                        columnList.push(columnObj)
+                    }
                 })
-            // 某个列isShow为false，则不显示
-            columnList = columnList.filter(item => item.ishow)
+          
+            
             return columnList
         },
         /**
@@ -588,6 +599,7 @@ export default {
         })
     },
     methods: {
+        
         setBodyHeight(el) {
             const tableHeight = el.clientHeight
             const headHeight =
