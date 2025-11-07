@@ -240,20 +240,17 @@ export default {
                         })
                     }
                     //列显示依据自定义函数，这里拿到item.isShowFun返回的值，true显示false不显示
-                    columnObj.isShow =
-                        item.isShowFun &&
-                        window[item.isShowFun[0].name] &&
-                        window[item.isShowFun[0].name].call(this, {
-                            ...that.commonParam(),
-                            customParam: item.isShowFun[0].param,
-                            _this: this,
+                    if( item.isShowFun && window[item.isShowFun[0].name]){
+
+                        columnObj.isShow =
+                            item.isShowFun &&
+                            window[item.isShowFun[0].name] &&
+                            window[item.isShowFun[0].name].call(this, {
+                                ...that.commonParam(),
+                                customParam: item.isShowFun[0].param,
+                                _this: this,
                         })
-                        console.log(window[item.isShowFun[0].name] &&
-                        window[item.isShowFun[0].name].call(this, {
-                            ...that.commonParam(),
-                            customParam: item.isShowFun[0]  .param,
-                            _this: this,
-                        }),"columnObj.isShow");
+                    }
                         
 
                     //标题自定义
